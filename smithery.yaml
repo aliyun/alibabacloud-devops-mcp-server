@@ -1,0 +1,19 @@
+# Smithery configuration file: https://smithery.ai/docs/build/project-config
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - accessToken
+    properties:
+      accessToken:
+        type: string
+        description: Alibaba Cloud Yunxiao Personal Access Token
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'npx', args: ['-y', 'alibabacloud-devops-mcp-server'], env: { YUNXIAO_ACCESS_TOKEN: config.accessToken } })
+  exampleConfig:
+    accessToken: abc123
