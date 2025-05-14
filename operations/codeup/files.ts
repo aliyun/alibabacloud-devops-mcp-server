@@ -4,59 +4,18 @@ import {
   FileContentSchema, 
   CreateFileResponseSchema, 
   DeleteFileResponseSchema,
-  FileInfoSchema
+  FileInfoSchema,
+  GetFileBlobsSchema,
+  GetFileBlobsOptions,
+  CreateFileSchema,
+  CreateFileOptions,
+  UpdateFileSchema,
+  UpdateFileOptions,
+  DeleteFileSchema,
+  DeleteFileOptions,
+  ListFilesSchema,
+  ListFilesOptions
 } from "../../common/types.js";
-
-// Schema definitions
-export const GetFileBlobsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  filePath: z.string().describe("File path, needs to be URL encoded, for example: /src/main/java/com/aliyun/test.java"),
-  ref: z.string().describe("Reference name, usually branch name, can be branch name, tag name or commit SHA. If not provided, the default branch of the repository will be used, such as master"),
-});
-
-export const CreateFileSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  filePath: z.string().describe("File path, needs to be URL encoded, for example: /src/main/java/com/aliyun/test.java"),
-  content: z.string().describe("File content"),
-  commitMessage: z.string().describe("Commit message, not empty, no more than 102400 characters"),
-  branch: z.string().describe("Branch name"),
-  encoding: z.string().optional().describe("Encoding rule, options {text, base64}, default is text"),
-});
-
-export const UpdateFileSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  filePath: z.string().describe("File path, needs to be URL encoded, for example: /src/main/java/com/aliyun/test.java"),
-  content: z.string().describe("File content"),
-  commitMessage: z.string().describe("Commit message, not empty, no more than 102400 characters"),
-  branch: z.string().describe("Branch name"),
-  encoding: z.string().default("text").optional().describe("Encoding rule, options {text, base64}, default is text"),
-});
-
-export const DeleteFileSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  filePath: z.string().describe("File path, needs to be URL encoded, for example: /src/main/java/com/aliyun/test.java"),
-  commitMessage: z.string().describe("Commit message"),
-  branch: z.string().describe("Branch name"),
-});
-
-export const ListFilesSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  path: z.string().optional().describe("Specific path to query, for example to query files in the src/main directory"),
-  ref: z.string().optional().describe("Reference name, usually branch name, can be branch name, tag name or commit SHA. If not provided, the default branch of the repository will be used, such as master"),
-  type: z.string().default("RECURSIVE").optional().describe("File tree retrieval method: DIRECT - only get the current directory, default method; RECURSIVE - recursively find all files under the current path; FLATTEN - flat display (if it is a directory, recursively find until the subdirectory contains files or multiple directories)"),
-});
-
-// Type exports
-export type GetFileBlobsOptions = z.infer<typeof GetFileBlobsSchema>;
-export type CreateFileOptions = z.infer<typeof CreateFileSchema>;
-export type UpdateFileOptions = z.infer<typeof UpdateFileSchema>;
-export type DeleteFileOptions = z.infer<typeof DeleteFileSchema>;
-export type ListFilesOptions = z.infer<typeof ListFilesSchema>;
 
 // Common helper function to handle repositoryId and filePath encoding
 function handlePathEncoding(repositoryId: string, filePath: string): { encodedRepoId: string; encodedFilePath: string } {
@@ -87,7 +46,13 @@ function handlePathEncoding(repositoryId: string, filePath: string): { encodedRe
   return { encodedRepoId, encodedFilePath };
 }
 
-// Function implementations
+/**
+ * 查询文件内容
+ * @param organizationId
+ * @param repositoryId
+ * @param filePath
+ * @param ref
+ */
 export async function getFileBlobsFunc(
   organizationId: string,
   repositoryId: string,
@@ -131,6 +96,16 @@ export async function getFileBlobsFunc(
   return FileContentSchema.parse(response);
 }
 
+/**
+ * 创建文件
+ * @param organizationId
+ * @param repositoryId
+ * @param filePath
+ * @param content
+ * @param commitMessage
+ * @param branch
+ * @param encoding
+ */
 export async function createFileFunc(
   organizationId: string,
   repositoryId: string,
@@ -177,6 +152,16 @@ export async function createFileFunc(
   return CreateFileResponseSchema.parse(response);
 }
 
+/**
+ * 更新文件内容
+ * @param organizationId
+ * @param repositoryId
+ * @param filePath
+ * @param content
+ * @param commitMessage
+ * @param branch
+ * @param encoding
+ */
 export async function updateFileFunc(
   organizationId: string,
   repositoryId: string,
@@ -225,6 +210,14 @@ export async function updateFileFunc(
   return CreateFileResponseSchema.parse(response);
 }
 
+/**
+ * 删除文件
+ * @param organizationId
+ * @param repositoryId
+ * @param filePath
+ * @param commitMessage
+ * @param branch
+ */
 export async function deleteFileFunc(
   organizationId: string,
   repositoryId: string,
@@ -269,6 +262,14 @@ export async function deleteFileFunc(
   return DeleteFileResponseSchema.parse(response);
 }
 
+/**
+ * 查询文件树
+ * @param organizationId
+ * @param repositoryId
+ * @param path
+ * @param ref
+ * @param type
+ */
 export async function listFilesFunc(
   organizationId: string,
   repositoryId: string,

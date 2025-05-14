@@ -1,13 +1,13 @@
 {
   "name": "alibabacloud-devops-mcp-server",
-  "version": "0.1.5",
+  "version": "0.1.10",
   "description": "MCP Server for using the alibabacloud-devops API: allows AI assistants to directly participate in development collaboration, helping teams optimize development processes and improve efficiency.",
   "type": "module",
   "license": "Apache-2.0",
   "author": {
     "name": "Yunxiao",
     "email": "liyebin.lyb@alibaba-inc.com",
-    "url": "https://github.com/aliyun/alibabacloud-devops-mcp-server.git"
+    "url": "https://github.com/aliyun/alibabacloud-devops-mcp-server"
   },
   "homepage": "https://github.com/aliyun/alibabacloud-devops-mcp-server.git",
   "bin": {
@@ -21,11 +21,9 @@
     "url": "git@github.com:aliyun/alibabacloud-devops-mcp-server.git"
   },
   "keywords": [
-    "alibaba",
+    "alibaba-cloud",
     "aliyun",
-    "cloud",
     "devops",
-    "mcp",
     "mcp",
     "ai",
     "open api",

@@ -1,41 +1,29 @@
 import { z } from "zod";
-import { yunxiaoRequest, buildUrl } from "../../common/utils.js";
-import { ChangeRequestCommentSchema } from "../../common/types.js";
-import { handleRepositoryIdEncoding } from "./utils.js";
+import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding } from "../../common/utils.js";
+import { 
+  ChangeRequestCommentSchema,
+  CreateChangeRequestCommentSchema,
+  CreateChangeRequestCommentOptions,
+  ListChangeRequestCommentsSchema,
+  ListChangeRequestCommentsOptions
+} from "../../common/types.js";
 
-// Schema definitions
-export const CreateChangeRequestCommentSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  localId: z.string().describe("Local ID, represents the nth merge request in the repository"),
-  comment_type: z.string().default("GLOBAL_COMMENT").describe("Comment type. Possible values: GLOBAL_COMMENT, INLINE_COMMENT"),
-  content: z.string().describe("Comment content, length must be between 1 and 65535"),
-  draft: z.boolean().default(false).describe("Whether it is a draft comment"),
-  resolved: z.boolean().default(false).describe("Whether to mark as resolved"),
-  patchset_biz_id: z.string().describe("Associated version ID, if it's INLINE_COMMENT, choose one from from_patchset_biz_id or to_patchset_biz_id"),
-  file_path: z.string().nullable().optional().describe("File name, only for inline comments"),
-  line_number: z.number().int().nullable().optional().describe("Line number, only for inline comments"),
-  from_patchset_biz_id: z.string().nullable().optional().describe("Start version ID for comparison, required for INLINE_COMMENT type"),
-  to_patchset_biz_id: z.string().nullable().optional().describe("Target version ID for comparison, required for INLINE_COMMENT type"),
-  parent_comment_biz_id: z.string().nullable().optional().describe("Parent comment ID"),
-});
-
-export const ListChangeRequestCommentsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  localId: z.string().describe("Local ID, represents the nth merge request in the repository"),
-  patchSetBizIds: z.array(z.string()).nullable().optional().describe("Associated version ID list, each comment is associated with a version, indicating which version the comment was posted on, for global comments, it's associated with the latest merge source version"),
-  commentType: z.string().optional().default("GLOBAL_COMMENT").describe("Comment type. Possible values: GLOBAL_COMMENT, INLINE_COMMENT"),
-  state: z.string().optional().default("OPENED").describe("Comment state. Possible values: OPENED, DRAFT"),
-  resolved: z.boolean().optional().default(false).describe("Whether marked as resolved"),
-  filePath: z.string().nullable().optional().describe("File name, only for inline comments"),
-});
-
-// Type exports
-export type CreateChangeRequestCommentOptions = z.infer<typeof CreateChangeRequestCommentSchema>;
-export type ListChangeRequestCommentsOptions = z.infer<typeof ListChangeRequestCommentsSchema>;
-
-// Function implementations
+/**
+ * 创建合并请求评论
+ * @param organizationId
+ * @param repositoryId
+ * @param localId
+ * @param comment_type
+ * @param content
+ * @param draft
+ * @param resolved
+ * @param patchset_biz_id
+ * @param file_path
+ * @param line_number
+ * @param from_patchset_biz_id
+ * @param to_patchset_biz_id
+ * @param parent_comment_biz_id
+ */
 export async function createChangeRequestCommentFunc(
   organizationId: string,
   repositoryId: string,
@@ -90,6 +78,17 @@ export async function createChangeRequestCommentFunc(
   return ChangeRequestCommentSchema.parse(response);
 }
 
+/**
+ * 获取合并请求评论列表
+ * @param organizationId
+ * @param repositoryId
+ * @param localId
+ * @param patchSetBizIds
+ * @param commentType
+ * @param state
+ * @param resolved
+ * @param filePath
+ */
 export async function listChangeRequestCommentsFunc(
   organizationId: string,
   repositoryId: string,

@@ -46,6 +46,21 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `get_work_item`: 获取工作项详情
 - `search_workitems`: 搜索工作项
 
+### 流水线工具
+
+- `get_pipeline`: 获取流水线详情
+- `list_pipelines`: 获取流水线列表
+- `create_pipeline_run`: 运行流水线
+- `get_latest_pipeline_run`: 获取最近一次流水线运行信息
+- `get_pipeline_run`: 获取流水线运行实例
+- `list_pipeline_runs`: 获取流水线运行实例列表
+
+### 制品仓库工具
+
+- `list_package_repositories`: 查看制品仓库信息
+- `list_artifacts`: 查询制品信息
+- `get_artifact`: 查看单个制品信息
+
 ## 用法
 
 ### 先决条件
@@ -53,6 +68,11 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 * 阿里云云效个人访问令牌，[点击前往](https://help.aliyun.com/zh/yunxiao/developer-reference/obtain-personal-access-token?spm=a2c4g.11186623.help-menu-150040.d_5_0_1.5dc72af2GnT64i)，授予组织管理、项目协作、代码管理下所有api的读写权限。
   
   ![个人令牌授权页面](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/img_8.png)
+
+### 通过 MCP市场 安装云效 MCP 服务
+通义灵码内置的MCP市场中已经提供了云效的MCP服务，在通义灵码中进入MCP市场并且找到「云效DevOps」，直接安装即可。
+
+![MCP市场安装云效MCP服务](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/img_9.png)
 
 ### 通过 NPX 运行 MCP 服务器
 ```json
@@ -100,3 +120,5 @@ docker build -t alibabacloud/alibabacloud-devops-mcp-server .
 
 ## 相关链接
 - [阿里云云效](https://devops.aliyun.com)
+- [MCP 市场](https://modelscope.cn/mcp/servers/@aliyun/alibabacloud-devops-mcp-server)
+- [使用场景示例](https://mp.weixin.qq.com/s/KQsN6dQlnNeCNATC-QD7pg)

@@ -1,48 +1,29 @@
 import { z } from "zod";
-import {CodeupBranchSchema} from "../../common/types.js";
 import {buildUrl, yunxiaoRequest} from "../../common/utils.js";
-
-// Schema definitions
-export const CreateBranchSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  branch: z.string().describe("Name of the branch to be created"),
-  ref: z.string().default("master").describe("Source branch name, the new branch will be created based on this branch, default value is master"),
-});
-
-export const GetBranchSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  branchName: z.string().describe("Branch name (if it contains special characters, use URL encoding), example: master or feature%2Fdev"),
-});
-
-export const DeleteBranchSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  branchName: z.string().describe("Branch name (use URL-Encoder for encoding, example: feature%2Fdev)"),
-});
-
-export const ListBranchesSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  page: z.number().int().default(1).optional().describe("Page number"),
-  perPage: z.number().int().default(20).optional().describe("Items per page"),
-  sort: z.enum(["name_asc", "name_desc", "updated_asc", "updated_desc"]).default("name_asc").optional().describe("Sort order: name_asc - name ascending, name_desc - name descending, updated_asc - update time ascending, updated_desc - update time descending"),
-  search: z.string().nullable().optional().describe("Search query"),
-});
-
-// Type exports
-export type CreateBranchOptions = z.infer<typeof CreateBranchSchema>;
-export type GetBranchOptions = z.infer<typeof GetBranchSchema>;
-export type DeleteBranchOptions = z.infer<typeof DeleteBranchSchema>;
-export type ListBranchesOptions = z.infer<typeof ListBranchesSchema>;
+import {
+  CreateBranchSchema,
+  CreateBranchOptions,
+  GetBranchSchema,
+  GetBranchOptions,
+  DeleteBranchSchema,
+  DeleteBranchOptions,
+  ListBranchesSchema,
+  ListBranchesOptions,
+  CodeupBranchSchema
+} from "../../common/types.js";
 
 // Response type for delete branch operation
 interface DeleteBranchResponse {
   branchName: string;
 }
 
-// Function implementations
+/**
+ * 创建分支
+ * @param organizationId
+ * @param repositoryId
+ * @param branch
+ * @param ref
+ */
 export async function createBranchFunc(
     organizationId: string,
     repositoryId: string,
@@ -78,6 +59,12 @@ export async function createBranchFunc(
   return CodeupBranchSchema.parse(response);
 }
 
+/**
+ * 获取分支详情
+ * @param organizationId
+ * @param repositoryId
+ * @param branchName
+ */
 export async function getBranchFunc(
     organizationId: string,
     repositoryId: string,
@@ -108,6 +95,12 @@ export async function getBranchFunc(
   return CodeupBranchSchema.parse(response);
 }
 
+/**
+ * 删除分支
+ * @param organizationId
+ * @param repositoryId
+ * @param branchName
+ */
 export async function deleteBranchFunc(
     organizationId: string,
     repositoryId: string,
@@ -141,6 +134,15 @@ export async function deleteBranchFunc(
   };
 }
 
+/**
+ * 查询分支列表
+ * @param organizationId
+ * @param repositoryId
+ * @param page
+ * @param perPage
+ * @param sort
+ * @param search
+ */
 export async function listBranchesFunc(
     organizationId: string,
     repositoryId: string,
