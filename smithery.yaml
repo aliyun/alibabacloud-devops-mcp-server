@@ -6,14 +6,14 @@ startCommand:
     # JSON Schema defining the configuration options for the MCP.
     type: object
     required:
-      - yunxiaoAccessToken
+      - accessToken
     properties:
-      yunxiaoAccessToken:
+      accessToken:
         type: string
         description: Alibaba Cloud Yunxiao Personal Access Token
   commandFunction:
     # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
     |-
-    (config) => ({ command: 'npx', args: ['-y','alibabacloud-devops-mcp-server'], env: { YUNXIAO_ACCESS_TOKEN: config.yunxiaoAccessToken } })
+    (config) => ({ command: 'npx', args: ['-y', 'alibabacloud-devops-mcp-server'], env: { YUNXIAO_ACCESS_TOKEN: config.accessToken } })
   exampleConfig:
-    yunxiaoAccessToken: YOUR_TOKEN_HERE
+    accessToken: abc123
