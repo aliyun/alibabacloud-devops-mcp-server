@@ -1,3 +1,13 @@
+/**
+ * 代码库（Repository）相关操作
+ * 
+ * 概念说明：
+ * - 代码库（Repository）是云效平台中的代码管理单元，属于CodeUp产品
+ * - 代码库与项目（Project）是不同的概念，项目属于项目管理领域
+ * - 代码库用于存储和管理源代码，而项目用于管理工作项、迭代等
+ * - 请勿混淆这两个概念，它们是不同的资源类型
+ */
+
 import { z } from "zod";
 import {yunxiaoRequest, buildUrl, handleRepositoryIdEncoding} from "../../common/utils.js";
 import { 

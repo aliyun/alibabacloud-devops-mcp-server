@@ -73,100 +73,106 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             // Branch Operations
             {
                 name: "create_branch",
-                description: "Create a new branch in a Codeup repository",
+                description: "[Code Management] Create a new branch in a Codeup repository",
                 inputSchema: zodToJsonSchema(types.CreateBranchSchema),
             },
             {
                 name: "get_branch",
-                description: "Get information about a branch in a Codeup repository",
+                description: "[Code Management] Get information about a branch in a Codeup repository",
                 inputSchema: zodToJsonSchema(types.GetBranchSchema),
             },
             {
                 name: "delete_branch",
-                description: "Delete a branch from a Codeup repository",
+                description: "[Code Management] Delete a branch from a Codeup repository",
                 inputSchema: zodToJsonSchema(types.DeleteBranchSchema),
             },
             {
                 name: "list_branches",
-                description: "List branches in a Codeup repository",
+                description: "[Code Management] List branches in a Codeup repository",
                 inputSchema: zodToJsonSchema(types.ListBranchesSchema),
             },
 
             // File Operations
             {
                 name: "get_file_blobs",
-                description: "Get file content from a Codeup repository",
+                description: "[Code Management] Get file content from a Codeup repository",
                 inputSchema: zodToJsonSchema(types.GetFileBlobsSchema),
             },
             {
                 name: "create_file",
-                description: "Create a new file in a Codeup repository",
+                description: "[Code Management] Create a new file in a Codeup repository",
                 inputSchema: zodToJsonSchema(types.CreateFileSchema),
             },
             {
                 name: "update_file",
-                description: "Update an existing file in a Codeup repository",
+                description: "[Code Management] Update an existing file in a Codeup repository",
                 inputSchema: zodToJsonSchema(types.UpdateFileSchema),
             },
             {
                 name: "delete_file",
-                description: "Delete a file from a Codeup repository",
+                description: "[Code Management] Delete a file from a Codeup repository",
                 inputSchema: zodToJsonSchema(types.DeleteFileSchema),
             },
             {
                 name: "compare",
-                description: "Query code to compare content",
+                description: "[Code Management] Query code to compare content",
                 inputSchema: zodToJsonSchema(types.GetCompareSchema),
             },
 
             // Repository Operations
             {
                 name: "get_repository",
-                description: "Get information about a Codeup repository",
+                description: "[Code Management] Get information about a Codeup repository",
                 inputSchema: zodToJsonSchema(types.GetRepositorySchema),
             },
             {
                 name: "list_repositories",
-                description: "List repositories in an organization",
+                description: "[Code Management] Get the CodeUp Repository List.\n" +
+                    "\n" +
+                    "A Repository serves as a unit for managing source code and is distinct from a Project.\n" +
+                    "\n" +
+                    "Use Case:\n" +
+                    "\n" +
+                    "View my repositories",
                 inputSchema: zodToJsonSchema(types.ListRepositoriesSchema),
             },
 
             // Change Request Operations
             {
                 name: "get_change_request",
-                description: "Get information about a change request",
+                description: "[Code Management] Get information about a change request",
                 inputSchema: zodToJsonSchema(types.GetChangeRequestSchema),
             },
             {
                 name: "list_change_requests",
-                description: "List change requests",
+                description: "[Code Management] List change requests",
                 inputSchema: zodToJsonSchema(types.ListChangeRequestsSchema),
             },
             {
                 name: "create_change_request",
-                description: "Create a new change request",
+                description: "[Code Management] Create a new change request",
                 inputSchema: zodToJsonSchema(types.CreateChangeRequestSchema),
             },
             {
                 name: "create_change_request_comment",
-                description: "Create a comment on a change request",
+                description: "[Code Management] Create a comment on a change request",
                 inputSchema: zodToJsonSchema(types.CreateChangeRequestCommentSchema),
             },
             {
                 name: "list_change_request_comments",
-                description: "List comments on a change request",
+                description: "[Code Management] List comments on a change request",
                 inputSchema: zodToJsonSchema(types.ListChangeRequestCommentsSchema),
             },
             {
                 name: "list_change_request_patch_sets",
-                description: "List patch sets for a change request",
+                description: "[Code Management] List patch sets for a change request",
                 inputSchema: zodToJsonSchema(types.ListChangeRequestPatchSetsSchema),
             },
 
             // Organization Operations
             {
                 name: "get_current_organization_info",
-                description: "Get information about the current user and organization based on the token",
+                description: "Get information about the current user and organization based on the token. In the absence of an explicitly specified organization ID, this result will take precedence.",
                 inputSchema: zodToJsonSchema(z.object({})),
             },
             {
@@ -178,12 +184,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             // Project Operations
             {
                 name: "get_project",
-                description: "Get information about a project",
+                description: "[Project Management] Get information about a Yunxiao project",
                 inputSchema: zodToJsonSchema(types.GetProjectSchema),
             },
             {
                 name: "search_projects",
-                description: "Search projects with various filter conditions",
+                description: "[Project Management] Search for Yunxiao Project List. A Project is a project management unit that includes work items and sprints, and it is different from a code repository (Repository).\n" +
+                    "\n" +
+                    "Use Cases:\n" +
+                    "\n" +
+                    "Query projects I am involved in\n" +
+                    "Query projects I have created",
                 inputSchema: zodToJsonSchema(types.SearchProjectsSchema),
             },
 
@@ -202,29 +213,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             // Work Item Operations
             {
                 name: "get_work_item",
-                description: "Get information about a work item",
+                description: "[Project Management] Get information about a work item",
                 inputSchema: zodToJsonSchema(types.GetWorkItemSchema),
             },
             {
                 name: "search_workitems",
-                description: "Search work items with various filter conditions",
+                description: "[Project Management] Search work items with various filter conditions",
                 inputSchema: zodToJsonSchema(types.SearchWorkitemsSchema),
             },
 
             // Pipeline Operations
             {
                 name: "get_pipeline",
-                description: "Get details of a specific pipeline in an organization",
+                description: "[Pipeline Management] Get details of a specific pipeline in an organization",
                 inputSchema: zodToJsonSchema(types.GetPipelineSchema),
             },
             {
                 name: "list_pipelines",
-                description: "Get a list of pipelines in an organization with filtering options",
+                description: "[Pipeline Management] Get a list of pipelines in an organization with filtering options",
                 inputSchema: zodToJsonSchema(types.ListPipelinesSchema),
             },
             {
                 name: "smart_list_pipelines",
-                description: "Intelligently search pipelines with natural language time references (e.g., 'today', 'this week')",
+                description: "[Pipeline Management] Intelligently search pipelines with natural language time references (e.g., 'today', 'this week')",
                 inputSchema: zodToJsonSchema(
                     z.object({
                         organizationId: z.string().describe("Organization ID"),
@@ -238,41 +249,41 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             {
                 name: "create_pipeline_run",
-                description: "Run a pipeline with optional parameters",
+                description: "[Pipeline Management] Run a pipeline with optional parameters",
                 inputSchema: zodToJsonSchema(types.CreatePipelineRunSchema),
             },
             {
                 name: "get_latest_pipeline_run",
-                description: "Get information about the latest pipeline run",
+                description: "[Pipeline Management] Get information about the latest pipeline run",
                 inputSchema: zodToJsonSchema(types.GetLatestPipelineRunSchema),
             },
             {
                 name: "get_pipeline_run",
-                description: "Get details of a specific pipeline run instance",
+                description: "[Pipeline Management] Get details of a specific pipeline run instance",
                 inputSchema: zodToJsonSchema(types.GetPipelineRunSchema),
             },
             {
                 name: "list_pipeline_runs",
-                description: "Get a list of pipeline run instances with filtering options",
+                description: "[Pipeline Management] Get a list of pipeline run instances with filtering options",
                 inputSchema: zodToJsonSchema(types.ListPipelineRunsSchema),
             },
             
             // Package Repository Operations
             {
                 name: "list_package_repositories",
-                description: "List package repositories in an organization with filtering options",
+                description: "[Packages Management] List package repositories in an organization with filtering options",
                 inputSchema: zodToJsonSchema(types.ListPackageRepositoriesSchema),
             },
             
             // Package Artifact Operations
             {
                 name: "list_artifacts",
-                description: "List artifacts in a repository with filtering options",
+                description: "[Packages Management] List artifacts in a package repository with filtering options",
                 inputSchema: zodToJsonSchema(types.ListArtifactsSchema),
             },
             {
                 name: "get_artifact",
-                description: "Get information about a single artifact in a repository",
+                description: "[Packages Management] Get information about a single artifact in a package repository",
                 inputSchema: zodToJsonSchema(types.GetArtifactSchema),
             }
         ],

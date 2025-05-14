@@ -1,3 +1,12 @@
+/**
+ * 项目（Project）相关操作
+ * 
+ * 概念说明：
+ * - 项目（Project）是云效平台中的项目管理单元，包含工作项、迭代等管理概念
+ * - 项目与代码库（Repository）是不同的概念，代码库属于CodeUp产品，用于代码管理
+ * - 一个项目可以关联多个代码库，但两者是不同的资源类型
+ */
+
 import { z } from "zod";
 import { yunxiaoRequest } from "../../common/utils.js";
 import {

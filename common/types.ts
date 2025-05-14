@@ -943,3 +943,12 @@ export const GetArtifactSchema = z.object({
 export type PackageRepository = z.infer<typeof PackageRepositorySchema>;
 export type Artifact = z.infer<typeof ArtifactSchema>;
 
+// 添加概念区分的常量说明
+export const CONCEPT_DESCRIPTIONS = {
+  PROJECT: "项目（Project）是云效平台中的项目管理单元，包含工作项、迭代等管理概念，用于组织和管理软件开发工作。",
+  REPOSITORY: "代码库（Repository）是云效平台中的代码管理单元，属于CodeUp产品，用于存储和管理源代码。",
+  PIPELINE: "流水线（Pipeline）是云效平台中的持续集成/持续部署工具，用于自动化构建、测试和部署代码。",
+  WORKITEM: "工作项（WorkItem）是项目管理中的任务单元，可以是需求、缺陷、任务等类型。",
+  SPRINT: "迭代（Sprint）是敏捷开发中的时间盒，通常是一到四周的开发周期。"
+};
+
