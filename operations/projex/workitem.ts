@@ -1,34 +1,10 @@
 import { z } from "zod";
 import { yunxiaoRequest } from "../../common/utils.js";
-import { WorkItemSchema, FilterConditionSchema, ConditionsSchema } from "../../common/types.js";
-
-// Schema definitions
-export const GetWorkItemSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  workItemId: z.string().describe("Work item unique identifier, required parameter"),
-});
-
-export const SearchWorkitemsSchema = z.object({
-  organizationId: z.string().describe("Organization ID"),
-  category: z.string().describe("Search for work item types, such as Req (requirement), Task (task), Bug (defect), etc., multiple values separated by commas"),
-  spaceId: z.string().describe("Project ID, project unique identifier"),
-  
-  // Simplified search parameters
-  subject: z.string().nullable().optional().describe("Text contained in the title"),
-  status: z.string().nullable().optional().describe("Status ID, multiple separated by commas. Status names and their IDs: Pending Confirmation (28), Pending Processing (100005), Reopened (30), Deferred Fix (34), Confirmed (32), Selected (625489), In Analysis (154395), Analysis Complete (165115), In Progress (100010), In Design (156603), Design Complete (307012), In Development (142838), Development Complete (100011), In Testing (100012)"),
-  createdAfter: z.string().nullable().optional().describe("Created not earlier than, format: YYYY-MM-DD"),
-  createdBefore: z.string().nullable().optional().describe("Created not later than, format: YYYY-MM-DD"),
-  creator: z.string().nullable().optional().describe("Creator ID, multiple separated by commas"),
-  assignedTo: z.string().nullable().optional().describe("Assignee ID, multiple separated by commas"),
-  
-  // Advanced parameters
-  advancedConditions: z.string().nullable().optional().describe("Advanced filter conditions, JSON format"),
-  orderBy: z.string().optional().default("gmtCreate").describe("Sort field, default is gmtCreate. Possible values: gmtCreate, subject, status, priority, assignedTo"),
-});
-
-// Type exports
-export type GetWorkItemOptions = z.infer<typeof GetWorkItemSchema>;
-export type SearchWorkitemsOptions = z.infer<typeof SearchWorkitemsSchema>;
+import {
+  WorkItemSchema,
+  FilterConditionSchema,
+  ConditionsSchema
+} from "../../common/types.js";
 
 // Function implementations
 export async function getWorkItemFunc(

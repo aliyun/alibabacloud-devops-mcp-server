@@ -1,37 +1,10 @@
 import { z } from "zod";
 import { yunxiaoRequest } from "../../common/utils.js";
-import { ProjectInfoSchema, FilterConditionSchema, ConditionsSchema } from "../../common/types.js";
-
-// Schema definitions
-export const GetProjectSchema = z.object({
-  organizationId: z.string().describe("Organization ID"),
-  id: z.string().describe("Project unique identifier"),
-});
-
-export const SearchProjectsSchema = z.object({
-  organizationId: z.string().describe("Organization ID"),
-  
-  // Simplified search parameters
-  name: z.string().nullable().optional().describe("Text contained in project name"),
-  status: z.string().nullish().optional().describe("Project status ID, multiple separated by commas"),
-  createdAfter: z.string().nullable().optional().describe("Created not earlier than, format: YYYY-MM-DD"),
-  createdBefore: z.string().nullable().optional().describe("Created not later than, format: YYYY-MM-DD"),
-  creator: z.string().nullable().optional().describe("Creator"),
-  admin: z.string().nullable().optional().describe("Administrator"),
-  logicalStatus: z.string().nullable().optional().describe("Logical status, e.g., NORMAL"),
-  
-  // Advanced parameters
-  advancedConditions: z.string().nullable().optional().describe("Advanced filter conditions, JSON format"),
-  extraConditions: z.string().nullable().optional().describe("Additional filter conditions, e.g., projects I manage, projects I participate in, projects I favorited, etc."),
-  orderBy: z.string().optional().default("gmtCreate").describe("Sort field, default is gmtCreate, supports: gmtCreate (creation time), name (name)"),
-  page: z.number().int().default(1).optional().describe("Pagination parameter, page number"),
-  perPage: z.number().int().default(20).optional().describe("Pagination parameter, page size, 0-200, default value is 20"),
-  sort: z.string().optional().default("desc").describe("Sort order, default is desc, options: desc (descending), asc (ascending)"),
-});
-
-// Type exports
-export type GetProjectOptions = z.infer<typeof GetProjectSchema>;
-export type SearchProjectsOptions = z.infer<typeof SearchProjectsSchema>;
+import {
+  ProjectInfoSchema,
+  FilterConditionSchema,
+  ConditionsSchema
+} from "../../common/types.js";
 
 // Function implementations
 export async function getProjectFunc(

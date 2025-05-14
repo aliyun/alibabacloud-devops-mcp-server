@@ -1,55 +1,17 @@
 import { z } from "zod";
-import { yunxiaoRequest, buildUrl } from "../../common/utils.js";
-import { ChangeRequestSchema, PatchSetSchema } from "../../common/types.js";
-import { handleRepositoryIdEncoding, floatToIntString } from "./utils.js";
-
-// Schema definitions
-export const GetChangeRequestSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  localId: z.string().describe("Local ID, represents the nth merge request in the repository"),
-});
-
-export const ListChangeRequestsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  page: z.number().int().default(1).optional().describe("Page number"),
-  perPage: z.number().int().default(20).optional().describe("Items per page"),
-  projectIds: z.string().nullable().optional().describe("Repository ID or a combination of organization ID and repository name list, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F), multiple separated by commas"),
-  authorIds: z.string().nullable().optional().describe("Creator user ID list, multiple separated by commas"),
-  reviewerIds: z.string().nullable().optional().describe("Reviewer user ID list, multiple separated by commas"),
-  state: z.string().nullable().optional().describe("Merge request filter status. Possible values: opened, merged, closed. Default is null, which queries all statuses"),
-  search: z.string().nullable().optional().describe("Title keyword search"),
-  orderBy: z.string().default("updated_at").optional().describe("Sort field. Possible values: created_at (creation time), updated_at (update time, default)"),
-  sort: z.string().default("desc").optional().describe("Sort order. Possible values: asc (ascending), desc (descending, default)"),
-  createdBefore: z.string().nullable().optional().describe("Start creation time, time format is ISO 8601, for example: 2019-03-15T08:00:00Z"),
-  createdAfter: z.string().nullable().optional().describe("End creation time, time format is ISO 8601, for example: 2019-03-15T08:00:00Z"),
-});
-
-export const ListChangeRequestPatchSetsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  localId: z.string().describe("Local ID, represents the nth merge request in the repository"),
-});
-
-export const CreateChangeRequestSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  title: z.string().describe("Title, no more than 256 characters"),
-  description: z.string().nullable().optional().describe("Description, no more than 10000 characters"),
-  sourceBranch: z.string().describe("Source branch name"),
-  sourceProjectId: z.number().optional().describe("Source repository ID (if not provided, will try to get automatically)"),
-  targetBranch: z.string().describe("Target branch name"),
-  targetProjectId: z.number().optional().describe("Target repository ID (if not provided, will try to get automatically)"),
-  reviewerUserIds: z.array(z.string()).nullable().optional().describe("Reviewer user ID list"),
-  workItemIds: z.array(z.string()).nullable().optional().describe("Associated work item ID list"),
-  createFrom: z.string().optional().default("WEB").describe("Creation source. Possible values: WEB (created from web page), COMMAND_LINE (created from command line). Default is WEB"),
-});
-
-// Type exports
-export type GetChangeRequestOptions = z.infer<typeof GetChangeRequestSchema>;
-export type ListChangeRequestsOptions = z.infer<typeof ListChangeRequestsSchema>;
-export type ListChangeRequestPatchSetsOptions = z.infer<typeof ListChangeRequestPatchSetsSchema>;
-export type CreateChangeRequestOptions = z.infer<typeof CreateChangeRequestSchema>;
+import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, floatToIntString } from "../../common/utils.js";
+import { 
+  ChangeRequestSchema, 
+  PatchSetSchema,
+  GetChangeRequestSchema,
+  GetChangeRequestOptions,
+  ListChangeRequestsSchema,
+  ListChangeRequestsOptions,
+  ListChangeRequestPatchSetsSchema,
+  ListChangeRequestPatchSetsOptions,
+  CreateChangeRequestSchema,
+  CreateChangeRequestOptions
+} from "../../common/types.js";
 
 // 通过API获取仓库的数字ID
 async function getRepositoryNumericId(organizationId: string, repositoryId: string): Promise<string> {
@@ -71,7 +33,12 @@ async function getRepositoryNumericId(organizationId: string, repositoryId: stri
   return repoId.toString();
 }
 
-// Function implementations
+/**
+ * 查询合并请求
+ * @param organizationId
+ * @param repositoryId
+ * @param localId
+ */
 export async function getChangeRequestFunc(
   organizationId: string,
   repositoryId: string,
@@ -88,6 +55,21 @@ export async function getChangeRequestFunc(
   return ChangeRequestSchema.parse(response);
 }
 
+/**
+ * 查询合并请求列表
+ * @param organizationId
+ * @param page
+ * @param perPage
+ * @param projectIds
+ * @param authorIds
+ * @param reviewerIds
+ * @param state
+ * @param search
+ * @param orderBy
+ * @param sort
+ * @param createdBefore
+ * @param createdAfter
+ */
 export async function listChangeRequestsFunc(
   organizationId: string,
   page?: number,
@@ -167,6 +149,12 @@ export async function listChangeRequestsFunc(
   return response.map(changeRequest => ChangeRequestSchema.parse(changeRequest));
 }
 
+/**
+ * 查询合并请求的版本列表
+ * @param organizationId
+ * @param repositoryId
+ * @param localId
+ */
 export async function listChangeRequestPatchSetsFunc(
   organizationId: string,
   repositoryId: string,
@@ -189,6 +177,20 @@ export async function listChangeRequestPatchSetsFunc(
   return response.map(patchSet => PatchSetSchema.parse(patchSet));
 }
 
+/**
+ * 创建合并请求
+ * @param organizationId
+ * @param repositoryId
+ * @param title
+ * @param sourceBranch
+ * @param targetBranch
+ * @param description
+ * @param sourceProjectId
+ * @param targetProjectId
+ * @param reviewerUserIds
+ * @param workItemIds
+ * @param createFrom
+ */
 export async function createChangeRequestFunc(
   organizationId: string,
   repositoryId: string,

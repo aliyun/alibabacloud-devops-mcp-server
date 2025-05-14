@@ -1,25 +1,8 @@
 import { z } from "zod";
 import { yunxiaoRequest, buildUrl } from "../../common/utils.js";
-import { SprintInfoSchema } from "../../common/types.js";
-
-// Schema definitions
-export const GetSprintSchema = z.object({
-  organizationId: z.string().describe("Organization ID"),
-  projectId: z.string().describe("Project unique identifier"),
-  id: z.string().describe("Sprint unique identifier"),
-});
-
-export const ListSprintsSchema = z.object({
-  organizationId: z.string().describe("Organization ID"),
-  id: z.string().describe("Project unique identifier"),
-  status: z.string().optional().describe("Filter by status: TODO, DOING, ARCHIVED, corresponding to not started, in progress, and completed; multiple statuses separated by commas"),
-  page: z.number().optional().describe("Pagination parameter, page number"),
-  perPage: z.number().optional().describe("Pagination parameter, page size"),
-});
-
-// Type exports
-export type GetSprintOptions = z.infer<typeof GetSprintSchema>;
-export type ListSprintsOptions = z.infer<typeof ListSprintsSchema>;
+import {
+  SprintInfoSchema
+} from "../../common/types.js";
 
 // Function implementations
 export async function getSprintFunc(

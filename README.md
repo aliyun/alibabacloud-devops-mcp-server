@@ -48,6 +48,21 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `get_work_item`: Get work item details
 - `search_workitems`: Search work items
 
+### Pipeline Management Tools
+
+- `get_pipeline`: Get pipeline details
+- `list_pipelines`: Get pipeline list
+- `create_pipeline_run`: Create a pipeline run instance
+- `get_latest_pipeline_run`: Get the latest pipeline run instance
+- `get_pipeline_run`: Get pipeline run details
+- `list_pipeline_runs`: Get pipeline run list
+
+### Packages Management Tools
+
+- `list_package_repositories`: Get package repositories details list
+- `list_artifacts`: Get artifacts details list
+- `get_artifact`: Get single artifact details
+
 ## Usage
 
 ### Prerequisites
@@ -63,6 +78,11 @@ To install alibabacloud-devops-mcp-server for Claude Desktop automatically via [
 ```bash
 npx -y @smithery/cli install @yjiace/alibabacloud-devops-mcp-server --client claude
 ```
+
+### Install Yunxiao MCP server via MCP marketplace
+The MCP market built into Lingma (AlibabaCloud Tongyi Lingma) has already provided the Yunxiao MCP service. To install it, simply enter the MCP market in Lingma and search for "Yunxiao DevOps", then click install.
+
+![Install Yunxiao MCP Service from the MCP Market](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/img_9.png)
 
 ### Run MCP Server via NPX
 ```json
@@ -111,3 +131,5 @@ docker build -t alibabacloud/alibabacloud-devops-mcp-server .
 
 ## Related Links
 - [Alibaba Cloud Yunxiao](https://devops.aliyun.com)
+- [MCP market](https://modelscope.cn/mcp/servers/@aliyun/alibabacloud-devops-mcp-server)
+- [Example Use Cases](https://mp.weixin.qq.com/s/KQsN6dQlnNeCNATC-QD7pg)
