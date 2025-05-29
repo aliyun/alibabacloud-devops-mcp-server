@@ -1,4 +1,6 @@
 # alibabacloud-devops-mcp-server
+[![smithery badge](https://smithery.ai/badge/@aliyun/alibabacloud-devops-mcp-server)](https://smithery.ai/server/@aliyun/alibabacloud-devops-mcp-server)
+
 Yunxiao MCP Server provides AI assistants with the ability to interact with the Yunxiao platform, enabling them to read work item contents in projects, automatically write code after understanding requirements, and submit code merge requests. Enterprise development teams can use it to assist with code reviews, optimize task management, reduce repetitive operations, and thus focus on more important innovation and product delivery.
 
 ## Features
@@ -74,6 +76,14 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 * Alibaba Cloud Yunxiao Personal Access Token, [click here to obtain](https://help.aliyun.com/zh/yunxiao/developer-reference/obtain-personal-access-token?spm=a2c4g.11186623.help-menu-150040.d_5_0_1.5dc72af2GnT64i). Grant read and write permissions to all APIs under organization management, project collaboration, and code management.
 
   ![The personal token authorization page](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/img_8.png)
+
+### Installing via Smithery
+
+To install Yunxiao DevOps Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@aliyun/alibabacloud-devops-mcp-server):
+
+```bash
+npx -y @smithery/cli install @aliyun/alibabacloud-devops-mcp-server --client claude
+```
 
 ### Install Yunxiao MCP server via MCP marketplace
 The MCP market built into Lingma (AlibabaCloud Tongyi Lingma) has already provided the Yunxiao MCP service. To install it, simply enter the MCP market in Lingma and search for "Yunxiao DevOps", then click install.
