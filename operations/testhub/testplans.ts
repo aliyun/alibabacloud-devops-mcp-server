@@ -18,10 +18,11 @@ export const ListTestPlanRequestSchema = z.object({
 export const ListTestPlanResponseSchema = z.array(TestPlanDTOSchema);
 
 // Schema for MiniUser (reuse from testcases.ts)
+// 字段设为可选，因为 API 可能返回空对象或 null，或者字段可能缺失
 export const MiniUserSchema = z.object({
-  id: z.string().describe("用户id"),
-  name: z.string().describe("名称"),
-});
+  id: z.string().optional().nullable().describe("用户id"),
+  name: z.string().optional().nullable().describe("名称"),
+}).passthrough(); // 允许额外的字段，处理空对象的情况
 
 // Schema for FieldValue (from testplan.swagger.json)
 export const TestPlanFieldValueSchema = z.object({
@@ -36,13 +37,16 @@ export const TestcaseTestResultSummarySchema = z.object({
   identifier: z.string().describe("测试用例 id，测试用例唯一标识"),
   gmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("测试用例创建时间"),
   subject: z.string().nullable().optional().describe("测试用例标题"),
-  assignedTo: MiniUserSchema.nullable().optional().describe("负责人信息"),
+  // 使用 union 来正确处理 null 值或空对象，.optional() 处理 undefined
+  assignedTo: z.union([MiniUserSchema, z.null()]).optional().describe("负责人信息"),
   spaceIdentifier: z.string().nullable().optional().describe("测试用例所属的测试库 id"),
-  customFields: TestPlanFieldValueSchema.nullable().optional().describe("自定义字段数组"),
+  // customFields 实际返回的是数组，不是单个对象
+  customFields: z.array(TestPlanFieldValueSchema).nullable().optional().describe("自定义字段数组"),
   testResultIdentifier: z.string().nullable().optional().describe("测试结果的id"),
   testResultStatus: z.enum(["TODO", "PASS", "FAILURE", "POSTPONE"]).nullable().optional().describe("测试结果的状态"),
   testResultExecutorIdentifier: z.string().nullable().optional().describe("测试计划执行人id"),
-  testResultExecutor: MiniUserSchema.nullable().optional().describe("测试计划执行人对象"),
+  // 使用 union 来正确处理 null 值或空对象，.optional() 处理 undefined
+  testResultExecutor: z.union([MiniUserSchema, z.null()]).optional().describe("测试计划执行人对象"),
   testResultGmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("测试结果创建时间"),
   testResultGmtModified: z.union([z.string(), z.number()]).nullable().optional().describe("测试结果最后创建时间"),
   bugCount: z.number().int().nullable().optional().describe("测试执行结果关联缺陷数量"),

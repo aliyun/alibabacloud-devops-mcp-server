@@ -1,0 +1,1760 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API文档",
+    "description": "这是描述信息",
+    "version": "1.0"
+  },
+  "servers": [],
+  "tags": [
+    {
+      "name": "工作项",
+      "description": "项目协作工作项相关接口"
+    },
+    {
+      "name": "工作项工作流",
+      "description": "项目协作工作项工作流相关接口"
+    },
+    {
+      "name": "工作项类型",
+      "description": "项目协作工作项类型相关接口"
+    },
+    {
+      "name": "工作项自定义字段",
+      "description": "项目协作工作项自定义字段相关接口"
+    }
+  ],
+  "paths": {
+    "/projex/organizations/{organizationId}/customField/{id}": {
+      "put": {
+        "tags": [
+          "工作项自定义字段"
+        ],
+        "summary": "更新自定义字段",
+        "operationId": "UpdateCustomField",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "自定义字段id",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFieldRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitems": {
+      "post": {
+        "tags": [
+          "工作项"
+        ],
+        "summary": "创建工作项",
+        "description": "创建工作项，可以用于创建项目下的工作项，包含（需求、缺陷、任务、风险、主题等），需要填写的字段信息可以参考：获取工作项类型列表接口 和 获取工作项类型字段配置 两个接口。",
+        "operationId": "CreateWorkitem",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkitemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentifierDTO"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitems/{id}": {
+      "get": {
+        "tags": [
+          "工作项"
+        ],
+        "summary": "获取工作项",
+        "operationId": "GetWorkitem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkitemDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "工作项"
+        ],
+        "summary": "更新工作项",
+        "description": "更新的内容，body的格式为一个jsonobject，格式为:{\"fieldId\":\"value\"}，如果是多值格式为:{\"fieldId\":[\"value1\"],\"value2\"]}。例如:更改标题： {\"subject\":\"test-update-by-api\"},更改状态： {\"status\":\"statusId\"},更改负责人： {\"assignedTo\":\"userId\"},更改优先级： {\"priority\":\"priorityId\"},fieldId的可选值可以通过\"获取工作项类型字段配置\"接口获取，value为希望更新的值。 指定操作人时参数增加\"operatorId\":\"userId\"，该参数在个人token场景无效",
+        "operationId": "UpdateWorkitem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "工作项"
+        ],
+        "summary": "删除工作项",
+        "operationId": "DeleteWorkitem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitems/{id}/activities": {
+      "get": {
+        "tags": [
+          "工作项"
+        ],
+        "summary": "获取工作项动态",
+        "operationId": "ListWorkitemActivities",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActivityDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitems/{id}/starred": {
+      "post": {
+        "tags": [
+          "工作项"
+        ],
+        "summary": "收藏工作项",
+        "operationId": "CreateStarredWorkitem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "工作项"
+        ],
+        "summary": "取消收藏工作项",
+        "operationId": "DeleteStarredWorkitem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitems:search": {
+      "post": {
+        "tags": [
+          "工作项"
+        ],
+        "summary": "搜索工作项",
+        "description": "搜索工作项，参数中spaceId为项目id，该接口不支持跨多个项目进行数据搜索\nconditions为过滤条件，是一个json串，格式为{\"conditionGroups\":[[filterObject,filterObject,...]]}， 每个字段如何拼接可参考需求列表页面过滤时请求的ajax接口: workitem/list. 可在页面上先选择好条件进行过滤，后直接取workitem/list接口中的conditions参数 \n几个常见的filterObject: \n标题包含test的条件：\n{\"fieldIdentifier\": \"subject\",\"operator\": \"CONTAINS\",\"value\": [\"test\"],\"toValue\": null,\"className\": \"string\",\"format\": \"input\"},\n状态包含指定状态的条件：\n{\"fieldIdentifier\": \"status\",\"operator\": \"CONTAINS\",\"value\": [\"28\",\"30\",\"32\",\"100010\"],\"toValue\": null,\"className\": \"status\",\"format\": \"list\"},\n负责人包含用户id为5f2bfdacb69dd0f7311e2932的条件\n{\"fieldIdentifier\": \"assignedTo\",\"operator\": \"CONTAINS\",\"value\": [\"5f2bfdacb69dd0f7311e2932\"],\"toValue\": null,\"className\": \"user\",\"format\": \"list\"}\n创建人包含用户id为5f2bfdacb69dd0f7311e2932的条件\n{\"fieldIdentifier\": \"creator\",\"operator\": \"CONTAINS\",\"value\": [\"5f2bfdacb69dd0f7311e2932\"],\"toValue\": null,\"className\": \"user\",\"format\": \"list\"}\n包含标签id为1589a2b0ae967141c6929f1a78的条件\n{\"fieldIdentifier\": \"tag\",\"operator\": \"CONTAINS\",\"value\": [\"1589a2b0ae967141c6929f1a78\"],\"toValue\": null,\"className\": \"tag\",\"format\": \"multiList\"}\n更新时间介入的条件：\n{\"fieldIdentifier\": \"gmtCreate\",\"operator\": \"BETWEEN\",\"value\": [\"2022-04-01 00:00:00\"],\"toValue\": \"2023-03-31 23:59:59\",\"className\": \"dateTime\",\"format\": \"input\"}",
+        "operationId": "SearchWorkitems",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchWorkitemsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "headers": {
+              "x-per-page": {
+                "description": "每页数据条数",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "x-page": {
+                "description": "当前页",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "x-total-pages": {
+                "description": "总分页数",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "x-total": {
+                "description": "总数据量",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "x-next-page": {
+                "description": "下一页",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "x-prev-page": {
+                "description": "上一页",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkitemDTO"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects/{id}/workitemTypes": {
+      "get": {
+        "tags": [
+          "工作项类型"
+        ],
+        "summary": "获取工作项类型列表",
+        "operationId": "ListWorkitemTypes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "工作项类型，可选值为Req，Bug，Task等",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkitemTypeDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects/{projectId}/workitemTypes/{id}/fields": {
+      "get": {
+        "tags": [
+          "工作项类型"
+        ],
+        "summary": "获取工作项类型字段配置",
+        "operationId": "GetWorkitemTypeFieldConfig",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项类型id",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkitemSimpleFiled"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitemTypes": {
+      "get": {
+        "tags": [
+          "工作项类型"
+        ],
+        "summary": "获取组织下所有工作项类型列表",
+        "operationId": "ListAllWorkitemTypes",
+        "parameters": [
+          {
+            "name": "categories",
+            "in": "query",
+            "description": "工作项类型，可选值为Req，Bug，Task等",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkitemTypeDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitemTypes/{id}": {
+      "get": {
+        "tags": [
+          "工作项类型"
+        ],
+        "summary": "获取工作项类型详情",
+        "operationId": "GetWorkitemType",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项类型唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkitemTypeDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitemTypes/{id}/relationWorkitemTypes": {
+      "get": {
+        "tags": [
+          "工作项类型"
+        ],
+        "summary": "获取工作项可关联的工作项类型列表",
+        "operationId": "ListWorkitemRelationWorkitemTypes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项类型唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "relationType",
+            "in": "query",
+            "description": "关联类型，可选值为PARENT、SUB、ASSOCIATED，DEPEND_ON, DEPENDED_BY 分别对应父项，子项，关联项，依赖项，支撑项",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RelationWorkitemType"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects/{projectId}/workitemTypes/{id}/workflows": {
+      "get": {
+        "tags": [
+          "工作项工作流"
+        ],
+        "summary": "获取工作项工作流信息",
+        "operationId": "GetWorkitemWorkflow",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项类型唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkitemWorkflow"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActivityDTO": {
+        "title": "ActivityDTO",
+        "type": "object",
+        "properties": {
+          "actionType": {
+            "type": "string",
+            "description": "action类型，可选值为: created, updated, delete, associate, unassociate分别对应: 创建，更新，删除，关联和解除关联的action"
+          },
+          "eventId": {
+            "type": "integer",
+            "description": "事件id",
+            "format": "int64"
+          },
+          "eventTime": {
+            "type": "string",
+            "description": "事件发生时间",
+            "format": "date-time"
+          },
+          "eventType": {
+            "type": "string",
+            "description": "事件类型，可选值为: workitem.created, workitem.updated, workitem.transitioned, workitem.association.changed， workitem.attachment.changed分别对应工作项创建，工作项更新，工作项状态流转，工作项附件变更，工作项关联项变更"
+          },
+          "newValue": {
+            "type": "array",
+            "description": "更新后的值，可以为空",
+            "items": {
+              "$ref": "#/components/schemas/FieldDisplayValue"
+            }
+          },
+          "oldValue": {
+            "type": "array",
+            "description": "更新前的值，可以为空",
+            "items": {
+              "$ref": "#/components/schemas/FieldDisplayValue"
+            }
+          },
+          "operator": {
+            "description": "操作人",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "parentEventId": {
+            "type": "integer",
+            "description": "parentEventId",
+            "format": "int64"
+          },
+          "property": {
+            "description": "修改的字段信息",
+            "$ref": "#/components/schemas/Property"
+          },
+          "relatedResource": {
+            "description": "操作关联项时对应的关联资源信息，当eventType为workitem.association.changed时： actionType的值为unassociate表示解除关联，actionType的值为associate时表示建立关联",
+            "$ref": "#/components/schemas/RelatedResource"
+          },
+          "resourceId": {
+            "type": "string",
+            "description": "事件发生的资源对象id，工作项则是对应的工作项id"
+          }
+        }
+      },
+      "CascadingOption": {
+        "title": "CascadingOption",
+        "type": "object",
+        "properties": {
+          "mustSelectLeaf": {
+            "type": "boolean",
+            "description": "是否必须选择叶子节点",
+            "example": true
+          },
+          "optionsList": {
+            "type": "array",
+            "description": "选项列表",
+            "example": "[]",
+            "items": {
+              "$ref": "#/components/schemas/FieldMiniCascadingOption"
+            }
+          }
+        }
+      },
+      "CreateWorkitemRequest": {
+        "title": "CreateWorkitemRequest",
+        "required": [
+          "assignedTo",
+          "spaceId",
+          "subject",
+          "workitemTypeId"
+        ],
+        "type": "object",
+        "properties": {
+          "assignedTo": {
+            "type": "string",
+            "description": "指派人userId",
+            "example": "674d96abd497cd558d68****"
+          },
+          "customFieldValues": {
+            "type": "object",
+            "description": "格式为:{\"fieldId\":\"value\"}，多值value用逗号隔开，例如：{\"fieldId\": \"value1,value2\"}。例如：\n{\"priority\":\"888853d622cc8eae793e085e27\"},fieldId的可选值为\"工作项创建时需要的字段信息\"接口返回的字段type值为SystemCustomField和CustomField的字段，value为希望更新的值。 ",
+            "example": "{\"priority\":\"888853d622cc8eae793e085e27\"}"
+          },
+          "description": {
+            "type": "string",
+            "description": "工作项描述",
+            "example": "描述test"
+          },
+          "labels": {
+            "type": "array",
+            "description": "关联的标签id列表",
+            "example": "f2f52de5cac7656371fba2****",
+            "items": {
+              "type": "string"
+            }
+          },
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的useId，个人token时该参数无效",
+            "example": "操作者的useId，个人token时该参数无效"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "父工作项id",
+            "example": "beda1775d1c3eca7dbdff5****"
+          },
+          "participants": {
+            "type": "array",
+            "description": "参与人userId列表",
+            "example": "674d96abd497cd558d68****",
+            "items": {
+              "type": "string"
+            }
+          },
+          "spaceId": {
+            "type": "string",
+            "description": "空间id，如果是项目就是项目的id",
+            "example": "bfbb5f44f3aaab11460cd1****"
+          },
+          "sprint": {
+            "type": "string",
+            "description": "关联的迭代id",
+            "example": "1c0d8bc0115fdf76bc33ac****"
+          },
+          "subject": {
+            "maxLength": 256,
+            "minLength": 0,
+            "type": "string",
+            "description": "工作项标题",
+            "example": "标题test"
+          },
+          "trackers": {
+            "type": "array",
+            "description": "抄送人userId列表",
+            "example": "674d96abd497cd558d68****",
+            "items": {
+              "type": "string"
+            }
+          },
+          "verifier": {
+            "type": "string",
+            "description": "验证人userId",
+            "example": "674d96abd497cd558d68****"
+          },
+          "versions": {
+            "type": "array",
+            "description": "关联的版本id列表",
+            "example": "bfbb5f44f3aaab11460cd1****",
+            "items": {
+              "type": "string"
+            }
+          },
+          "workitemTypeId": {
+            "type": "string",
+            "description": "工作项类型id，可以通过获取工作项类型列表接口获取",
+            "example": "bca48ee2a0976d38f48****"
+          }
+        }
+      },
+      "FieldDisplayValue": {
+        "title": "FieldDisplayValue",
+        "type": "object",
+        "properties": {
+          "displayValue": {
+            "type": "string",
+            "description": "显示的名称"
+          },
+          "identifier": {
+            "type": "string",
+            "description": "值的唯一标识"
+          }
+        }
+      },
+      "FieldMiniCascadingOption": {
+        "title": "FieldMiniCascadingOption",
+        "type": "object",
+        "properties": {
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldMiniCascadingOption"
+            }
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "FieldMiniOptionDTO": {
+        "title": "FieldMiniOptionDTO",
+        "type": "object",
+        "properties": {
+          "displayValue": {
+            "type": "string",
+            "description": "可选值值显示值",
+            "example": "111"
+          },
+          "id": {
+            "type": "string",
+            "description": "字段id",
+            "example": "126553d622cc8521793e08****"
+          },
+          "value": {
+            "type": "string",
+            "description": "可选值值",
+            "example": "111"
+          },
+          "valueEn": {
+            "type": "string",
+            "description": "可选值值英文",
+            "example": "111"
+          }
+        }
+      },
+      "FieldValue": {
+        "title": "FieldValue",
+        "type": "object",
+        "properties": {
+          "fieldFormat": {
+            "type": "string",
+            "description": "字段类型",
+            "example": "User"
+          },
+          "fieldId": {
+            "type": "string",
+            "description": "字段id",
+            "example": "126553d622cc8521793e08****"
+          },
+          "fieldName": {
+            "type": "string",
+            "description": "字段名称",
+            "example": "field-name-xxx"
+          },
+          "values": {
+            "type": "array",
+            "description": "字段值",
+            "items": {
+              "$ref": "#/components/schemas/FieldDisplayValue"
+            }
+          }
+        }
+      },
+      "IdentifierDTO": {
+        "title": "IdentifierDTO",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "id-xxx"
+          }
+        }
+      },
+      "MiniItemDTO": {
+        "title": "MiniItemDTO",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "id-xxx"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "test"
+          }
+        }
+      },
+      "MiniLabel": {
+        "title": "MiniLabel",
+        "type": "object",
+        "properties": {
+          "color": {
+            "type": "string",
+            "description": "颜色",
+            "example": "test"
+          },
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "id-xxx"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "test"
+          }
+        }
+      },
+      "MiniSpace": {
+        "title": "MiniSpace",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "id-xxx"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "test"
+          }
+        }
+      },
+      "MiniStatus": {
+        "title": "MiniStatus",
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "description": "显示名称",
+            "example": "待处理"
+          },
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "id-xxx"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "待处理"
+          },
+          "nameEn": {
+            "type": "string",
+            "description": "英文名称",
+            "example": "TODO"
+          }
+        }
+      },
+      "MiniUser": {
+        "title": "MiniUser",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "用户id",
+            "example": "674d96abd497cd558d68****"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "name-xxx"
+          }
+        }
+      },
+      "OperatorIdRequest": {
+        "title": "OperatorIdRequest",
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的useId，个人token时该参数无效",
+            "example": "操作者的useId，个人token时该参数无效"
+          }
+        }
+      },
+      "Property": {
+        "title": "Property",
+        "type": "object",
+        "properties": {
+          "propertyId": {
+            "type": "string",
+            "description": "属性id"
+          },
+          "propertyName": {
+            "type": "string",
+            "description": "属性名称"
+          },
+          "propertyType": {
+            "type": "string",
+            "description": "属性类型, 可选值为Field，Relation 或是null"
+          }
+        }
+      },
+      "RelatedResource": {
+        "title": "RelatedResource",
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "description": "资源id，如果是工作项则是对应的工作项id"
+          },
+          "resourceType": {
+            "type": "string",
+            "description": "资源对象，如果是工作项则是Workitem"
+          }
+        }
+      },
+      "RelationWorkitemType": {
+        "title": "RelationWorkitemType",
+        "type": "object",
+        "properties": {
+          "relationType": {
+            "type": "string",
+            "description": "关系类型, 关联类型，可选值为PARENT、SUB、ASSOCIATED，DEPEND_ON, DEPENDED_BY 分别对应父项，子项，关联项，依赖项，支撑项",
+            "example": "ASSOCIATED"
+          },
+          "workitemTypeList": {
+            "type": "array",
+            "description": "可关联的工作项类型列表",
+            "items": {
+              "$ref": "#/components/schemas/WorkitemTypeDTO"
+            }
+          }
+        }
+      },
+      "SearchWorkitemsRequest": {
+        "title": "SearchWorkitemsRequest",
+        "required": [
+          "category",
+          "spaceId"
+        ],
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "搜索的工作项类型，例如Req，多值用逗号隔开",
+            "example": "Req"
+          },
+          "conditions": {
+            "type": "string",
+            "description": "过滤条件， 是一个json串，格式为{\"conditionGroups\":[[filterObject,filterObject,...]]}， 每个字段如何拼接可参考需求列表页面过滤时请求的ajax接口: /workitem/list，以下为一个完整的搜索条件(真实场景中可以按需选取对应的值){\"conditionGroups\":[[{\"fieldIdentifier\":\"status\",\"operator\":\"CONTAINS\",\"value\":[\"100005\",\"100010\",\"154395\"],\"toValue\":null,\"className\":\"status\",\"format\":\"list\"}]]}",
+            "example": "{\"conditionGroups\":[[{\"fieldIdentifier\":\"status\",\"operator\":\"CONTAINS\",\"value\":[\"100005\",\"100010\",\"154395\"],\"toValue\":null,\"className\":\"status\",\"format\":\"list\"}]]}"
+          },
+          "orderBy": {
+            "type": "string",
+            "description": "排序字段，默认为gmtCreate\ngmtCreate：创建时间\nname：名称",
+            "example": "gmtCreate"
+          },
+          "page": {
+            "type": "integer",
+            "description": "分页参数，第几页",
+            "format": "int32",
+            "example": 1
+          },
+          "perPage": {
+            "type": "integer",
+            "description": "分页参数，每页大小，0-200，默认值20",
+            "format": "int32",
+            "example": 20
+          },
+          "sort": {
+            "type": "string",
+            "description": "排序方式，默认为desc\ndesc：降序\nasc：升序",
+            "example": "desc"
+          },
+          "spaceId": {
+            "type": "string",
+            "description": "项目id"
+          }
+        }
+      },
+      "UpdateFieldRequest": {
+        "title": "UpdateFieldRequest",
+        "type": "object",
+        "properties": {
+          "defaultValue": {
+            "maxLength": 10,
+            "minLength": 0,
+            "type": "string",
+            "description": "默认值",
+            "example": "test"
+          },
+          "description": {
+            "maxLength": 40,
+            "minLength": 0,
+            "type": "string",
+            "description": "字段描述",
+            "example": "test"
+          },
+          "disabledOptions": {
+            "type": "array",
+            "description": "字段待选值，只有字段是全局字段且是列表类型时才有效",
+            "example": "[test]",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "maxLength": 32,
+            "minLength": 0,
+            "type": "string",
+            "description": "字段名称",
+            "example": "test"
+          },
+          "nameEn": {
+            "maxLength": 32,
+            "minLength": 0,
+            "type": "string",
+            "description": "字段英文名称",
+            "example": "test"
+          },
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的useId，个人token时该参数无效",
+            "example": "操作者的useId，个人token时该参数无效"
+          },
+          "options": {
+            "type": "array",
+            "description": "字段待选值，只有字段是列表类型时才有效",
+            "example": "[test]",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "WorkitemDTO": {
+        "title": "WorkitemDTO",
+        "type": "object",
+        "properties": {
+          "assignedTo": {
+            "description": "负责人",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "工作项分类id",
+            "example": "Req"
+          },
+          "creator": {
+            "description": "创建人",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "customFieldValues": {
+            "type": "array",
+            "description": "自定义字段值",
+            "items": {
+              "$ref": "#/components/schemas/FieldValue"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "test"
+          },
+          "formatType": {
+            "type": "string",
+            "description": "描述的格式，目前支持RICHTEXT 和 MARKDOWN",
+            "example": "RICHTEXT"
+          },
+          "gmtCreate": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time"
+          },
+          "gmtModified": {
+            "type": "string",
+            "description": "修改时间",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "description": "工作项id",
+            "example": "id-2"
+          },
+          "idPath": {
+            "type": "string",
+            "description": "工作项idPath",
+            "example": "id-1,id-2"
+          },
+          "labels": {
+            "type": "array",
+            "description": "标签",
+            "items": {
+              "$ref": "#/components/schemas/MiniLabel"
+            }
+          },
+          "logicalStatus": {
+            "type": "string",
+            "description": "逻辑状态, normal为正常状态， archived为归档状态",
+            "example": "normal"
+          },
+          "modifier": {
+            "description": "修改人",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "父工作项id",
+            "example": "id-1"
+          },
+          "participants": {
+            "type": "array",
+            "description": "参与人",
+            "items": {
+              "$ref": "#/components/schemas/MiniUser"
+            }
+          },
+          "serialNumber": {
+            "type": "string",
+            "description": "编号",
+            "example": "DSDD-123"
+          },
+          "space": {
+            "description": "所属空间",
+            "$ref": "#/components/schemas/MiniSpace"
+          },
+          "sprint": {
+            "description": "迭代",
+            "$ref": "#/components/schemas/MiniItemDTO"
+          },
+          "status": {
+            "description": "状态",
+            "$ref": "#/components/schemas/MiniStatus"
+          },
+          "statusStageId": {
+            "type": "string",
+            "description": "状态阶段id",
+            "example": "id-xxx"
+          },
+          "subject": {
+            "type": "string",
+            "description": "标题",
+            "example": "test"
+          },
+          "trackers": {
+            "type": "array",
+            "description": "跟踪人",
+            "items": {
+              "$ref": "#/components/schemas/MiniUser"
+            }
+          },
+          "updateStatusAt": {
+            "type": "string",
+            "description": "状态更新时间",
+            "format": "date-time"
+          },
+          "verifier": {
+            "description": "验证人",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "versions": {
+            "type": "array",
+            "description": "版本",
+            "items": {
+              "$ref": "#/components/schemas/MiniItemDTO"
+            }
+          },
+          "workitemType": {
+            "description": "工作项类型",
+            "$ref": "#/components/schemas/MiniItemDTO"
+          }
+        }
+      },
+      "WorkitemSimpleFiled": {
+        "title": "WorkitemSimpleFiled",
+        "type": "object",
+        "properties": {
+          "cascadingOptions": {
+            "description": "层级字段的待选择，即format为cascading时的可选值",
+            "$ref": "#/components/schemas/CascadingOption"
+          },
+          "defaultValue": {
+            "type": "string",
+            "description": "默认值",
+            "example": "12233"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "描述"
+          },
+          "format": {
+            "type": "string",
+            "description": "字段格式，目前支持的有list、multiList、date、dateTime、int、float、string、text、user、multiUser、cascading、file、 tag、sprint、version 分别对应 单选、多选、日期、时间、整型、浮点、单行文本、多行文本、用户、多选用户、层级字段、文件、标签、迭代、版本",
+            "example": "list"
+          },
+          "id": {
+            "type": "string",
+            "description": "字段id",
+            "example": "126553d622cc8521793e08****"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "名称"
+          },
+          "options": {
+            "type": "array",
+            "description": "可选值",
+            "items": {
+              "$ref": "#/components/schemas/FieldMiniOptionDTO"
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "是否必填",
+            "example": true
+          },
+          "showWhenCreate": {
+            "type": "boolean",
+            "description": "创建时是否展示",
+            "example": true
+          },
+          "type": {
+            "type": "string",
+            "description": "字段类型,区分不同的类型，如系统字段：NativeField，用户自定义字段：CustomField",
+            "example": "NativeField"
+          }
+        }
+      },
+      "WorkitemTypeDTO": {
+        "title": "WorkitemTypeDTO",
+        "type": "object",
+        "properties": {
+          "addUser": {
+            "description": "添加用户",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "所属类别的唯一标识，例如Req，Task，Bug等",
+            "example": "Req"
+          },
+          "creator": {
+            "description": "创建人",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "defaultType": {
+            "type": "boolean",
+            "description": "是否默认类型",
+            "example": true
+          },
+          "description": {
+            "type": "string",
+            "description": "类型描述",
+            "example": "类型描述"
+          },
+          "enable": {
+            "type": "boolean",
+            "description": "是否启用",
+            "example": true
+          },
+          "gmtAdd": {
+            "type": "string",
+            "description": "添加时间",
+            "format": "date-time"
+          },
+          "gmtCreate": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "description": "工作项类型唯一标识",
+            "example": "bca48ee2a0976d38f48****"
+          },
+          "name": {
+            "type": "string",
+            "description": "类型名称",
+            "example": "技术需求"
+          },
+          "nameEn": {
+            "type": "string",
+            "description": "类型英文名",
+            "example": "Technical Requirements"
+          },
+          "systemDefault": {
+            "type": "boolean",
+            "description": "是否系统默认",
+            "example": true
+          }
+        }
+      },
+      "WorkitemWorkflow": {
+        "title": "WorkitemWorkflow",
+        "type": "object",
+        "properties": {
+          "defaultStatusId": {
+            "type": "string",
+            "description": "默认状态id",
+            "example": "TODO"
+          },
+          "id": {
+            "type": "string",
+            "description": "工作流id",
+            "example": "89c213d622cc8521793e08****"
+          },
+          "name": {
+            "type": "string",
+            "description": "工作流名称",
+            "example": "test"
+          },
+          "statuses": {
+            "type": "array",
+            "description": "包含的状态列表",
+            "items": {
+              "$ref": "#/components/schemas/MiniStatus"
+            }
+          }
+        }
+      }
+    }
+  }
+}
