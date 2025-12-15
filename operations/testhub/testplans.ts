@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { yunxiaoRequest } from '../../common/utils.js';
+import { isYunxiaoError } from '../../common/errors.js';
 
 // Schema for TestPlanDTO
 export const TestPlanDTOSchema = z.object({
@@ -98,14 +99,30 @@ export async function listTestPlan(params: ListTestPlanRequest): Promise<ListTes
 
 /**
  * 获取测试计划中测试用例列表
+ * 如果第一个 API 返回 404，则自动回退到第二个 API
  */
 export async function getTestResultList(params: GetTestResultListRequest): Promise<GetTestResultListResponse> {
   const { organizationId, testPlanIdentifier, directoryIdentifier } = params;
-  const response = await yunxiaoRequest(
-    `/oapi/v1/projex/organizations/${organizationId}/${testPlanIdentifier}/result/list/${directoryIdentifier}`,
-    { method: 'POST', body: {} }
-  );
-  return GetTestResultListResponseSchema.parse(response);
+  
+  // 首先尝试使用 projex API
+  try {
+    const response = await yunxiaoRequest(
+      `/oapi/v1/projex/organizations/${organizationId}/${testPlanIdentifier}/result/list/${directoryIdentifier}`,
+      { method: 'POST', body: {} }
+    );
+    return GetTestResultListResponseSchema.parse(response);
+  } catch (error) {
+    // 如果是 404 错误，尝试使用 testhub API
+    if (isYunxiaoError(error) && error.status === 404) {
+      const response = await yunxiaoRequest(
+        `/oapi/v1/testhub/organizations/${organizationId}/${testPlanIdentifier}/result/list/${directoryIdentifier}`,
+        { method: 'POST', body: {} }
+      );
+      return GetTestResultListResponseSchema.parse(response);
+    }
+    // 其他错误直接抛出
+    throw error;
+  }
 }
 
 /**
