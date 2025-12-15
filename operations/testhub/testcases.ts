@@ -64,7 +64,7 @@ export const TestStepsDTOSchema = z.object({
   contentType: z.enum(["TABLE", "TEXT"]).describe("内容格式"),
   stepContent: z.string().nullable().optional().describe("当contentType为TEXT时，该字段描述了测试步骤的内容"),
   expectedResult: z.string().nullable().optional().describe("当contentType为TEXT时，该字段描述了期望结果的内容"),
-  content: z.array(TestStepSchema).optional().describe("当contentType为TABLE时，该字段描述了测试步骤的内容"),
+  content: z.array(TestStepSchema).nullable().optional().describe("当contentType为TABLE时，该字段描述了测试步骤的内容；当contentType为TEXT时，该字段为null"),
 });
 
 // Schema for CreateTestcaseRequest
