@@ -127,7 +127,7 @@ export const handleProjectManagementTools = async (request: any) => {
 
     case "search_workitems": {
       const args = types.SearchWorkitemsSchema.parse(request.params.arguments);
-      const workItems = await workitem.searchWorkitemsFunc(
+      const result = await workitem.searchWorkitemsFunc(
         args.organizationId,
         args.category,
         args.spaceId,
@@ -151,10 +151,13 @@ export const handleProjectManagementTools = async (request: any) => {
         args.updateStatusAtBefore ?? undefined,
         args.advancedConditions ?? undefined,
         args.orderBy ?? "gmtCreate",
+        args.sort ?? "desc",
+        args.page,
+        args.perPage,
         args.includeDetails ?? false
       );
       return {
-        content: [{ type: "text", text: JSON.stringify(workItems, null, 2) }],
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
     }
 

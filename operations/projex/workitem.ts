@@ -1,5 +1,8 @@
 import {RecordType, string, TypeOf, z, ZodString} from "zod";
-import {buildUrl, yunxiaoRequest} from "../../common/utils.js";
+import {buildUrl, yunxiaoRequest, getYunxiaoApiBaseUrl, getCurrentSessionToken} from "../../common/utils.js";
+import { createYunxiaoError } from "../../common/errors.js";
+import { getUserAgent } from "universal-user-agent";
+import { VERSION } from "../../common/version.js";
 import {
   WorkItemSchema,
   FilterConditionSchema,
@@ -27,6 +30,21 @@ export async function getWorkItemFunc(
   return WorkItemSchema.parse(response);
 }
 
+// 定义分页信息类型
+export interface PaginationInfo {
+  page: number;
+  perPage: number;
+  totalPages: number;
+  total: number;
+  nextPage: number | null;
+  prevPage: number | null;
+}
+
+export interface SearchWorkitemsResult {
+  items: z.infer<typeof WorkItemSchema>[];
+  pagination?: PaginationInfo;
+}
+
 export async function searchWorkitemsFunc(
   organizationId: string,
   category: string,
@@ -51,8 +69,11 @@ export async function searchWorkitemsFunc(
   updateStatusAtBefore?: string,
   advancedConditions?: string,
   orderBy: string = "gmtCreate",
+  sort: string = "desc",
+  page?: number,
+  perPage?: number,
   includeDetails: boolean = false // 新增参数：是否自动补充缺失的description等详细信息
-): Promise<z.infer<typeof WorkItemSchema>[]> {
+): Promise<SearchWorkitemsResult> {
   // 处理assignedTo为"self"的情况，自动获取当前用户ID
   let finalAssignedTo = assignedTo;
   let finalCreator = creator;
@@ -111,17 +132,83 @@ export async function searchWorkitemsFunc(
   }
 
   payload.orderBy = orderBy;
-
-  const response = await yunxiaoRequest(url, {
-    method: "POST",
-    body: payload,
-  });
-
-  if (!Array.isArray(response)) {
-    return [];
+  
+  // 添加分页和排序参数
+  if (sort) {
+    payload.sort = sort;
+  }
+  if (page !== undefined) {
+    payload.page = page;
+  }
+  if (perPage !== undefined) {
+    payload.perPage = perPage;
   }
 
-  const workItems = response.map(workitem => WorkItemSchema.parse(workitem));
+  // 使用 fetch 直接获取响应，以便读取响应头中的分页信息
+  const isAbsolute = url.startsWith("http://") || url.startsWith("https://");
+  const fullUrl = isAbsolute ? url : `${getYunxiaoApiBaseUrl()}${url.startsWith("/") ? url : `/${url}`}`;
+  
+  const requestHeaders: Record<string, string> = {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "User-Agent": `modelcontextprotocol/servers/alibabacloud-devops-mcp-server/v${VERSION} ${getUserAgent()}`,
+  };
+
+  const token = getCurrentSessionToken();
+  if (token) {
+    requestHeaders["x-yunxiao-token"] = token;
+  }
+
+  const response = await fetch(fullUrl, {
+    method: "POST",
+    headers: requestHeaders,
+    body: JSON.stringify(payload),
+  } as RequestInit);
+
+  if (!response.ok) {
+    const responseBody = await response.json().catch(() => ({}));
+    throw createYunxiaoError(
+      response.status,
+      responseBody,
+      fullUrl,
+      "POST",
+      requestHeaders,
+      payload
+    );
+  }
+
+  const responseBody = await response.json();
+  
+  // 从响应头中提取分页信息
+  const pagination: PaginationInfo | undefined = (() => {
+    const xPage = response.headers.get("x-page");
+    const xPerPage = response.headers.get("x-per-page");
+    const xTotalPages = response.headers.get("x-total-pages");
+    const xTotal = response.headers.get("x-total");
+    const xNextPage = response.headers.get("x-next-page");
+    const xPrevPage = response.headers.get("x-prev-page");
+
+    if (xPage && xPerPage && xTotalPages && xTotal) {
+      return {
+        page: parseInt(xPage, 10),
+        perPage: parseInt(xPerPage, 10),
+        totalPages: parseInt(xTotalPages, 10),
+        total: parseInt(xTotal, 10),
+        nextPage: xNextPage ? parseInt(xNextPage, 10) : null,
+        prevPage: xPrevPage ? parseInt(xPrevPage, 10) : null,
+      };
+    }
+    return undefined;
+  })();
+
+  if (!Array.isArray(responseBody)) {
+    return {
+      items: [],
+      pagination,
+    };
+  }
+
+  const workItems = responseBody.map(workitem => WorkItemSchema.parse(workitem));
 
   // 如果需要补充详细信息，使用分批并发方式获取
   if (includeDetails) {
@@ -135,7 +222,7 @@ export async function searchWorkitemsFunc(
       const descriptionMap = await batchGetWorkItemDetails(organizationId, itemsNeedingDetails);
 
       // 更新workItems中的description
-      return workItems.map(item => {
+      const updatedItems = workItems.map(item => {
         if (descriptionMap.has(item.id)) {
           return {
             ...item,
@@ -144,10 +231,18 @@ export async function searchWorkitemsFunc(
         }
         return item;
       });
+
+      return {
+        items: updatedItems,
+        pagination,
+      };
     }
   }
 
-  return workItems;
+  return {
+    items: workItems,
+    pagination,
+  };
 }
 
 // 分批并发获取工作项详情
