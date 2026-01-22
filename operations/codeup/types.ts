@@ -360,30 +360,39 @@ export const ListChangeRequestPatchSetsSchema = z.object({
 
 // Codeup change request comments related Schema definitions
 export const CreateChangeRequestCommentSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  localId: z.string().describe("Local ID, represents the nth merge request in the repository"),
-  comment_type: z.string().default("GLOBAL_COMMENT").describe("Comment type. Possible values: GLOBAL_COMMENT, INLINE_COMMENT"),
-  content: z.string().describe("Comment content, length must be between 1 and 65535"),
-  draft: z.boolean().default(false).describe("Whether it is a draft comment"),
-  resolved: z.boolean().default(false).describe("Whether to mark as resolved"),
-  patchset_biz_id: z.string().describe("Associated version ID, if it's INLINE_COMMENT, choose one from from_patchset_biz_id or to_patchset_biz_id"),
-  file_path: z.string().nullable().optional().describe("File name, only for inline comments"),
-  line_number: z.number().int().nullable().optional().describe("Line number, only for inline comments"),
-  from_patchset_biz_id: z.string().nullable().optional().describe("Start version ID for comparison, required for INLINE_COMMENT type"),
-  to_patchset_biz_id: z.string().nullable().optional().describe("Target version ID for comparison, required for INLINE_COMMENT type"),
-  parent_comment_biz_id: z.string().nullable().optional().describe("Parent comment ID"),
+  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"),
+  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"),
+  localId: z.string().describe("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  comment_type: z.enum(["GLOBAL_COMMENT", "INLINE_COMMENT"]).default("GLOBAL_COMMENT").describe("评论类型。GLOBAL_COMMENT - 全局评论（对整个合并请求的评论）；INLINE_COMMENT - 行内评论（针对特定代码行的评论）。创建行内评论时，必须提供 file_path、line_number、from_patchset_biz_id 和 to_patchset_biz_id 参数"),
+  content: z.string().min(1).max(65535).describe("评论内容，长度必须在 1 到 65535 之间。示例：'This is a comment content.' 或 '这里需要优化性能，建议使用缓存机制'"),
+  draft: z.boolean().default(false).describe("是否草稿评论。true - 草稿评论（不会立即显示给其他人）；false - 正式评论（默认值）"),
+  resolved: z.boolean().default(false).describe("是否标记已解决。true - 已解决；false - 未解决（默认值）"),
+  patchset_biz_id: z.string().describe("关联版本ID，具有唯一性。对于全局评论，使用最新合并源版本ID；对于行内评论，选择 from_patchset_biz_id 或 to_patchset_biz_id 中的一个。示例：'bf117304dfe44d5d9b1132f348edf92e'"),
+  file_path: z.string().optional().describe("文件路径，仅行内评论需要。表示评论针对的文件路径。示例：'/src/main/java/com/example/MyClass.java' 或 'src/utils/helper.ts' 或 'frontend/components/Button.tsx'"),
+  line_number: z.number().int().positive().optional().describe("行号，仅行内评论需要。表示评论针对的代码行号，从1开始计数。示例：42 表示第42行，100 表示第100行"),
+  from_patchset_biz_id: z.string().optional().describe("比较的起始版本ID，行内评论类型必传。表示代码比较的起始版本（通常是目标分支版本，即合并目标对应的版本）。示例：'bf117304dfe44d5d9b1132f348edf92e'"),
+  to_patchset_biz_id: z.string().optional().describe("比较的目标版本ID，行内评论类型必传。表示代码比较的目标版本（通常是源分支版本，即合并源对应的版本）。示例：'537367017a9841738ac4269fbf6aacbe'"),
+  parent_comment_biz_id: z.string().optional().describe("父评论ID，用于回复评论。如果这是对某个评论的回复，需要传入被回复评论的 bizId。示例：'1d8171cf0cc2453197fae0e0a27d5ece'"),
 });
 
 export const ListChangeRequestCommentsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  localId: z.string().describe("Change request local ID"),
-  patchSetBizIds: z.array(z.string()).nullable().optional().describe("Associated version ID list, each comment is associated with a version, indicating which version the comment was posted on, for global comments, it's associated with the latest merge source version"),
-  commentType: z.string().optional().default("GLOBAL_COMMENT").describe("Comment type. Possible values: GLOBAL_COMMENT, INLINE_COMMENT"),
-  state: z.string().optional().default("OPENED").describe("Comment state. Possible values: OPENED, DRAFT"),
-  resolved: z.boolean().optional().default(false).describe("Whether marked as resolved"),
-  filePath: z.string().nullable().optional().describe("Filter by file path (for inline comments)"),
+  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"),
+  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"),
+  localId: z.string().describe("合并请求局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  patchSetBizIds: z.array(z.string()).optional().describe("关联版本ID列表，每个评论都关联一个版本，表示该评论是在哪个版本上发布的。对于全局评论，关联的是最新合并源版本。示例：['bf117304dfe44d5d9b1132f348edf92e', '537367017a9841738ac4269fbf6aacbe']"),
+  commentType: z.enum(["GLOBAL_COMMENT", "INLINE_COMMENT"]).optional().default("GLOBAL_COMMENT").describe("评论类型。GLOBAL_COMMENT - 全局评论；INLINE_COMMENT - 行内评论"),
+  state: z.enum(["OPENED", "DRAFT"]).optional().default("OPENED").describe("评论状态。OPENED - 已发布的评论；DRAFT - 草稿评论"),
+  resolved: z.boolean().optional().default(false).describe("是否已解决。true - 只查询已解决的评论；false - 只查询未解决的评论（默认值）"),
+  filePath: z.string().optional().describe("文件路径过滤，仅用于行内评论。可以过滤特定文件的评论。示例：'/src/main/java/com/example/MyClass.java' 或 'src/utils/helper.ts'"),
+});
+
+export const UpdateChangeRequestCommentSchema = z.object({
+  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"),
+  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"),
+  localId: z.string().describe("合并请求局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  commentBizId: z.string().describe("评论 bizId，具有唯一性，用于标识要更新的评论。示例：'bf117304dfe44d5d9b1132f348edf92e'"),
+  content: z.string().min(1).optional().describe("评论内容，更新后的评论内容（可选）。如果提供，将更新评论的文本内容。示例：'your new comment' 或 '更新后的评论内容：这里需要优化性能，建议使用缓存机制'"),
+  resolved: z.boolean().optional().describe("是否已解决（可选）。true - 标记为已解决；false - 标记为未解决。示例：false。如果不提供此参数，将保持原有的解决状态不变"),
 });
 
 // Codeup commit related Schema definitions

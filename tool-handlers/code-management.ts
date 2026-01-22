@@ -275,6 +275,21 @@ export const handleCodeManagementTools = async (request: any) => {
       };
     }
 
+    case "update_change_request_comment": {
+      const args = types.UpdateChangeRequestCommentSchema.parse(request.params.arguments);
+      const result = await changeRequestComments.updateChangeRequestCommentFunc(
+        args.organizationId,
+        args.repositoryId,
+        args.localId,
+        args.commentBizId,
+        args.content ?? undefined,
+        args.resolved ?? undefined
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
     case "list_change_request_patch_sets": {
       const args = types.ListChangeRequestPatchSetsSchema.parse(request.params.arguments);
       const patchSets = await changeRequests.listChangeRequestPatchSetsFunc(

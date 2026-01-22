@@ -93,13 +93,18 @@ export const getCodeManagementTools = () => [
   },
   {
     name: "create_change_request_comment",
-    description: "[Code Management] Create a comment on a change request",
+    description: "[Code Management] Create a comment on a change request. Supports two types: GLOBAL_COMMENT (global comment on the entire merge request) and INLINE_COMMENT (inline comment on specific code lines). For INLINE_COMMENT, you must provide file_path, line_number, from_patchset_biz_id, and to_patchset_biz_id parameters.",
     inputSchema: zodToJsonSchema(types.CreateChangeRequestCommentSchema),
   },
   {
     name: "list_change_request_comments",
-    description: "[Code Management] List comments on a change request",
+    description: "[Code Management] List comments on a change request. Supports filtering by comment type (GLOBAL_COMMENT or INLINE_COMMENT), state (OPENED or DRAFT), resolved status, and file path (for inline comments).",
     inputSchema: zodToJsonSchema(types.ListChangeRequestCommentsSchema),
+  },
+  {
+    name: "update_change_request_comment",
+    description: "[Code Management] Update a comment on a change request. Can update the comment content and/or resolved status.",
+    inputSchema: zodToJsonSchema(types.UpdateChangeRequestCommentSchema),
   },
   {
     name: "list_change_request_patch_sets",

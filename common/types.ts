@@ -62,6 +62,7 @@ export {
   // Change request comment schemas
   CreateChangeRequestCommentSchema,
   ListChangeRequestCommentsSchema,
+  UpdateChangeRequestCommentSchema,
   
   // Commit schemas
   ListCommitsRequestSchema,
