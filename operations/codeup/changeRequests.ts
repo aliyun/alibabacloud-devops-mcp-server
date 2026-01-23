@@ -26,10 +26,11 @@ async function getRepositoryNumericId(organizationId: string, repositoryId: stri
 }
 
 /**
- * 查询合并请求
- * @param organizationId
- * @param repositoryId
- * @param localId
+ * 查询合并请求详情
+ * 
+ * @param organizationId 组织ID，示例：'60d54f3daccf2bbd6659f3ad'
+ * @param repositoryId 代码库ID或路径，示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'
+ * @param localId 合并请求局部ID，示例：'1'
  */
 export async function getChangeRequestFunc(
   organizationId: string,
@@ -49,18 +50,20 @@ export async function getChangeRequestFunc(
 
 /**
  * 查询合并请求列表
- * @param organizationId
- * @param page
- * @param perPage
- * @param projectIds
- * @param authorIds
- * @param reviewerIds
- * @param state
- * @param search
- * @param orderBy
- * @param sort
- * @param createdBefore
- * @param createdAfter
+ * 支持多条件筛选、分页以及排序
+ * 
+ * @param organizationId 组织ID，示例：'60d54f3daccf2bbd6659f3ad'
+ * @param page 页码，从1开始，默认1
+ * @param perPage 每页大小，默认20
+ * @param projectIds 代码库ID或路径列表，多个以逗号分隔，示例：'2813489,2813490'
+ * @param authorIds 创建者用户ID列表，多个以逗号分隔，示例：'62c795xxxb468af8'
+ * @param reviewerIds 评审人用户ID列表，多个以逗号分隔，示例：'62c795xxxb468af8'
+ * @param state 合并请求筛选状态：'opened' - 已开启；'merged' - 已合并；'closed' - 已关闭。默认为null，即查询全部状态
+ * @param search 标题关键字搜索，示例：'mr title'
+ * @param orderBy 排序字段：'created_at' - 创建时间；'updated_at' - 更新时间（默认）
+ * @param sort 排序方式：'asc' - 升序；'desc' - 降序（默认）
+ * @param createdBefore 起始创建时间，ISO 8601格式，示例：'2024-04-05T15:30:45Z'
+ * @param createdAfter 截止创建时间，ISO 8601格式，示例：'2024-04-05T15:30:45Z'
  */
 export async function listChangeRequestsFunc(
   organizationId: string,
@@ -142,10 +145,12 @@ export async function listChangeRequestsFunc(
 }
 
 /**
- * 查询合并请求的版本列表
- * @param organizationId
- * @param repositoryId
- * @param localId
+ * 查询合并请求的版本列表（Patch Sets）
+ * Patch Sets 表示合并请求在不同时间点的版本快照
+ * 
+ * @param organizationId 组织ID，示例：'60d54f3daccf2bbd6659f3ad'
+ * @param repositoryId 代码库ID或路径，示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'
+ * @param localId 合并请求局部ID，示例：'1'
  */
 export async function listChangeRequestPatchSetsFunc(
   organizationId: string,
@@ -171,17 +176,19 @@ export async function listChangeRequestPatchSetsFunc(
 
 /**
  * 创建合并请求
- * @param organizationId
- * @param repositoryId
- * @param title
- * @param sourceBranch
- * @param targetBranch
- * @param description
- * @param sourceProjectId
- * @param targetProjectId
- * @param reviewerUserIds
- * @param workItemIds
- * @param createFrom
+ * 
+ * @param organizationId 组织ID，示例：'60d54f3daccf2bbd6659f3ad'
+ * @param repositoryId 代码库ID或路径，示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'
+ * @param title 标题，不超过256个字符，示例：'mr title'
+ * @param sourceBranch 源分支名称，示例：'demo-branch'
+ * @param targetBranch 目标分支名称，示例：'master'
+ * @param description 描述，不超过10000个字符（可选），示例：'mr description'
+ * @param sourceProjectId 源库ID（可选，未提供时将尝试自动获取），示例：2813489
+ * @param targetProjectId 目标库ID（可选，未提供时将尝试自动获取），示例：2813489
+ * @param reviewerUserIds 评审人用户ID列表（可选），示例：['62c795xxxb468af8']
+ * @param workItemIds 关联工作项ID列表（可选），示例：['workitem-123']
+ * @param createFrom 创建来源，默认 'WEB'。可选值：'WEB' - 页面创建；'COMMAND_LINE' - 命令行创建
+ * @param triggerAIReviewRun 是否触发AI评审，默认 false
  */
 export async function createChangeRequestFunc(
   organizationId: string,

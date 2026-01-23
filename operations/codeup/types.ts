@@ -317,45 +317,45 @@ export const GetCompareSchema = z.object({
 
 // Codeup change requests related Schema definitions
 export const GetChangeRequestSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  localId: z.string().describe("Local ID, represents the nth merge request in the repository"),
+  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"),
+  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"),
+  localId: z.string().describe("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
 });
 
 export const ListChangeRequestsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  page: z.number().int().default(1).optional().describe("Page number"),
-  perPage: z.number().int().default(20).optional().describe("Items per page"),
-  projectIds: z.string().nullable().optional().describe("Repository ID or a combination of organization ID and repository name list, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F), multiple separated by commas"),
-  authorIds: z.string().nullable().optional().describe("Creator user ID list, multiple separated by commas"),
-  reviewerIds: z.string().nullable().optional().describe("Reviewer user ID list, multiple separated by commas"),
-  state: z.string().nullable().optional().describe("Merge request filter status. Possible values: opened, merged, closed. Default is null, which queries all statuses"),
-  search: z.string().nullable().optional().describe("Title keyword search"),
-  orderBy: z.string().default("updated_at").optional().describe("Sort field. Possible values: created_at (creation time), updated_at (update time, default)"),
-  sort: z.string().default("desc").optional().describe("Sort order. Possible values: asc (ascending), desc (descending, default)"),
-  createdBefore: z.string().nullable().optional().describe("Start creation time, time format is ISO 8601, for example: 2019-03-15T08:00:00Z"),
-  createdAfter: z.string().nullable().optional().describe("End creation time, time format is ISO 8601, for example: 2019-03-15T08:00:00Z"),
+  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"),
+  page: z.number().int().default(1).optional().describe("页码，从1开始。示例：1"),
+  perPage: z.number().int().default(20).optional().describe("每页大小，默认20。示例：20"),
+  projectIds: z.string().nullable().optional().describe("代码库ID或者路径列表，多个以逗号分隔。示例：'2813489,2813490' 或 '2813489,60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"),
+  authorIds: z.string().nullable().optional().describe("创建者用户ID列表，多个以逗号分隔。示例：'62c795xxxb468af8' 或 '62c795xxxb468af8,62c795xxxb468af9'"),
+  reviewerIds: z.string().nullable().optional().describe("评审人用户ID列表，多个以逗号分隔。示例：'62c795xxxb468af8' 或 '62c795xxxb468af8,62c795xxxb468af9'"),
+  state: z.enum(["opened", "merged", "closed"]).nullable().optional().describe("合并请求筛选状态。opened - 已开启；merged - 已合并；closed - 已关闭。默认为null，即查询全部状态。示例：'opened'"),
+  search: z.string().nullable().optional().describe("标题关键字搜索，用于在合并请求标题中搜索。示例：'mr title' 或 'bug fix'"),
+  orderBy: z.enum(["created_at", "updated_at"]).default("updated_at").optional().describe("排序字段。created_at - 按创建时间排序；updated_at - 按更新时间排序（默认）。示例：'updated_at'"),
+  sort: z.enum(["asc", "desc"]).default("desc").optional().describe("排序方式。asc - 升序；desc - 降序（默认）。示例：'desc'"),
+  createdBefore: z.string().nullable().optional().describe("起始创建时间，时间格式为ISO 8601。查询创建时间不早于此时间的合并请求。示例：'2024-04-05T15:30:45Z'"),
+  createdAfter: z.string().nullable().optional().describe("截止创建时间，时间格式为ISO 8601。查询创建时间不晚于此时间的合并请求。示例：'2024-04-05T15:30:45Z'"),
 });
 
 export const CreateChangeRequestSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  title: z.string().describe("Title, no more than 256 characters"),
-  description: z.string().nullable().optional().describe("Description, no more than 10000 characters"),
-  sourceBranch: z.string().describe("Source branch name"),
-  sourceProjectId: z.number().optional().describe("Source repository ID (if not provided, will try to get automatically)"),
-  targetBranch: z.string().describe("Target branch name"),
-  targetProjectId: z.number().optional().describe("Target repository ID (if not provided, will try to get automatically)"),
-  reviewerUserIds: z.array(z.string()).nullable().optional().describe("Reviewer user ID list"),
-  workItemIds: z.array(z.string()).nullable().optional().describe("Associated work item ID list"),
-  createFrom: z.string().optional().default("WEB").describe("Creation source. Possible values: WEB (created from web page), COMMAND_LINE (created from command line). Default is WEB"),
-  triggerAIReviewRun: z.boolean().optional().default(false).describe("Whether to trigger AI review, default is false"),
+  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"),
+  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"),
+  title: z.string().max(256).describe("标题，不超过256个字符。示例：'mr title' 或 '修复登录bug'"),
+  description: z.string().max(10000).nullable().optional().describe("描述，不超过10000个字符。示例：'mr description' 或 '修复了用户登录时的验证逻辑问题'"),
+  sourceBranch: z.string().describe("源分支名称，即要合并的分支。示例：'demo-branch' 或 'feature/user-login'"),
+  sourceProjectId: z.number().int().optional().describe("源库ID，如果未提供，将尝试自动获取。示例：2813489"),
+  targetBranch: z.string().describe("目标分支名称，即合并到的分支。示例：'master' 或 'main'"),
+  targetProjectId: z.number().int().optional().describe("目标库ID，如果未提供，将尝试自动获取。示例：2813489"),
+  reviewerUserIds: z.array(z.string()).nullable().optional().describe("评审人用户ID列表。示例：['62c795xxxb468af8'] 或 ['62c795xxxb468af8', '62c795xxxb468af9']"),
+  workItemIds: z.array(z.string()).nullable().optional().describe("关联工作项ID列表。示例：['workitem-123', 'workitem-456']"),
+  createFrom: z.enum(["WEB", "COMMAND_LINE"]).optional().default("WEB").describe("创建来源。WEB - 页面创建；COMMAND_LINE - 命令行创建。默认为WEB"),
+  triggerAIReviewRun: z.boolean().optional().default(false).describe("是否触发AI评审。true - 触发AI评审；false - 不触发（默认）"),
 });
 
 export const ListChangeRequestPatchSetsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  repositoryId: z.string().describe("Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"),
-  localId: z.string().describe("Local ID, represents the nth merge request in the repository"),
+  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"),
+  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"),
+  localId: z.string().describe("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
 });
 
 // Codeup change request comments related Schema definitions

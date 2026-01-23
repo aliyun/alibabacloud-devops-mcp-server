@@ -78,17 +78,17 @@ export const getCodeManagementTools = () => [
   // Change Request Operations
   {
     name: "get_change_request",
-    description: "[Code Management] Get information about a change request",
+    description: "[Code Management] Get detailed information about a specific change request (merge request) by its local ID.",
     inputSchema: zodToJsonSchema(types.GetChangeRequestSchema),
   },
   {
     name: "list_change_requests",
-    description: "[Code Management] List change requests",
+    description: "[Code Management] List change requests with multi-condition filtering, pagination and sorting. Supports filtering by repository, author, reviewer, state (opened/merged/closed), search keywords, and creation time range.",
     inputSchema: zodToJsonSchema(types.ListChangeRequestsSchema),
   },
   {
     name: "create_change_request",
-    description: "[Code Management] Create a new change request",
+    description: "[Code Management] Create a new change request (merge request). Supports specifying source/target branches, reviewers, associated work items, and optional AI review trigger.",
     inputSchema: zodToJsonSchema(types.CreateChangeRequestSchema),
   },
   {
@@ -108,7 +108,7 @@ export const getCodeManagementTools = () => [
   },
   {
     name: "list_change_request_patch_sets",
-    description: "[Code Management] List patch sets for a change request",
+    description: "[Code Management] List patch sets (versions) for a change request. Patch sets represent different versions of the merge request as it evolves.",
     inputSchema: zodToJsonSchema(types.ListChangeRequestPatchSetsSchema),
   },
 ];
