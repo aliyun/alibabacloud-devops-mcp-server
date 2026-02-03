@@ -187,7 +187,7 @@ export const handleProjectManagementTools = async (request: any) => {
         args.updateWorkItemFields
       );
       return {
-        content: [{ type: "text", text: "" }],
+        content: [{ type: "text", text: JSON.stringify({ success: true, message: "Work item updated successfully" }, null, 2) }],
       };
     }
 
