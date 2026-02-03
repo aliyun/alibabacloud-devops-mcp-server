@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/aliyun-alibabacloud-devops-mcp-server-badge.png)](https://mseep.ai/app/aliyun-alibabacloud-devops-mcp-server)
+
 <p align="center">English | <a href="README.zh-cn.md">中文</a><br></p>
 
 # alibabacloud-devops-mcp-server
