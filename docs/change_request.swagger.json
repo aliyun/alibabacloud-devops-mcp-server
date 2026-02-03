@@ -1,0 +1,3682 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "合并请求API文档",
+    "description": "合并请求相关API文档",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "合并请求",
+      "description": "Codeup合并请求相关的接口"
+    }
+  ],
+  "paths": {
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/labels": {
+      "post": {
+        "tags": ["项目类标"],
+        "summary": "关联类标到合并请求",
+        "description": "关联类标到合并请求",
+        "operationId": "AttachLabelsToChangeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 42
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkChangeRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "关联成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["项目类标"],
+        "summary": "获取合并请求的类标",
+        "description": "获取合并请求的类标",
+        "operationId": "GetChangeRequestLabels",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 42
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PopOpenAPIProjectLabelDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/changeRequests": {
+      "get": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "查询合并请求列表",
+        "description": "查询合并请求（新）列表，支持多条件筛选、分页以及排序",
+        "operationId": "ListChangeRequests",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "20"
+          },
+          {
+            "name": "projectIds",
+            "in": "query",
+            "description": "代码库ID或者路径列表，多个以逗号分隔",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489,2813490"
+          },
+          {
+            "name": "authorIds",
+            "in": "query",
+            "description": "创建者用户ID列表，多个以逗号分隔",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "62c795xxxb468af8"
+          },
+          {
+            "name": "reviewerIds",
+            "in": "query",
+            "description": "评审人用户ID列表，多个以逗号分隔",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "62c795xxxb468af8"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "合并请求筛选状态：opened，merged，closed，默认为null，即查询全部状态",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "opened"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "标题关键字搜索",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "mr title"
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "排序字段，仅支持：created_at - 创建时间；updated_at - 更新时间，默认排序字段",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "updated_at"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序方式：asc - 升序；desc - 降序，默认排序方式",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "desc"
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "description": "起始创建时间，时间格式为ISO 8601",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2024-04-05T15:30:45Z"
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "description": "截止创建时间，时间格式为ISO 8601",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2024-04-05T15:30:45Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DevopsChangeRequestListDTO"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "x-next-page": {
+                "type": "integer",
+                "description": "下一页",
+                "format": "int64",
+                "example": "3"
+              },
+              "x-page": {
+                "type": "integer",
+                "description": "当前页",
+                "format": "int64",
+                "example": "2"
+              },
+              "x-per-page": {
+                "type": "integer",
+                "description": "每页大小",
+                "format": "int64",
+                "example": "20"
+              },
+              "x-prev-page": {
+                "type": "integer",
+                "description": "前一页",
+                "format": "int64",
+                "example": "1"
+              },
+              "x-total": {
+                "type": "integer",
+                "description": "总数",
+                "format": "int64",
+                "example": "20"
+              },
+              "x-total-pages": {
+                "type": "integer",
+                "description": "总分页数",
+                "format": "int64",
+                "example": "3"
+              },
+              "x-request-id": {
+                "type": "string",
+                "description": "请求ID",
+                "example": "37294673-00CA-5B8B-914F-A8B35511E90A"
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}": {
+      "get": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "查询合并请求",
+        "description": "查询合并请求详情",
+        "operationId": "GetChangeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsChangeRequestVO"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "更新合并请求基本信息",
+        "description": "更新合并请求基本信息",
+        "operationId": "UpdateChangeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModifyCodeReviewBasicInfoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "是否执行成功",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "创建合并请求",
+        "description": "创建合并请求",
+        "operationId": "CreateChangeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsChangeRequestCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsChangeRequestVO"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/person/{type}": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "更新合并请求干系人",
+        "description": "更新合并请求干系人，包括创建人、评审人以及订阅人",
+        "operationId": "UpdateChangeRequestRelatedPerson",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "干系人类型：REVIEWER - 评审人；SUBSCRIBER - 订阅人",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "REVIEWER"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsModifyChangeRequestPersonRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "是否执行成功",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/merge": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "合并合并请求",
+        "description": "合并合并请求",
+        "operationId": "MergeChangeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsChangeRequestMergeDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsChangeRequestVO"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/review": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "评审合并请求",
+        "description": "评审合并请求",
+        "operationId": "ReviewChangeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsChangeRequestSubmitReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "是否执行成功",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/close": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "关闭合并请求",
+        "description": "关闭合并请求",
+        "operationId": "CloseChangeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "是否执行成功",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/reopen": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "重新打开合并请求",
+        "description": "重新打开合并请求",
+        "operationId": "ReopenChangeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "是否执行成功",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/diffs/patches": {
+      "get": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "查询合并请求版本列表",
+        "description": "查询合并请求版本列表",
+        "operationId": "ListChangeRequestPatchSets",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DevopsChangeRequestPatchSetVO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/diffs/changeTree": {
+      "get": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "查询合并请求的变更文件树",
+        "description": "查询合并请求的变更文件树，包含变更行数信息",
+        "operationId": "GetChangeRequestTree",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          },
+          {
+            "name": "fromPatchSetId",
+            "in": "query",
+            "description": "合并目标对应的版本唯一ID（from和to，是git的对比顺序，与通常的源分支和目标分支的顺序相反）",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          },
+          {
+            "name": "toPatchSetId",
+            "in": "query",
+            "description": "合并源对应的版本唯一ID（from和to，是git的对比顺序，与通常的源分支和目标分支的顺序相反）",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "537367017a9841738ac4269fbf6aacbe"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsChangeRequestDiffTreeVO"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/ai_review/run": {
+      "get": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "同步AI代码评审运行状态",
+        "description": "同步AI代码评审运行状态，调用此接口会从AI评审服务同步最新的评审状态到Codeup数据库",
+        "operationId": "SyncAIReviewRun",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIReviewRunDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/comments": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "创建合并请求评论",
+        "description": "创建合并请求评论",
+        "operationId": "CreateChangeRequestComment",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsChangeRequestCommentCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsChangeRequestCommentDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/comments/list": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "查询评论列表",
+        "description": "查询评论列表",
+        "operationId": "ListMergeRequestComments",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsChangeRequestListCommentDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items":{
+                    "$ref": "#/components/schemas/DevopsChangeRequestCommentDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "请求错误"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "禁止访问"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/changeRequests/{localId}/comments/{commentBizId}": {
+      "delete": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "删除合并请求评论",
+        "description": "删除合并请求评论",
+        "operationId": "DeleteChangeRequestComment",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          },
+          {
+            "name": "commentBizId",
+            "in": "path",
+            "description": "评论 bizId",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "执行结果",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "更新合并请求评论",
+        "description": "更新合并请求评论",
+        "operationId": "UpdateChangeRequestComment",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "localId",
+            "in": "path",
+            "description": "局部ID，表示代码库中第几个合并请求",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          },
+          {
+            "name": "commentBizId",
+            "in": "path",
+            "description": "评论 bizId",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsChangeRequestCommentEditDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "执行结果",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/mergeRequests": {
+      "get": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "查询合并请求列表(旧)",
+        "description": "查询合并请求列表(旧)",
+        "operationId": "ListMergeRequests",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码，默认从1开始，一般不要超过150页",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "每页大小，默认20，取值范围【1，100】",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "20"
+          },
+          {
+            "name": "repositoryIds",
+            "in": "query",
+            "description": "代码库ID列表",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            },
+            "example": ["2813489", "2813490"]
+          },
+          {
+            "name": "authorUserIds",
+            "in": "query",
+            "description": "创建人用户ID列表",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": ["62c795xxxb468af8"]
+          },
+          {
+            "name": "assigneeUserIds",
+            "in": "query",
+            "description": "评审人用户ID列表",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": ["62c795xxxb468af8"]
+          },
+          {
+            "name": "subscriberUserIds",
+            "in": "query",
+            "description": "订阅人用户ID列表",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": ["62c795xxxb468af8"]
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "合并请求状态，包括 {merged、opened、closed、reopened、accepted、canceled、all}，默认opened",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "opened"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "合并请求标题搜索关键字",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "mr title"
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "排序字段，均为降序排列：id-按id降序，updated_at - 按更新时间降序",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "updated_at"
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "description": "创建时间截止范围，格式为：yyyy-MM-dd",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2024-09-09"
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "description": "创建时间起始范围，格式为：yyyy-MM-dd",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2024-09-09"
+          },
+          {
+            "name": "targetBranch",
+            "in": "query",
+            "description": "按目标分支查询",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "master"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsOldMergeRequestVO"
+                }
+              }
+            },
+            "headers": {
+              "x-next-page": {
+                "type": "integer",
+                "description": "下一页",
+                "format": "int64",
+                "example": "3"
+              },
+              "x-page": {
+                "type": "integer",
+                "description": "当前页",
+                "format": "int64",
+                "example": "2"
+              },
+              "x-per-page": {
+                "type": "integer",
+                "description": "每页大小",
+                "format": "int64",
+                "example": "20"
+              },
+              "x-prev-page": {
+                "type": "integer",
+                "description": "前一页",
+                "format": "int64",
+                "example": "1"
+              },
+              "x-total": {
+                "type": "integer",
+                "description": "总数",
+                "format": "int64",
+                "example": "60"
+              },
+              "x-total-pages": {
+                "type": "integer",
+                "description": "总分页数",
+                "format": "int64",
+                "example": "3"
+              },
+              "x-request-id": {
+                "type": "string",
+                "description": "请求ID",
+                "example": "37294673-00CA-5B8B-914F-A8B35511E90A"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/mergeRequests": {
+      "post": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "创建合并请求(旧)",
+        "description": "创建合并请求(旧)",
+        "operationId": "CreateMergeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsOldMergeRequestCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsOldMergeRequestVO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/mergeRequests/{iid}": {
+      "get": {
+        "tags": [
+          "合并请求"
+        ],
+        "summary": "查询合并请求(旧)",
+        "description": "查询单个合并请求(旧)",
+        "operationId": "GetMergeRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          },
+          {
+            "name": "iid",
+            "in": "path",
+            "description": "库内合并请求ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsOldMergeRequestVO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PopOpenAPIProjectLabelDTO": {
+        "title": "项目类标",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "类标ID",
+            "example": "68c1bd9b8515477fa86fac5exxxxx941"
+          },
+          "name": {
+            "type": "string",
+            "description": "类标名称",
+            "example": "Bug"
+          },
+          "color": {
+            "type": "string",
+            "description": "类标颜色（十六进制格式），可填值：#006AD4, #2FA6A4, #6190AC, #4B81D0, #4D5DBB, #A16AD7, #3BA630, #95B44F, #AA945F, #B36A53, #FD842F, #EF433B",
+            "example": "#006AD4"
+          },
+          "description": {
+            "type": "string",
+            "description": "类标描述",
+            "example": "表示代码中的错误"
+          }
+        }
+      },
+      "OperationResult": {
+        "title": "操作结果",
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "boolean",
+            "description": "操作是否成功",
+            "example": true
+          }
+        }
+      },
+      "LinkChangeRequestRequest": {
+        "title": "关联类标请求",
+        "type": "object",
+        "properties": {
+          "label_id_list": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "需要关联的类标ID列表",
+            "example": ["68c1bd9b8515477fa86fac5exxxxx942", "68c1bd9b8515477fa86fac5exxxxx941"]
+          }
+        },
+        "required": ["label_id_list"]
+      },
+      "DevopsChangeRequestListDTO": {
+        "title": "合并请求（新）列表对象",
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "代码库ID",
+            "example": "2813489"
+          },
+          "localId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "合并请求局部ID，表示当前代码库中第几个合并请求ID",
+            "example": "1"
+          },
+          "title": {
+            "type": "string",
+            "description": "标题",
+            "example": "mr title"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "mr description"
+          },
+          "state": {
+            "type": "string",
+            "description": "合并请求状态：UNDER_DEV - 开发中；UNDER_REVIEW - 评审中；TO_BE_MERGED - 待合并；CLOSED - 已关闭；MERGED - 已合并",
+            "example": "UNDER_REVIEW"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "创建时间",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "更新时间",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "sourceBranch": {
+            "type": "string",
+            "description": "源分支",
+            "example": "demo-branch"
+          },
+          "targetBranch": {
+            "type": "string",
+            "description": "目标分支",
+            "example": "master"
+          },
+          "author": {
+            "description": "创建者信息",
+            "$ref": "#/components/schemas/DevopsUserBasicDTO"
+          },
+          "reviewers": {
+            "type": "array",
+            "description": "评审人列表",
+            "items": {
+              "$ref": "#/components/schemas/DevopsChangeRequestReviewerDTO"
+            }
+          },
+          "sourceProjectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "评审分支所在的代码库ID",
+            "example": "2813489"
+          },
+          "targetProjectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "目标分支所在的代码库ID",
+            "example": "2813489"
+          },
+          "workInProgress": {
+            "type": "boolean",
+            "description": "WIP标识，即是否在开发中",
+            "example": "false"
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "Web地址",
+            "example": "https://example.com/example/example_demo/change/1"
+          },
+          "sshUrl": {
+            "type": "string",
+            "description": "仓库SSH克隆地址",
+            "example": "git@example:example_org/example.git"
+          },
+          "detailUrl": {
+            "type": "string",
+            "description": "合并请求详情地址",
+            "example": "https://example.com/example/example_demo/change/1"
+          },
+          "creationMethod": {
+            "type": "string",
+            "description": "合并请求的创建方式：WEB - 页面创建；COMMAND_LINE - 命令行创建",
+            "example": "WEB"
+          },
+          "sourceType": {
+            "type": "string",
+            "description": "评审分支类型：BRANCH、COMMIT",
+            "example": "BRANCH"
+          },
+          "targetType": {
+            "type": "string",
+            "description": "目标分支类型：BRANCH、COMMIT",
+            "example": "BRANCH"
+          },
+          "supportMergeFFOnly": {
+            "type": "boolean",
+            "description": "是否支持fast-forward-only合并方式",
+            "example": "true"
+          },
+          "totalCommentCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总评论数",
+            "example": "10"
+          },
+          "unResolvedCommentCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "未解决评论数",
+            "example": "1"
+          },
+          "hasConflict": {
+            "type": "boolean",
+            "description": "是否有冲突",
+            "example": "false"
+          },
+          "mergedRevision": {
+            "type": "string",
+            "description": "合并版本（提交ID），仅已合并状态才有值",
+            "example": "6da8c14b5a9102998148b7ea35f96507d5304f74"
+          }
+        }
+      },
+      "DevopsChangeRequestVO": {
+        "title": "DevopsChangeRequestVO",
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "代码库ID",
+            "example": "2813489"
+          },
+          "localId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "局部ID",
+            "example": "1"
+          },
+          "createTime": {
+            "type": "string",
+            "description": "创建时间",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "updateTime": {
+            "type": "string",
+            "description": "更新时间",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "mrType": {
+            "type": "string",
+            "description": "合并请求类型：CODE_REVIEW - 代码评审；REF_REVIEW - 分支标签评审",
+            "example": "CODE_REVIEW"
+          },
+          "sourceProjectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "源库ID",
+            "example": "2813489"
+          },
+          "sourceBranch": {
+            "type": "string",
+            "description": "源分支",
+            "example": "demo-branch"
+          },
+          "sourceRef": {
+            "type": "string",
+            "description": "源提交引用，当createFrom=COMMAND_LINE时，有值",
+            "example": "null"
+          },
+          "sourceCommitId": {
+            "type": "string",
+            "description": "源提交ID，当createFrom=COMMAND_LINE时，有值",
+            "example": "6da8c14b5a9102998148b7ea35f96507d5304f74"
+          },
+          "targetProjectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "目标库ID",
+            "example": "2813489"
+          },
+          "targetBranch": {
+            "type": "string",
+            "description": "目标分支",
+            "example": "master"
+          },
+          "title": {
+            "type": "string",
+            "description": "标题",
+            "example": "mr title"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "mr description"
+          },
+          "author": {
+            "$ref": "#/components/schemas/DevopsUserBasicDTO"
+          },
+          "reviewers": {
+            "type": "array",
+            "description": "评审人列表",
+            "items": {
+              "$ref": "#/components/schemas/DevopsChangeRequestReviewerDTO"
+            }
+          },
+          "subscribers": {
+            "type": "array",
+            "description": "订阅人列表",
+            "items": {
+              "$ref": "#/components/schemas/DevopsUserBasicDTO"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "合并请求状态：UNDER_DEV - 开发中；UNDER_REVIEW - 评审中；TO_BE_MERGED - 待合并；CLOSED - 已关闭；MERGED - 已合并",
+            "example": "UNDER_REVIEW"
+          },
+          "createFrom": {
+            "type": "string",
+            "description": "创建来源：WEB - 页面创建；COMMAND_LINE - 命令行创建",
+            "example": "WEB"
+          },
+          "ahead": {
+            "type": "integer",
+            "format": "int32",
+            "description": "源分支领先目标分支的commit数量",
+            "example": "1"
+          },
+          "behind": {
+            "type": "integer",
+            "format": "int32",
+            "description": "目标分支领先源分支的commit数量",
+            "example": "1"
+          },
+          "allRequirementsPass": {
+            "type": "boolean",
+            "description": "是否所有卡点项通过",
+            "example": "true"
+          },
+          "supportMergeFastForwardOnly": {
+            "type": "boolean",
+            "description": "是否支持fast-forward-only",
+            "example": "true"
+          },
+          "detailUrl": {
+            "type": "string",
+            "description": "合并请求详情地址",
+            "example": "https://example.com/example/example_demo/change/1"
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "页面地址",
+            "example": "https://example.com/example/example_demo/change/1"
+          },
+          "targetProjectNameWithNamespace": {
+            "type": "string",
+            "description": "目标库名称（含完整父路径）",
+            "example": "60de7a6852743a5162b5f957 / DemoRepo（斜杠两侧有空格）"
+          },
+          "targetProjectPathWithNamespace": {
+            "type": "string",
+            "description": "目标库路径（含完整父路径）",
+            "example": "60de7a6852743a5162b5f957/DemoRepo"
+          },
+          "totalCommentCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总评论数",
+            "example": "1"
+          },
+          "unResolvedCommentCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "未解决评论数",
+            "example": "1"
+          },
+          "conflictCheckStatus": {
+            "type": "string",
+            "description": "冲突检测状态：CHECKING - 检测中；HAS_CONFLICT - 有冲突；NO_CONFLICT - 无冲突；FAILED - 检测失败",
+            "example": "NO_CONFLICT"
+          },
+          "hasReverted": {
+            "type": "boolean",
+            "description": "是否Revert过",
+            "example": "false"
+          },
+          "canRevertOrCherryPick": {
+            "type": "boolean",
+            "description": "是否能Revert或者CherryPick",
+            "example": "true"
+          },
+          "mergedRevision": {
+            "type": "string",
+            "description": "合并版本（提交ID），仅已合并状态才有值",
+            "example": "6da8c14b5a9102998148b7ea35f96507d5304f74"
+          }
+        }
+      },
+      "DevopsUserBasicDTO": {
+        "title": "DevopsUserBasicDTO",
+        "type": "object",
+        "description": "用户信息",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "用户名称",
+            "example": "codeup-name"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户登录名",
+            "example": "codeup-username"
+          },
+          "state": {
+            "type": "string",
+            "description": "用户状态：active - 激活可用；blocked - 阻塞暂不可用",
+            "example": "active"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "用户头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "email": {
+            "type": "string",
+            "description": "用户邮箱",
+            "example": "username@example.com"
+          },
+          "userId": {
+            "type": "string",
+            "description": "云效用户ID",
+            "example": "62c795xxxb468af8"
+          }
+        }
+      },
+      "DevopsChangeRequestReviewerDTO": {
+        "title": "DevopsChangeRequestReviewerDTO",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "用户名称",
+            "example": "codeup-name"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户登录名",
+            "example": "codeup-username"
+          },
+          "state": {
+            "type": "string",
+            "description": "用户状态：active - 激活可用；blocked - 阻塞暂不可用",
+            "example": "active"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "用户头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "email": {
+            "type": "string",
+            "description": "用户邮箱",
+            "example": "username@example.com"
+          },
+          "userId": {
+            "type": "string",
+            "description": "云效用户ID",
+            "example": "62c795xxxb468af8"
+          },
+          "hasReviewed": {
+            "type": "boolean",
+            "description": "是否评审过",
+            "example": "true"
+          },
+          "reviewOpinionStatus": {
+            "type": "string",
+            "description": "评审意见：PASS - 通过；NOT_PASS - 不通过",
+            "example": "PASS"
+          },
+          "hasCommented": {
+            "type": "boolean",
+            "description": "是否已经评论过",
+            "example": "true"
+          },
+          "reviewTime": {
+            "type": "string",
+            "description": "评审时间",
+            "example": "2024-10-05T15:30:45Z"
+          }
+        }
+      },
+      "ModifyCodeReviewBasicInfoRequest": {
+        "title": "ModifyCodeReviewBasicInfoRequest",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "标题",
+            "example": "new mr title"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "new mr description"
+          }
+        }
+      },
+      "DevopsChangeRequestCreateDTO": {
+        "title": "DevopsChangeRequestCreateDTO",
+        "type": "object",
+        "properties": {
+          "sourceProjectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "源库ID",
+            "example": "2813489"
+          },
+          "sourceBranch": {
+            "type": "string",
+            "description": "源分支",
+            "example": "demo-branch"
+          },
+          "targetProjectId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "目标库ID",
+            "example": "2813489"
+          },
+          "targetBranch": {
+            "type": "string",
+            "description": "目标分支",
+            "example": "master"
+          },
+          "title": {
+            "type": "string",
+            "description": "标题，不超过256个字符",
+            "example": "mr title"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述，不超过10000个字符",
+            "example": "mr description"
+          },
+          "reviewerUserIds": {
+            "type": "array",
+            "description": "评审人用户ID列表",
+            "items": {
+              "type": "string"
+            },
+            "example": ["62c795xxxb468af8"]
+          },
+          "createFrom": {
+            "type": "string",
+            "description": "创建来源：WEB - 页面创建；COMMAND_LINE - 命令行创建；默认为WEB",
+            "example": "WEB"
+          },
+          "workItemIds": {
+            "type": "array",
+            "description": "关联工作项ID列表",
+            "items": {
+              "type": "string"
+            }
+          },
+          "triggerAIReviewRun": {
+            "type": "boolean",
+            "description": "是否触发AI评审，默认false",
+            "default": false,
+            "example": false
+          }
+        },
+        "required": ["sourceProjectId", "sourceBranch", "targetProjectId", "targetBranch", "title"]
+      },
+      "DevopsModifyChangeRequestPersonRequest": {
+        "title": "DevopsModifyChangeRequestPersonRequest",
+        "type": "object",
+        "properties": {
+          "userIds": {
+            "type": "array",
+            "description": "干系人用户ID列表",
+            "items": {
+              "type": "string"
+            },
+            "example": ["62c795xxxb468af8"]
+          }
+        }
+      },
+      "DevopsChangeRequestMergeDTO": {
+        "title": "DevopsChangeRequestMergeDTO",
+        "type": "object",
+        "properties": {
+          "mergeType": {
+            "type": "string",
+            "description": "合并类型：ff-only - fast-forward-only合并方式；no-fast-forward - 普通合并方式；squash - 压缩合并方式；rebase - rebase合并方式",
+            "example": "ff-only"
+          },
+          "mergeMessage": {
+            "type": "string",
+            "description": "合并提交信息",
+            "example": "merge message"
+          },
+          "removeSourceBranch": {
+            "type": "boolean",
+            "description": "是否在合并后删除源分支",
+            "example": "true"
+          }
+        },
+        "required": ["mergeType"]
+      },
+      "DevopsChangeRequestSubmitReviewRequest": {
+        "title": "DevopsChangeRequestSubmitReviewRequest",
+        "type": "object",
+        "properties": {
+          "reviewOpinion": {
+            "type": "string",
+            "description": "评审意见：PASS - 通过；NOT_PASS - 不通过",
+            "example": "PASS"
+          },
+          "reviewComment": {
+            "type": "string",
+            "description": "评论内容",
+            "example": "change request comment content"
+          },
+          "submitDraftCommentIds": {
+            "type": "array",
+            "description": "提交的草稿评论ID列表",
+            "items": {
+              "type": "string"
+            },
+            "example": ["4ff23jj62c795xxxb468af8"]
+          }
+        }
+      },
+      "DevopsChangeRequestPatchSetVO": {
+        "title": "DevopsChangeRequestPatchSetVO",
+        "type": "object",
+        "properties": {
+          "versionNo": {
+            "type": "integer",
+            "format": "int64",
+            "description": "版本号",
+            "example": "1"
+          },
+          "patchSetName": {
+            "type": "string",
+            "description": "版本名称",
+            "example": "版本1"
+          },
+          "patchSetBizId": {
+            "type": "string",
+            "description": "版本ID，具有唯一性",
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          },
+          "commitId": {
+            "type": "string",
+            "description": "版本对应的提交ID",
+            "example": "45ede4680536406d793e0e629bc771cb9fcaa153"
+          },
+          "shortId": {
+            "type": "string",
+            "description": "提交ID对应的短ID，通常为8位",
+            "example": "45ede468"
+          },
+          "createTime": {
+            "type": "string",
+            "description": "版本创建时间",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "relatedMergeItemType": {
+            "type": "string",
+            "description": "关联的类型：MERGE_SOURCE - 合并源；MERGE_TARGET - 合并目标",
+            "example": "MERGE_SOURCE"
+          },
+          "ref": {
+            "type": "string",
+            "description": "版本对应的ref信息",
+            "example": "null"
+          }
+        }
+      },
+      "DevopsChangeRequestDiffTreeVO": {
+        "title": "DevopsChangeRequestDiffTreeVO",
+        "type": "object",
+        "properties": {
+          "totalAddLines": {
+            "type": "integer",
+            "format": "int32",
+            "description": "总增加行数",
+            "example": "10"
+          },
+          "totalDelLines": {
+            "type": "integer",
+            "format": "int32",
+            "description": "总删除行数",
+            "example": "10"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "description": "总变更文件数",
+            "example": "1"
+          },
+          "changedTreeItems": {
+            "type": "array",
+            "description": "变更文件列表",
+            "items": {
+              "$ref": "#/components/schemas/DevopsChangeRequestDiffTreeItemVO"
+            }
+          }
+        }
+      },
+      "DevopsChangeRequestDiffTreeItemVO": {
+        "title": "DevopsChangeRequestDiffTreeItemVO",
+        "type": "object",
+        "properties": {
+          "newPath": {
+            "type": "string",
+            "description": "新文件路径",
+            "example": "src/test/main.java"
+          },
+          "oldPath": {
+            "type": "string",
+            "description": "旧文件路径",
+            "example": "src/test/main.java"
+          },
+          "newFile": {
+            "type": "boolean",
+            "description": "是否是新建文件",
+            "example": "false"
+          },
+          "renamedFile": {
+            "type": "string",
+            "description": "是否是重命名文件",
+            "example": "false"
+          },
+          "deletedFile": {
+            "type": "string",
+            "description": "是否是删除文件",
+            "example": "false"
+          },
+          "addLines": {
+            "type": "integer",
+            "format": "int32",
+            "description": "新增行数",
+            "example": "1"
+          },
+          "delLines": {
+            "type": "integer",
+            "format": "int32",
+            "description": "删除行数",
+            "example": "1"
+          },
+          "isBinary": {
+            "type": "boolean",
+            "description": "是否是二进制文件",
+            "example": "false"
+          },
+          "newObjectId": {
+            "type": "string",
+            "description": "新文件git object id",
+            "example": "9cc84ea9b4d95453115d0c26488d6a78694e0bc6"
+          },
+          "oldObjectId": {
+            "type": "string",
+            "description": "旧文件git object id",
+            "example": "b573bb50d56e8c19282593cbf5b081e211923a83"
+          }
+        }
+      },
+      "OpenApiErrorResponse": {
+        "title": "错误信息返回",
+        "type": "object",
+        "properties": {
+          "traceId": {
+            "type": "string",
+            "description": "日志ID",
+            "example": "0a472f8c17273205597985305e0040"
+          },
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "HTTP状态码",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "description": "业务错误码",
+            "example": "SYSTEM_UNKNOWN_ERROR"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "错误信息",
+            "example": "error message"
+          },
+          "errorDescription": {
+            "type": "string",
+            "description": "描述信息",
+            "example": "error description"
+          }
+        }
+      },
+
+      "DevopsChangeRequestCommentCreateDTO": {
+        "title": "DevopsChangeRequestCommentCreateDTO",
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "评论内容，长度必须在 1 到 65535 之间",
+            "example": "This is a comment content."
+          },
+          "parent_comment_biz_id": {
+            "type": "string",
+            "description": "父评论id",
+            "example": "12345"
+          },
+          "comment_type": {
+            "type": "string",
+            "description": "评论类型",
+            "example": "GLOBAL_COMMENT,INLINE_COMMENT"
+          },
+          "resolved": {
+            "type": "boolean",
+            "description": "是否标记已解决",
+            "example": false
+          },
+          "line_number": {
+            "type": "integer",
+            "description": "行号，只有行内评论才有",
+            "example": 42
+          },
+          "file_path": {
+            "type": "string",
+            "description": "文件名称，只有行内评论才有",
+            "example": "/src/main/java/com/example/MyClass.java"
+          },
+          "patchset_biz_id": {
+            "type": "string",
+            "description": "关联版本id，如果是INLINE_COMMENT，则选择from_patchset_biz_id或to_patchset_biz_id中的一个",
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          },
+          "from_patchset_biz_id": {
+            "type": "string",
+            "description": "比较的起始版本id，INLINE_COMMENT类型的评论必传",
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          },
+          "to_patchset_biz_id": {
+            "type": "string",
+            "description": "比较的目标版本id， INLINE_COMMENT类型的评论必传",
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          },
+          "draft": {
+            "type": "boolean",
+            "description": "是否草稿评论",
+            "example": true
+          }
+        },
+        "required": [
+          "content",
+          "comment_type",
+          "resolved",
+          "patchset_biz_id",
+          "draft"
+        ]
+      },
+      "DevopsChangeRequestListCommentDTO": {
+        "title": "DevopsChangeRequestListCommentDTO",
+        "type": "object",
+        "properties": {
+          "patchset_biz_id_list": {
+            "type": "array",
+            "description": "版本业务 ID 列表",
+            "items": {
+              "type": "string",
+              "description": "版本业务 ID",
+              "example": "5e733626d53f4b04a6aa0e23d4ff72b8"
+            }
+          },
+          "comment_type": {
+            "type": "string",
+            "description": "评论类型",
+            "example": "GLOBAL_COMMENT,INLINE_COMMENT"
+          },
+          "comment_biz_id_list": {
+            "type": "array",
+            "description": "所需评论ID列表，从根评论开始返回",
+            "items": {
+              "type": "string",
+              "description": "评论ID",
+              "example": "5c399e3685e542a28db16d93e9f82abb"
+            }
+          },
+          "file_path": {
+            "type": "string",
+            "description": "文件路径",
+            "example": "/src/main/test.java"
+          },
+          "state": {
+            "type": "string",
+            "description": "评论状态",
+            "example": "DRAFT,OPENED"
+          },
+          "resolved": {
+            "type": "boolean",
+            "description": "是否已解决",
+            "example": "false"
+          }
+        }
+      },
+      "DevopsChangeRequestCommentEditDTO": {
+        "title": "DevopsChangeRequestCommentEditDTO",
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "内容",
+            "example": "your new comment"
+          },
+          "resolved": {
+            "type": "boolean",
+            "description": "是否已解决",
+            "example": "false"
+          }
+        }
+      },
+      "DevopsChangeRequestCommentDTO": {
+        "title": "合并请求评论信息",
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "代码库ID",
+            "example": 123456
+          },
+          "comment_biz_id": {
+            "type": "string",
+            "description": "评论bizId",
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          },
+          "mr_biz_id": {
+            "type": "string",
+            "description": "所属mrBizId",
+            "example": "bf117304dfe44d5d9b1132f348edf92e"
+          },
+          "comment_time": {
+            "type": "string",
+            "description": "评论时间",
+            "example": "2023-08-21T14:30:00Z"
+          },
+          "last_edit_time": {
+            "type": "string",
+            "description": "上次编辑时间",
+            "example": "2023-08-21T15:00:00Z"
+          },
+          "comment_type": {
+            "type": "string",
+            "description": "评论类型",
+            "example": "INLINE_COMMENT"
+          },
+          "state": {
+            "type": "string",
+            "description": "评论状态",
+            "example": "OPENED,DRAFT"
+          },
+          "resolved": {
+            "type": "boolean",
+            "description": "是否已解决",
+            "example": false
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "description": "是否已经删除",
+            "example": false
+          },
+          "related_patchset": {
+            "type": "object",
+            "description": "关联版本信息",
+            "$ref": "#/components/schemas/DevopsChangeRequestPatchSetVO"
+          },
+          "author": {
+            "type": "object",
+            "description": "作者ID",
+            "$ref": "#/components/schemas/DevopsUserBasicDTO"
+          },
+          "content": {
+            "type": "string",
+            "description": "评论内容",
+            "example": "This is a comment content."
+          },
+          "line_number": {
+            "type": "integer",
+            "description": "所在行号",
+            "example": 42
+          },
+          "filePath": {
+            "type": "string",
+            "description": "所在文件",
+            "example": "/src/main/java/com/example/MyClass.java"
+          },
+          "parent_comment_biz_id": {
+            "type": "string",
+            "description": "父评论bizID",
+            "example": "1d8171cf0cc2453197fae0e0a27d5ece"
+          },
+          "root_comment_biz_id": {
+            "type": "string",
+            "description": "根评论bizId",
+            "example": "1d8171cf0cc2453197fae0e0a27d5ece"
+          },
+          "location": {
+            "type": "object",
+            "description": "定位信息",
+            "$ref": "#/components/schemas/DevopsChangeRequestCommentLocationDTO"
+          },
+          "child_comments_list": {
+            "type": "array",
+            "description": "子评论",
+            "items": {
+              "$ref": "#/components/schemas/DevopsChangeRequestCommentDTO"
+            },
+            "example": []
+          },
+          "expression_reply_list": {
+            "type": "array",
+            "description": "表态回复",
+            "items": {
+              "$ref": "#/components/schemas/DevopsChangeRequestCommentExpressionReplyDTO"
+            },
+            "example": []
+          },
+          "last_edit_user": {
+            "type": "object",
+            "description": "最后编辑用户",
+            "$ref": "#/components/schemas/DevopsUserBasicDTO"
+          },
+          "last_resolved_status_change_time": {
+            "type": "string",
+            "description": "最后解决状态更改时间",
+            "example": "2023-08-21T16:00:00Z"
+          },
+          "last_resolved_status_change_user": {
+            "type": "object",
+            "description": "最后解决状态更改用户",
+            "$ref": "#/components/schemas/DevopsUserBasicDTO"
+          },
+          "out_dated": {
+            "type": "boolean",
+            "description": "是否过期评论",
+            "example": false
+          },
+          "from_patchset_biz_id": {
+            "type": "string",
+            "description": "from版本id",
+            "example": "c341efc7fa38425eb575ad6ab6e95e76"
+          },
+          "to_patchset_biz_id": {
+            "type": "string",
+            "description": "to版本id",
+            "example": "c341efc7fa38425eb575ad6ab6e95e76"
+          }
+        }
+      },
+      "DevopsChangeRequestCommentLocationDTO": {
+        "title": "评论定位信息",
+        "type": "object",
+        "properties": {
+          "can_located": {
+            "type": "boolean",
+            "description": "是否可以定位",
+            "example": true
+          },
+          "located_patch_set_biz_id": {
+            "type": "string",
+            "description": "定位的补丁集业务ID",
+            "example": "1d8171cf0cc2453197fae0e0a27d5ece"
+          },
+          "located_file_path": {
+            "type": "string",
+            "description": "定位的文件路径",
+            "example": "/src/main/java/com/example/Example.java"
+          },
+          "located_line_number": {
+            "type": "integer",
+            "description": "定位的行号",
+            "example": 100
+          }
+        }
+      },
+      "DevopsChangeRequestCommentExpressionReplyDTO": {
+        "title": "DevopsChangeRequestCommentExpressionReplyDTO",
+        "type": "object",
+        "properties": {
+          "emoji": {
+            "type": "string",
+            "description": "emoji表情符",
+            "example": "😊"
+          },
+          "reply_user_list": {
+            "type": "array",
+            "description": "表态用户列表",
+            "items": {
+              "$ref": "#/components/schemas/DevopsChangeRequestCommentExpressionReplyUserDTO"
+            }
+          }
+        }
+      },
+      "DevopsChangeRequestCommentExpressionReplyUserDTO": {
+        "title": "DevopsChangeRequestCommentExpressionReplyUserDTO",
+        "type": "object",
+        "properties": {
+          "reply_user": {
+            "type": "object",
+            "description": "表态用户信息",
+            "$ref": "#/components/schemas/DevopsUserBasicDTO"
+          },
+          "reply_biz_id": {
+            "type": "string",
+            "description": "回复业务ID",
+            "example": "1d8171cf0cc2453197fae0e0a27d5ece"
+          }
+        }
+      },
+      "DevopsOldMergeRequestVO": {
+        "title": "合并请求",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "合并请求ID",
+            "format": "int64",
+            "example": "1"
+          },
+          "iid": {
+            "type": "integer",
+            "description": "库内合并请求ID，表示属于代码库内的第几个合并请求ID",
+            "format": "int64",
+            "example": "1"
+          },
+          "projectId": {
+            "type": "integer",
+            "description": "代码库ID",
+            "format": "int64",
+            "example": "2813489"
+          },
+          "title": {
+            "type": "string",
+            "description": "合并请求标题",
+            "example": "mr title"
+          },
+          "description": {
+            "type": "string",
+            "description": "合并请求描述信息",
+            "example": "mr description"
+          },
+          "state": {
+            "type": "string",
+            "description": "合并请求状态：opened-已开启，closed-已关闭，merged-已合并，accepted-评审通过，reopened-重新打开，locked-合并中",
+            "example": "opened"
+          },
+          "mergeStatus": {
+            "type": "string",
+            "description": "合并请求合并状态，包括：unchecked-未检查，can_be_merged-待合并，cannot_be_merged-不可合并",
+            "example": "can_be_merged"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "创建时间",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "更新时间",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "sourceBranch": {
+            "type": "string",
+            "description": "源分支",
+            "example": "demo-branch"
+          },
+          "targetBranch": {
+            "type": "string",
+            "description": "目标分支",
+            "example": "master"
+          },
+          "author": {
+            "type": "object",
+            "description": "创建人",
+            "$ref": "#/components/schemas/DevopsMrUserDTO"
+          },
+          "assignees": {
+            "type": "array",
+            "description": "评审人列表",
+            "items": {
+              "$ref": "#/components/schemas/DevopsMrAssigneeDTO"
+            }
+          },
+          "subscribers": {
+            "type": "array",
+            "description": "订阅人列表",
+            "items": {
+              "$ref": "#/components/schemas/DevopsMrUserDTO"
+            }
+          },
+          "sourceProjectId": {
+            "type": "integer",
+            "description": "评审分支所在的代码库ID",
+            "format": "int64",
+            "example": "2813489"
+          },
+          "targetProjectId": {
+            "type": "integer",
+            "description": "目标分支所在的代码库ID",
+            "format": "int64",
+            "example": "2813489"
+          },
+          "sourceProjectName": {
+            "type": "string",
+            "description": "源库名称",
+            "example": "Codeup-Demo"
+          },
+          "targetProjectName": {
+            "type": "string",
+            "description": "目标库名称",
+            "example": "Codeup-Demo"
+          },
+          "workInProgress": {
+            "type": "boolean",
+            "description": "WIP标识，即合并请求还处于开发中",
+            "example": "false"
+          },
+          "detailUrl": {
+            "type": "string",
+            "description": "合并请求详情地址",
+            "example": "https://example.com/example/example_demo/merge_requests/1"
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "web地址",
+            "example": "https://example.com/example/example_demo/merge_requests/1"
+          },
+          "sshUrlToRepo": {
+            "type": "string",
+            "description": "仓库SSH克隆地址",
+            "example": "git@example:example_org/example.git"
+          },
+          "isUsePushBlock": {
+            "type": "boolean",
+            "description": "是否开启推送拦截",
+            "example": "false"
+          },
+          "creationMethod": {
+            "type": "string",
+            "description": "创建方式，包括：WEB、COMMAND，默认创建方式为WEB",
+            "example": "WEB"
+          },
+          "upvotes": {
+            "type": "integer",
+            "description": "通过投票数",
+            "format": "int32",
+            "example": "1"
+          },
+          "downvotes": {
+            "type": "integer",
+            "description": "不通过投票数",
+            "format": "int32",
+            "example": "1"
+          },
+          "acceptedRevision": {
+            "type": "string",
+            "description": "评审通过时的版本",
+            "example": "6da8c14b5a9102998148b7ea35f96507d5304f74"
+          },
+          "sourceType": {
+            "type": "string",
+            "description": "合并源类型，包括：BRANCH、COMMIT",
+            "example": "BRANCH"
+          },
+          "targetType": {
+            "type": "string",
+            "description": "合并目标类型，包括：BRANCH、COMMIT",
+            "example": "BRANCH"
+          },
+          "mergedRevision": {
+            "type": "string",
+            "description": "合并的版本",
+            "example": "6da8c14b5a9102998148b7ea35f96507d5304f74"
+          },
+          "ahead": {
+            "type": "integer",
+            "description": "源分支领先目标分支的commit数量",
+            "format": "int32",
+            "example": "1"
+          },
+          "behind": {
+            "type": "integer",
+            "description": "目标分支领先源分支的commit数量",
+            "format": "int32",
+            "example": "1"
+          },
+          "nameWithNamespace": {
+            "type": "string",
+            "description": "代码库的全名称（包含父路径）",
+            "example": "60de7a6852743a5162b5f957 / DemoRepo（斜杠两侧有空格）"
+          },
+          "supportMergeFFOnly": {
+            "type": "boolean",
+            "description": "是否支持ff-only合并方式",
+            "example": "true"
+          },
+          "labels": {
+            "type": "array",
+            "description": "标签（label）列表",
+            "items": {
+              "type": "string"
+            },
+            "example": ["BUG"]
+          }
+        }
+      },
+      "DevopsMrAssigneeDTO": {
+        "title": "合并请求评审人",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "数据库主键ID（无业务意义）",
+            "format": "int64",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "用户名称",
+            "example": "codeup-name"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名称（登录名）",
+            "example": "codeup-username"
+          },
+          "state": {
+            "type": "string",
+            "description": "用户状态，包括{active、blocked}，一般为active",
+            "example": "active"
+          },
+          "email": {
+            "type": "string",
+            "description": "邮箱",
+            "example": "username@example.com"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "userId": {
+            "type": "string",
+            "description": "云效用户ID（在codeup的OpenAPI中涉及到用户ID之处，均应使用该用户ID）",
+            "example": "62c795xxxb468af8"
+          },
+          "status": {
+            "type": "string",
+            "description": "评审人的评审状态，包括：approved - 评审通过，pending - 待处理，comment - 发表过评论、点赞等",
+            "example": "approved"
+          }
+        }
+      },
+      "DevopsMrUserDTO": {
+        "title": "创建人或订阅人",
+        "type": "object",
+        "description": "用户信息",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "数据库主键ID（无业务意义）",
+            "format": "int64",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "用户名称",
+            "example": "codeup-name"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名称（登录名）",
+            "example": "codeup-username"
+          },
+          "state": {
+            "type": "string",
+            "description": "用户状态，包括{active、blocked}，一般为active",
+            "example": "active"
+          },
+          "email": {
+            "type": "string",
+            "description": "邮箱",
+            "example": "username@example.com"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "userId": {
+            "type": "string",
+            "description": "云效用户ID（在codeup的OpenAPI中涉及到用户ID之处，均应使用该用户ID）",
+            "example": "62c795xxxb468af8"
+          }
+        }
+      },
+      "DevopsOldMergeRequestCreateDTO": {
+        "title": "创建合并请求",
+        "type": "object",
+        "properties": {
+          "sourceBranch": {
+            "type": "string",
+            "description": "评审分支",
+            "example": "demo-branch"
+          },
+          "targetBranch": {
+            "type": "string",
+            "description": "目标分支",
+            "example": "master"
+          },
+          "title": {
+            "type": "string",
+            "description": "合并请求标题，限制在256个字符以内",
+            "example": "mr title"
+          },
+          "description": {
+            "type": "string",
+            "description": "合并请求描述，一般不超过10000个字符，最长不超过10万个字符",
+            "example": "mr description"
+          },
+          "targetProjectId": {
+            "type": "integer",
+            "description": "目标库ID",
+            "format": "int64",
+            "example": "2813489"
+          },
+          "sourceProjectId": {
+            "type": "integer",
+            "description": "源库ID",
+            "format": "int64",
+            "example": "2813489"
+          },
+          "assigneeIds": {
+            "type": "array",
+            "description": "评审人用户ID列表",
+            "items": {
+              "type": "string"
+            },
+            "example": ["62c795xxxb468af8"]
+          },
+          "type": {
+            "type": "string",
+            "description": "评审创建方式类型，包括：WEB、COMMAND，默认为WEB",
+            "example": "WEB"
+          }
+        },
+        "required": ["sourceBranch", "targetBranch", "title"]
+      },
+      "AIReviewRunDTO": {
+        "title": "AI代码评审运行状态",
+        "type": "object",
+        "description": "AI代码评审运行状态信息",
+        "properties": {
+          "aiReviewRun": {
+            "$ref": "#/components/schemas/AIReviewRun"
+          },
+          "lastPatchSet": {
+            "$ref": "#/components/schemas/DevopsChangeRequestPatchSetVO"
+          }
+        }
+      },
+      "AIReviewRun": {
+        "title": "AI评审运行信息",
+        "type": "object",
+        "description": "AI代码评审运行信息",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "description": "请求ID",
+            "example": "req-123456"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AIReviewRunSessionData"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误信息，当 response status code != 200 时返回",
+            "example": "Error message"
+          }
+        }
+      },
+      "AIReviewRunSessionData": {
+        "title": "AI评审会话数据",
+        "type": "object",
+        "description": "AI评审会话数据",
+        "properties": {
+          "lastTaskType": {
+            "type": "string",
+            "description": "最近一次触发Agent的任务类型：MERGE_REQUEST / MERGE_REQUEST_COMMENT",
+            "example": "MERGE_REQUEST"
+          },
+          "lastTaskStartAt": {
+            "type": "integer",
+            "format": "int64",
+            "description": "最近一次触发Agent的任务开始时间，单位为毫秒",
+            "example": 1704067200000
+          },
+          "lastTaskEndAt": {
+            "type": "integer",
+            "format": "int64",
+            "description": "最近一次触发Agent的任务结束时间，单位为毫秒",
+            "example": 1704067800000
+          },
+          "state": {
+            "type": "string",
+            "description": "状态：Running - 运行中，Idle - 空闲，Finished - 已完成",
+            "example": "Running"
+          },
+          "triggeredHeadCommits": {
+            "type": "array",
+            "description": "触发评审时HeadCommit ID列表，终止评审不会移除记录，多次相同HeadCommit触发评审不会去重处理",
+            "items": {
+              "type": "string"
+            },
+            "example": ["6da8c14b5a9102998148b7ea35f96507d5304f74"]
+          }
+        }
+      }
+    }
+  }
+}

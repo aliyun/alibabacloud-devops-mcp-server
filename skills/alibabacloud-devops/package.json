@@ -1,0 +1,8 @@
+{
+  "name": "skill-alibabacloud-devops-mcp-server",
+  "version": "1.0.0",
+  "description": "Claude Skill for alibabacloud-devops-mcp-server MCP server",
+  "scripts": {
+    "setup": "pip install mcp"
+  }
+}
