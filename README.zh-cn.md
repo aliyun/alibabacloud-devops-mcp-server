@@ -170,11 +170,11 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `cancel_app_release_stage_execution`: [应用交付] 取消发布流程阶段执行
 - `retry_app_release_stage_pipeline`: [应用交付] 重试变更请求的发布流程阶段流水线
 - `skip_app_release_stage_pipeline`: [应用交付] 跳过变更请求的发布流程阶段流水线
-- `list_app_release_stage_execution_integrated_metadata`: [应用交付] 查询研发阶段执行记录集成变更信息
+- `list_app_release_stage_metadata`: [应用交付] 查询研发阶段执行记录集成变更信息
 - `get_app_release_stage_pipeline_run`: [应用交付] 获取研发阶段流水线运行实例
-- `pass_app_release_stage_pipeline_validate`: [应用交付] 通过发布流程阶段验证
-- `get_app_release_stage_execution_pipeline_job_log`: [应用交付] 查询研发阶段流水线任务运行日志
-- `refuse_app_release_stage_pipeline_validate`: [应用交付] 拒绝发布流程阶段验证
+- `pass_app_release_stage_validate`: [应用交付] 通过发布流程阶段验证
+- `get_app_release_stage_job_log`: [应用交付] 查询研发阶段流水线任务运行日志
+- `refuse_app_release_stage_validate`: [应用交付] 拒绝发布流程阶段验证
 
 ### 制品仓库工具
 

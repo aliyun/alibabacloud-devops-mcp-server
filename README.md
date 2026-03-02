@@ -172,11 +172,11 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `cancel_app_release_stage_execution`: [application delivery] Cancel release workflow stage execution
 - `retry_app_release_stage_pipeline`: [application delivery] Retry release workflow stage pipeline
 - `skip_app_release_stage_pipeline`: [application delivery] Skip release workflow stage pipeline
-- `list_app_release_stage_execution_integrated_metadata`: [application delivery] List integrated metadata for stage execution
+- `list_app_release_stage_metadata`: [application delivery] List integrated metadata for stage execution
 - `get_app_release_stage_pipeline_run`: [application delivery] Get release stage pipeline run instance
-- `pass_app_release_stage_pipeline_validate`: [application delivery] Pass release workflow stage validation
-- `get_app_release_stage_execution_pipeline_job_log`: [application delivery] Get pipeline job execution log
-- `refuse_app_release_stage_pipeline_validate`: [application delivery] Refuse release workflow stage validation
+- `pass_app_release_stage_validate`: [application delivery] Pass release workflow stage validation
+- `get_app_release_stage_job_log`: [application delivery] Get pipeline job execution log
+- `refuse_app_release_stage_validate`: [application delivery] Refuse release workflow stage validation
 
 ### Packages Management Tools
 

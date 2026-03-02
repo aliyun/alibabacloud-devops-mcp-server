@@ -70,7 +70,7 @@ export const getAppStackAppReleaseWorkflowTools = () => [
     inputSchema: zodToJsonSchema(SkipChangeRequestStagePipelineRequestSchema),
   },
   {
-    name: 'list_app_release_stage_execution_integrated_metadata',
+    name: 'list_app_release_stage_metadata',
     description: '[application delivery] 查询研发阶段执行记录集成变更信息',
     inputSchema: zodToJsonSchema(ListAppReleaseStageExecutionIntegratedMetadataRequestSchema),
   },
@@ -80,17 +80,17 @@ export const getAppStackAppReleaseWorkflowTools = () => [
     inputSchema: zodToJsonSchema(GetReleaseStagePipelineRunRequestSchema),
   },
   {
-    name: 'pass_app_release_stage_pipeline_validate',
+    name: 'pass_app_release_stage_validate',
     description: '[application delivery] 通过发布流程阶段验证',
     inputSchema: zodToJsonSchema(PassReleaseStagePipelineValidateRequestSchema),
   },
   {
-    name: 'get_app_release_stage_execution_pipeline_job_log',
+    name: 'get_app_release_stage_job_log',
     description: '[application delivery] 查询研发阶段流水线任务运行日志',
     inputSchema: zodToJsonSchema(GetAppReleaseStageExecutionPipelineJobLogRequestSchema),
   },
   {
-    name: 'refuse_app_release_stage_pipeline_validate',
+    name: 'refuse_app_release_stage_validate',
     description: '[application delivery] 拒绝发布流程阶段验证',
     inputSchema: zodToJsonSchema(RefuseReleaseStagePipelineValidateRequestSchema),
   }

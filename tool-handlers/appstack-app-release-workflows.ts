@@ -109,7 +109,7 @@ export async function handleAppStackAppReleaseWorkflowTools(request: any) {
         content: [{ type: "text", text: JSON.stringify(skipResult, null, 2) }],
       };
       
-    case 'list_app_release_stage_execution_integrated_metadata':
+    case 'list_app_release_stage_metadata':
       const listMetadataParams = ListAppReleaseStageExecutionIntegratedMetadataRequestSchema.parse(request.params.arguments);
       const listMetadataResult = await listAppReleaseStageExecutionIntegratedMetadata(listMetadataParams);
       return {
@@ -123,21 +123,21 @@ export async function handleAppStackAppReleaseWorkflowTools(request: any) {
         content: [{ type: "text", text: JSON.stringify(getPipelineRunResult, null, 2) }],
       };
       
-    case 'pass_app_release_stage_pipeline_validate':
+    case 'pass_app_release_stage_validate':
       const passValidateParams = PassReleaseStagePipelineValidateRequestSchema.parse(request.params.arguments);
       const passValidateResult = await passReleaseStagePipelineValidate(passValidateParams);
       return {
         content: [{ type: "text", text: JSON.stringify(passValidateResult, null, 2) }],
       };
       
-    case 'get_app_release_stage_execution_pipeline_job_log':
+    case 'get_app_release_stage_job_log':
       const getJobLogParams = GetAppReleaseStageExecutionPipelineJobLogRequestSchema.parse(request.params.arguments);
       const getJobLogResult = await getAppReleaseStageExecutionPipelineJobLog(getJobLogParams);
       return {
         content: [{ type: "text", text: JSON.stringify(getJobLogResult, null, 2) }],
       };
       
-    case 'refuse_app_release_stage_pipeline_validate':
+    case 'refuse_app_release_stage_validate':
       const refuseValidateParams = RefuseReleaseStagePipelineValidateRequestSchema.parse(request.params.arguments);
       const refuseValidateResult = await refuseReleaseStagePipelineValidate(refuseValidateParams);
       return {
