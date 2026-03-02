@@ -184,15 +184,37 @@ export async function createPipelineRunFunc(
     return Number(response);
   }
 
-  // 否则，基于用户提供的自然语言参数构建params
+  // 否则，基于用户提供的简化参数构建params
   const paramsObject: Record<string, any> = {};
   
-  // 处理分支模式相关参数
+  // ========== 步骤1：提前获取并填充 repositories 信息 ==========
+  // 如果用户没有提供 repositories 或提供的是空数组，且提供了 branch 或 tag，则从流水线配置中获取仓库列表
+  if ((!options?.repositories || options.repositories.length === 0) && (options?.branch || options?.tag)) {
+    try {
+      const pipelineDetail = await getPipelineFunc(organizationId, pipelineId);
+      const sources = pipelineDetail.pipelineConfig?.sources || [];
+
+      // 从 sources 中提取仓库URL并构建 repositories 数组
+      options.repositories = sources
+        .filter(source => source.data?.repo)
+        .map(source => ({
+          url: source.data!.repo!,
+          branch: options.branch, // 如果有branch参数，应用到所有仓库
+          tag: options.tag // 如果有tag参数，应用到所有仓库
+        }));
+      
+    } catch (e) {
+      // 获取失败时，保持 repositories 为空，后续会有 fallback 处理
+      console.error('[ERROR] Failed to fetch pipeline detail for repositories:', e);
+    }
+  }
+  
+  // ========== 步骤2：处理分支模式（多个分支） ==========
   if (options?.branchMode && options?.branches && options.branches.length > 0) {
     paramsObject.branchModeBranchs = options.branches;
   }
   
-  // 处理Release分支相关参数
+  // ========== 处理Release分支相关参数 ==========
   if (options?.createReleaseBranch !== undefined) {
     paramsObject.needCreateBranch = options.createReleaseBranch;
   }
@@ -201,19 +223,33 @@ export async function createPipelineRunFunc(
     paramsObject.releaseBranch = options.releaseBranch;
   }
   
-  // 处理环境变量
+  // ========== 处理环境变量 ==========
   if (options?.environmentVariables && Object.keys(options.environmentVariables).length > 0) {
     paramsObject.envs = options.environmentVariables;
   }
   
-  // 处理特定仓库配置
+  // ========== 处理制品相关参数 ==========
+  if (options?.pipelineArtifacts && Object.keys(options.pipelineArtifacts).length > 0) {
+    paramsObject.runningPipelineArtifacts = options.pipelineArtifacts;
+  }
+  
+  if (options?.acrArtifacts && Object.keys(options.acrArtifacts).length > 0) {
+    paramsObject.runningAcrArtifacts = options.acrArtifacts;
+  }
+  
+  if (options?.packagesArtifacts && Object.keys(options.packagesArtifacts).length > 0) {
+    paramsObject.runningPackagesArtifacts = options.packagesArtifacts;
+  }
+  
+  // ========== 处理特定仓库配置 ==========
+
   if (options?.repositories && options.repositories.length > 0) {
     // 初始化runningBranchs和runningTags对象
     const runningBranchs: Record<string, string> = {};
     const runningTags: Record<string, string> = {};
     
     // 填充分支和标签信息
-    options.repositories.forEach(repo => {
+    options.repositories.forEach((repo, index) => {
       if (repo.branch) {
         runningBranchs[repo.url] = repo.branch;
       }
@@ -221,7 +257,7 @@ export async function createPipelineRunFunc(
         runningTags[repo.url] = repo.tag;
       }
     });
-    
+
     // 只有在有内容时才添加到params对象
     if (Object.keys(runningBranchs).length > 0) {
       paramsObject.runningBranchs = runningBranchs;
@@ -230,9 +266,29 @@ export async function createPipelineRunFunc(
     if (Object.keys(runningTags).length > 0) {
       paramsObject.runningTags = runningTags;
     }
+  } else {
+    console.log('[DEBUG] No repositories to process, skipping runningBranchs/runningTags generation');
   }
   
-  // 如果有自然语言描述，尝试解析它
+
+  if (!paramsObject.runningBranchs && !paramsObject.runningTags) {
+    // 如果没有生成 runningBranchs 或 runningTags，且有 branch 参数，使用 fallback
+    if (options?.branch && !paramsObject.branchModeBranchs) {
+      console.log('[DEBUG] Using fallback: setting branchModeBranchs');
+      paramsObject.branchModeBranchs = [options.branch];
+    }
+    // tag 无法使用 branchModeBranchs fallback，只能记录警告
+    if (options?.tag) {
+      console.warn('[WARN] Tag parameter provided but no repositories found, tag will be ignored');
+    }
+  }
+  
+  // ========== 处理备注 ==========
+  if (options?.comment) {
+    paramsObject.comment = options.comment;
+  }
+  
+  // ========== 如果有自然语言描述，尝试解析它 ==========
   if (options?.description) {
     // 此处可以添加更复杂的自然语言处理逻辑
     // 当前实现是简单的关键词匹配
@@ -262,8 +318,12 @@ export async function createPipelineRunFunc(
 
   const body: Record<string, any> = {};
 
+
   if (Object.keys(paramsObject).length > 0) {
     body.params = JSON.stringify(paramsObject);
+    console.log('[DEBUG] Final body.params:', body.params);
+  } else {
+    console.log('[DEBUG] paramsObject is empty, no params will be sent');
   }
   
   const response = await utils.yunxiaoRequest(url, {

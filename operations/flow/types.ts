@@ -131,9 +131,9 @@ export const ListPipelinesSchema = z.object({
 
 // Flow Pipeline list item schema
 export const PipelineListItemSchema = z.object({
-  name: z.string().nullable().optional().describe("Pipeline name"),
-  id: z.number().int().nullable().optional().describe("Pipeline ID"),
-  creatorAccountId: z.string().nullable().optional().describe("Creator account ID"),
+  pipelineName: z.string().nullable().optional().describe("Pipeline name"),
+  pipelineId: z.number().int().nullable().optional().describe("Pipeline ID"),
+  createAccountId: z.string().nullable().optional().describe("Creator account ID"),
   createTime: z.number().int().nullable().optional().describe("Creation time in milliseconds"),
 });
 
@@ -141,20 +141,41 @@ export const PipelineListItemSchema = z.object({
 export const CreatePipelineRunSchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
   pipelineId: z.string().describe("Pipeline ID to run"),
-  params: z.string().optional().describe("Pipeline run parameters in JSON string format. Can include: branchModeBranchs(array), envs(object), runningBranchs(object), runningTags(object), runningPipelineArtifacts(object), runningAcrArtifacts(object), runningPackagesArtifacts(object), comment(string), needCreateBranch(boolean), releaseBranch(string)"),
   
-  // 添加自然语言相关参数，这些参数将被转换为params参数的内容
-  description: z.string().optional().describe("Natural language description of how to run the pipeline, e.g. 'Run pipeline using branch mode with branches main and develop'"),
-  branches: z.array(z.string()).optional().describe("Branches to use in branch mode or specific branches for repositories"),
-  branchMode: z.boolean().optional().describe("Whether to run in branch mode"),
-  releaseBranch: z.string().optional().describe("Specific release branch to use"),
-  createReleaseBranch: z.boolean().optional().describe("Whether to create a release branch"),
-  environmentVariables: z.record(z.string()).optional().describe("Environment variables for the pipeline run"),
+  // ========== 高级参数（兼容原有方式）==========
+  params: z.string().optional().describe("[Advanced] Raw pipeline run parameters in JSON string format. If provided, this will override other parameters. Example: {\"branchModeBranchs\":[\"main\"],\"envs\":{\"key\":\"value\"},\"runningBranchs\":{\"https://codeup.aliyun.com/org/repo.git\":\"dev\"}}"),
+  
+  // ========== 简化参数（推荐使用）==========
+  // 分支/标签相关
+  branch: z.string().optional().describe("[Simple] Branch name to run the pipeline with. When user says 'run pipeline with XX branch', use this parameter. This is the most common use case."),
+  tag: z.string().optional().describe("[Simple] Tag name to run the pipeline with. When user says 'run pipeline with XX tag', use this parameter. Will automatically fetch repo URLs from pipeline config."),
+  branches: z.array(z.string()).optional().describe("[Simple] Multiple branches for branch mode. Use when user wants to run pipeline in branch mode with specific branches."),
+  branchMode: z.boolean().optional().describe("[Simple] Enable branch mode to run pipeline with multiple branches simultaneously"),
+  
+  // 仓库特定配置
   repositories: z.array(z.object({
-    url: z.string().describe("Repository URL"),
-    branch: z.string().optional().describe("Branch to use for this repository"),
-    tag: z.string().optional().describe("Tag to use for this repository")
-  })).optional().describe("Specific repository configurations")
+    url: z.string().describe("Repository URL, e.g., https://codeup.aliyun.com/org/repo.git"),
+    branch: z.string().optional().describe("Branch name for this specific repository"),
+    tag: z.string().optional().describe("Tag name for this specific repository")
+  })).optional().describe("[Simple] Specific branch or tag configurations for different repositories in the pipeline"),
+  
+  // 环境变量
+  environmentVariables: z.record(z.string()).optional().describe("[Simple] Environment variables to pass to the pipeline, e.g., {\"ENV\":\"production\",\"VERSION\":\"1.0.0\"}"),
+  
+  // 制品相关
+  pipelineArtifacts: z.record(z.string()).optional().describe("[Simple] Pipeline artifacts to use, key is artifact ID, value is version"),
+  acrArtifacts: z.record(z.string()).optional().describe("[Simple] ACR (Alibaba Cloud Container Registry) artifacts to use, key is image address, value is image tag"),
+  packagesArtifacts: z.record(z.string()).optional().describe("[Simple] Package repository artifacts to use, key is artifact path, value is version"),
+  
+  // Release分支相关
+  releaseBranch: z.string().optional().describe("[Simple] Specific release branch name"),
+  createReleaseBranch: z.boolean().optional().describe("[Simple] Whether to create a new release branch"),
+  
+  // 备注
+  comment: z.string().optional().describe("[Simple] Comment or note for this pipeline run"),
+  
+  // 自然语言描述（辅助参数）
+  description: z.string().optional().describe("[Optional] Natural language description of how to run the pipeline, the system will try to parse it automatically")
 });
 
 // Flow Pipeline run related schemas

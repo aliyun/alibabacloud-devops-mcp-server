@@ -114,7 +114,40 @@ export const getPipelineTools = () => [
   },
   {
     name: "create_pipeline_run",
-    description: "[Pipeline Management] Run a pipeline with optional parameters",
+    description: "[Pipeline Management] Run a pipeline with flexible parameters.\n\n" +
+      "**⚠️ IMPORTANT: DO NOT provide 'params' parameter unless user explicitly provides a JSON string. Use simplified parameters instead!**\n\n" +
+      "**🎯 Most Common Use Cases:**\n" +
+      "1. 🌿 Run with specific branch: Use 'branch' parameter\n" +
+      "   - User: 'Run pipeline with dev branch' → { branch: 'dev' }\n" +
+      "   - User: '用master分支运行流水线' → { branch: 'master' }\n" +
+      "   - System will automatically fetch repository URLs from pipeline config\n\n" +
+      "2. 🏷️ Run with specific tag: Use 'tag' parameter\n" +
+      "   - User: 'Run pipeline with v1.0 tag' → { tag: 'v1.0' }\n" +
+      "   - User: '用v2.0标签运行流水线' → { tag: 'v2.0' }\n" +
+      "   - System will automatically fetch repository URLs from pipeline config\n\n" +
+      "3. 🔄 Run with multiple branches: Use 'branches' parameter\n" +
+      "   - User: 'Run pipeline with main and dev branches' → { branches: ['main', 'dev'] }\n\n" +
+      "4. 🏛️ Run with specific repo branch/tag: Use 'repositories' parameter\n" +
+      "   - { repositories: [{ url: 'https://codeup.aliyun.com/org/repo.git', branch: 'feature-x' }] }\n" +
+      "   - { repositories: [{ url: 'https://codeup.aliyun.com/org/repo.git', tag: 'v1.0' }] }\n\n" +
+      "5. 📦 Run with environment variables: Use 'environmentVariables' parameter\n" +
+      "   - { environmentVariables: { 'ENV': 'production', 'VERSION': '1.0.0' } }\n\n" +
+      "**📝 Parameter Guide:**\n" +
+      "- 🌿 branch: Single branch name (most common)\n" +
+      "- 🏷️ tag: Single tag name (for release versions)\n" +
+      "- 🔄 branches: Multiple branches for branch mode\n" +
+      "- 🏛️ repositories: Specific branch/tag per repository\n" +
+      "- 📦 environmentVariables: Key-value pairs for pipeline variables\n" +
+      "- 📝 comment: Add a note for this run\n" +
+      "- 🔧 params: [Advanced] ONLY use if user provides raw JSON string\n\n" +
+      "**⚡ Smart Behavior:**\n" +
+      "- If only 'branch' or 'tag' is provided → automatically fetches repo URLs from pipeline and generates runningBranchs/runningTags\n" +
+      "- If 'branches' is provided → automatically enables branch mode\n" +
+      "- If 'params' is provided → all other parameters are ignored\n\n" +
+      "**❌ DO NOT:**\n" +
+      "- Generate 'params' parameter yourself\n" +
+      "- Convert simplified parameters to 'params' JSON\n" +
+      "- The system will handle param generation automatically",
     inputSchema: zodToJsonSchema(types.CreatePipelineRunSchema),
   },
   {
