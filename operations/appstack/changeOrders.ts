@@ -59,15 +59,13 @@ export const JobLogSchema = z.object({
 
 // Schema for ActionContext
 export const ActionContextSchema = z.object({
-  // Based on the reference in the swagger, we'll define a basic structure
-  // You may need to update this with the actual fields from ActionContext
-  comment: z.string().optional().describe("操作备注"),
+  comment: z.string().describe("操作备注"),
 });
 
 // Schema for ChangeJobActionReq
 export const ChangeJobActionReqSchema = z.object({
   actionType: z.string().describe("操作类型:SUSPEND-暂停，RESUME-恢复，ROLLBACK-回滚，STOP-终止"),
-  context: ActionContextSchema.optional(),
+  context: ActionContextSchema.optional().describe("操作上下文，comment 为操作备注"),
 });
 
 // Schema for CreateChangeOrder API
