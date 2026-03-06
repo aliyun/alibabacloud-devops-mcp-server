@@ -1,4 +1,5 @@
 import * as utils from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import {
   PipelineDetailSchema,
   PipelineDetail,
@@ -24,10 +25,13 @@ import {listHostGroupsFunc} from "./hostGroup.js";
  * @returns 流水线详情
  */
 export async function getPipelineFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string
 ): Promise<PipelineDetail> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",

@@ -12,6 +12,25 @@ export function getYunxiaoApiBaseUrl(): string {
   return process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
 }
 
+/**
+ * 根据 YUNXIAO_API_BASE_URL 自动判断是否为 region 站：
+ * - 域名包含 openapi-rdc.aliyuncs.com -> 中心站
+ * - 其他域名 -> 认为是 region 站
+ */
+export function isRegionEdition(): boolean {
+  const baseUrl = getYunxiaoApiBaseUrl();
+  return !baseUrl.includes("openapi-rdc.aliyuncs.com");
+}
+
+/**
+ * region 站下使用的"默认 organizationId"（占位值）
+ * - 默认使用 "default"
+ * - 如有需要，可以通过环境变量覆盖
+ */
+export function getRegionDefaultOrganizationId(): string {
+  return process.env.YUNXIAO_REGION_DEFAULT_ORG_ID || "default";
+}
+
 type RequestOptions = {
   method?: string;
   body?: unknown;

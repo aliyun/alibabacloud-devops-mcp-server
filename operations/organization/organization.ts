@@ -1,5 +1,10 @@
 import { z } from "zod";
-import {buildUrl, yunxiaoRequest} from "../../common/utils.js";
+import {
+  buildUrl,
+  yunxiaoRequest,
+  isRegionEdition,
+  getRegionDefaultOrganizationId
+} from "../../common/utils.js";
 import {
   CurrentOrganizationInfoSchema,
   UserOrganizationsInfoSchema,
@@ -125,4 +130,31 @@ export async function getCurrentUserFunc(): Promise<z.infer<typeof CurrentUserSc
   });
 
   return CurrentUserSchema.parse(response);
+}
+
+/**
+ * 统一解析 organizationId：
+ * - region 站：无论传什么 / 不传，最终统一用 getRegionDefaultOrganizationId()
+ * - 中心站：
+ *   - 传入 explicitOrgId 则使用
+ *   - 未传则从 /platform/user 的 lastOrganization 补充
+ */
+export async function resolveOrganizationId(
+  explicitOrgId?: string
+): Promise<string> {
+  if (isRegionEdition()) {
+    // region 模式：统一使用默认占位 orgId
+    return getRegionDefaultOrganizationId();
+  }
+
+  // 中心站模式
+  if (explicitOrgId && explicitOrgId !== "default") {
+    return explicitOrgId;
+  }
+
+  const info = await getCurrentOrganizationInfoFunc();
+  if (!info.lastOrganization) {
+    throw new Error("organizationId is required when using Yunxiao central edition");
+  }
+  return info.lastOrganization;
 } 

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { yunxiaoRequest } from "../../common/utils.js";
+import { yunxiaoRequest, isRegionEdition } from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import {
   EffortRecordSchema,
   EstimatedEffortSchema,
@@ -18,8 +19,10 @@ export async function listCurrentUserEffortRecords(
   params: z.infer<typeof ListCurrentUserEffortRecordsSchema>
 ) {
   const validatedParams = ListCurrentUserEffortRecordsSchema.parse(params);
-  
-  const url = `/oapi/v1/projex/organizations/${validatedParams.organizationId}/effortRecords`;
+  const finalOrgId = await resolveOrganizationId(validatedParams.organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/effortRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/effortRecords`;
   const queryParams = {
     startDate: validatedParams.startDate,
     endDate: validatedParams.endDate
@@ -37,8 +40,10 @@ export async function listEffortRecords(
   params: z.infer<typeof ListEffortRecordsSchema>
 ) {
   const validatedParams = ListEffortRecordsSchema.parse(params);
-  
-  const url = `/oapi/v1/projex/organizations/${validatedParams.organizationId}/workitems/${validatedParams.id}/effortRecords`;
+  const finalOrgId = await resolveOrganizationId(validatedParams.organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${validatedParams.id}/effortRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${validatedParams.id}/effortRecords`;
   
   const response = await yunxiaoRequest(url, {
     method: "GET"
@@ -51,7 +56,7 @@ export async function listEffortRecords(
 export async function createEffortRecord(
   params: z.infer<typeof CreateEffortRecordRequestSchema> & {
     id: string;
-    organizationId: string;
+    organizationId: string | undefined;
   }
 ) {
   const validatedParams = CreateEffortRecordRequestSchema.parse({
@@ -62,8 +67,10 @@ export async function createEffortRecord(
     operatorId: params.operatorId,
     workType: params.workType
   });
-  
-  const url = `/oapi/v1/projex/organizations/${params.organizationId}/workitems/${params.id}/effortRecords`;
+  const finalOrgId = await resolveOrganizationId(params.organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${params.id}/effortRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${params.id}/effortRecords`;
   
   const response = await yunxiaoRequest(url, {
     method: "POST",
@@ -78,8 +85,10 @@ export async function listEstimatedEfforts(
   params: z.infer<typeof ListEstimatedEffortsSchema>
 ) {
   const validatedParams = ListEstimatedEffortsSchema.parse(params);
-  
-  const url = `/oapi/v1/projex/organizations/${validatedParams.organizationId}/workitems/${validatedParams.id}/estimatedEfforts`;
+  const finalOrgId = await resolveOrganizationId(validatedParams.organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${validatedParams.id}/estimatedEfforts`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${validatedParams.id}/estimatedEfforts`;
   
   const response = await yunxiaoRequest(url, {
     method: "GET"
@@ -92,7 +101,7 @@ export async function listEstimatedEfforts(
 export async function createEstimatedEffort(
   params: z.infer<typeof CreateEstimatedEffortRequestSchema> & {
     id: string;
-    organizationId: string;
+    organizationId: string | undefined;
   }
 ) {
   const validatedParams = CreateEstimatedEffortRequestSchema.parse({
@@ -102,8 +111,10 @@ export async function createEstimatedEffort(
     spentTime: params.spentTime,
     workType: params.workType
   });
-  
-  const url = `/oapi/v1/projex/organizations/${params.organizationId}/workitems/${params.id}/estimatedEfforts`;
+  const finalOrgId = await resolveOrganizationId(params.organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${params.id}/estimatedEfforts`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${params.id}/estimatedEfforts`;
   
   const response = await yunxiaoRequest(url, {
     method: "POST",
@@ -116,7 +127,7 @@ export async function createEstimatedEffort(
 // Update effort record
 export async function updateEffortRecord(
   params: z.infer<typeof CreateEffortRecordRequestSchema> & {
-    organizationId: string;
+    organizationId: string | undefined;
     workitemId: string;
     id: string;
   }
@@ -129,8 +140,10 @@ export async function updateEffortRecord(
     operatorId: params.operatorId,
     workType: params.workType
   });
-  
-  const url = `/oapi/v1/projex/organizations/${params.organizationId}/workitems/${params.workitemId}/effortRecords/${params.id}`;
+  const finalOrgId = await resolveOrganizationId(params.organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${params.workitemId}/effortRecords/${params.id}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${params.workitemId}/effortRecords/${params.id}`;
   
   const response = await yunxiaoRequest(url, {
     method: "PUT",
@@ -143,7 +156,7 @@ export async function updateEffortRecord(
 // Update estimated effort
 export async function updateEstimatedEffort(
   params: z.infer<typeof CreateEstimatedEffortRequestSchema> & {
-    organizationId: string;
+    organizationId: string | undefined;
     workitemId: string;
     id: string;
   }
@@ -155,8 +168,10 @@ export async function updateEstimatedEffort(
     spentTime: params.spentTime,
     workType: params.workType
   });
-  
-  const url = `/oapi/v1/projex/organizations/${params.organizationId}/workitems/${params.workitemId}/estimatedEfforts/${params.id}`;
+  const finalOrgId = await resolveOrganizationId(params.organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${params.workitemId}/estimatedEfforts/${params.id}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${params.workitemId}/estimatedEfforts/${params.id}`;
   
   const response = await yunxiaoRequest(url, {
     method: "PUT",

@@ -1,5 +1,11 @@
 import {RecordType, string, TypeOf, z, ZodString} from "zod";
-import {buildUrl, yunxiaoRequest, getYunxiaoApiBaseUrl, getCurrentSessionToken} from "../../common/utils.js";
+import {
+  buildUrl,
+  yunxiaoRequest,
+  getYunxiaoApiBaseUrl,
+  getCurrentSessionToken,
+  isRegionEdition
+} from "../../common/utils.js";
 import { createYunxiaoError } from "../../common/errors.js";
 import { getUserAgent } from "universal-user-agent";
 import { VERSION } from "../../common/version.js";
@@ -15,13 +21,16 @@ import {
 } from "./types.js";
 import { ProjectInfoSchema } from "./types.js";
 import { ListWorkItemCommentsParams } from "./types.js";
-import { getCurrentUserFunc } from "../organization/organization.js";
+import { getCurrentUserFunc, resolveOrganizationId } from "../organization/organization.js";
 
 export async function getWorkItemFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   workItemId: string
 ): Promise<z.infer<typeof WorkItemSchema>> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitems/${workItemId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -46,7 +55,7 @@ export interface SearchWorkitemsResult {
 }
 
 export async function searchWorkitemsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   category: string,
   spaceId: string,
   subject?: string,
@@ -98,7 +107,10 @@ export async function searchWorkitemsFunc(
     }
   }
 
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitems:search`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems:search`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems:search`;
 
   const payload: Record<string, any> = {
     category: category,
@@ -219,7 +231,7 @@ export async function searchWorkitemsFunc(
 
     if (itemsNeedingDetails.length > 0) {
       // 分批并发获取详情
-      const descriptionMap = await batchGetWorkItemDetails(organizationId, itemsNeedingDetails);
+      const descriptionMap = await batchGetWorkItemDetails(finalOrgId, itemsNeedingDetails);
 
       // 更新workItems中的description
       const updatedItems = workItems.map(item => {
@@ -530,7 +542,7 @@ function buildWorkitemConditions(args: {
 } 
 
 export async function createWorkItemFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     assignedTo: string,
     spaceId: string,
     subject: string,
@@ -545,7 +557,10 @@ export async function createWorkItemFunc(
     verifier?: string | undefined,
     versions?: string[] | undefined
 ): Promise<z.infer<typeof WorkItemSchema>> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitems`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems`;
 
   const payload: Record<string, any> = {
     assignedTo,
@@ -599,11 +614,14 @@ export async function createWorkItemFunc(
 }
 
 export async function updateWorkItemFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     workItemId: string,
     updateWorkItemFields: UpdateWorkItemField
 ): Promise<void> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitems/${workItemId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}`;
 
   // 构建请求体，将自定义字段合并到主对象中
   const requestBody: Record<string, any> = {};
@@ -658,11 +676,14 @@ export async function updateWorkItemFunc(
 }
 
 export async function getWorkItemTypesFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: string, // 项目唯一标识
   category: string // 工作项类型，可选值为 Req，Bug，Task 等。
 ): Promise<WorkItemType[]> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/projects/${id}/workitemTypes?category=${encodeURIComponent(category)}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${id}/workitemTypes?category=${encodeURIComponent(category)}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${id}/workitemTypes?category=${encodeURIComponent(category)}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -677,9 +698,12 @@ export async function getWorkItemTypesFunc(
  * @returns 工作项类型列表
  */
 export async function listAllWorkItemTypesFunc(
-  organizationId: string
+  organizationId: string | undefined
 ): Promise<WorkItemTypeDetail[]> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitemTypes`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitemTypes`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitemTypes`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -707,11 +731,14 @@ export async function listAllWorkItemTypesFunc(
  * @returns 工作项类型列表
  */
 export async function listWorkItemTypesFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   spaceIdentifier: string,
   category?: string
 ): Promise<WorkItemTypeDetail[]> {
-  let url = `/oapi/v1/projex/organizations/${organizationId}/projects/${spaceIdentifier}/workitemTypes`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  let url = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${spaceIdentifier}/workitemTypes`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${spaceIdentifier}/workitemTypes`;
   
   // 如果提供了category参数，则添加到URL中
   if (category) {
@@ -744,10 +771,13 @@ export async function listWorkItemTypesFunc(
  * @returns 工作项类型详情
  */
 export async function getWorkItemTypeFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: string
 ): Promise<WorkItemTypeDetail> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitemTypes/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitemTypes/${id}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitemTypes/${id}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -771,11 +801,14 @@ export async function getWorkItemTypeFunc(
  * @returns 关联的工作项类型列表
  */
 export async function listWorkItemRelationWorkItemTypesFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   workItemTypeId: string,
   relationType?: string
 ): Promise<WorkItemTypeDetail[]> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitemTypes/${workItemTypeId}/relationWorkitemTypes`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitemTypes/${workItemTypeId}/relationWorkitemTypes`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitemTypes/${workItemTypeId}/relationWorkitemTypes`;
 
   const queryParams: Record<string, string | number | undefined> = {};
   if (relationType != null) {
@@ -809,11 +842,14 @@ export async function listWorkItemRelationWorkItemTypesFunc(
  * @returns 工作项类型字段配置
  */
 export async function getWorkItemTypeFieldConfigFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   projectId: string,
   workItemTypeId: string
 ): Promise<WorkItemTypeFieldConfig> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/projects/${projectId}/workitemTypes/${workItemTypeId}/fields`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${projectId}/workitemTypes/${workItemTypeId}/fields`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${projectId}/workitemTypes/${workItemTypeId}/fields`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -836,11 +872,14 @@ export async function getWorkItemTypeFieldConfigFunc(
  * @returns 工作项工作流信息
  */
 export async function getWorkItemWorkflowFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   projectId: string,
   workItemTypeId: string
 ): Promise<WorkItemWorkflow> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/projects/${projectId}/workitemTypes/${workItemTypeId}/workflows`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${projectId}/workitemTypes/${workItemTypeId}/workflows`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${projectId}/workitemTypes/${workItemTypeId}/workflows`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -864,12 +903,15 @@ export async function getWorkItemWorkflowFunc(
  * @returns 工作项评论列表
  */
 export async function listWorkItemCommentsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   workItemId: string,
   page: number = 1,
   perPage: number = 20
 ): Promise<any[]> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitems/${workItemId}/comments?page=${page}&perPage=${perPage}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/comments?page=${page}&perPage=${perPage}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/comments?page=${page}&perPage=${perPage}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -897,11 +939,14 @@ export async function listWorkItemCommentsFunc(
  * @returns 创建的评论信息
  */
 export async function createWorkItemCommentFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   workItemId: string,
   content: string
 ): Promise<any> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/workitems/${workItemId}/comments`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/comments`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/comments`;
 
   const payload = {
     content: content

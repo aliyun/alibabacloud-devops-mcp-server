@@ -8,7 +8,8 @@
  */
 
 import { z } from "zod";
-import { yunxiaoRequest } from "../../common/utils.js";
+import { yunxiaoRequest, isRegionEdition } from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import {
   ProjectInfoSchema,
   FilterConditionSchema,
@@ -21,10 +22,13 @@ import {
  * @param id
  */
 export async function getProjectFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: string
 ): Promise<z.infer<typeof ProjectInfoSchema>> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/projects/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${id}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${id}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -53,7 +57,7 @@ export async function getProjectFunc(
  * @param userId
  */
 export async function searchProjectsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   name?: string,
   status?: string,
   createdAfter?: string,
@@ -70,7 +74,10 @@ export async function searchProjectsFunc(
   scenarioFilter?: "manage" | "participate" | "favorite", // Common project filter scenarios
   userId?: string // User ID to use with scenarioFilter
 ): Promise<z.infer<typeof ProjectInfoSchema>[]> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/projects:search`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/projects:search`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects:search`;
 
   const payload: Record<string, any> = {};
 

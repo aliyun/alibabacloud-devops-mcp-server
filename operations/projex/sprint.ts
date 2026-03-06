@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { yunxiaoRequest, buildUrl } from "../../common/utils.js";
+import { yunxiaoRequest, buildUrl, isRegionEdition } from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import {
   SprintInfoSchema
 } from "./types.js";
@@ -10,11 +11,14 @@ const CreateSprintResponseSchema = z.object({
 });
 
 export async function getSprintFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   projectId: string,
   id: string
 ): Promise<z.infer<typeof SprintInfoSchema>> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/projects/${projectId}/sprints/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${projectId}/sprints/${id}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${projectId}/sprints/${id}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -24,13 +28,16 @@ export async function getSprintFunc(
 }
 
 export async function listSprintsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: string,
   status?: string[],
   page?: number,
   perPage?: number
 ): Promise<z.infer<typeof SprintInfoSchema>[]> {
-  const baseUrl = `/oapi/v1/projex/organizations/${organizationId}/projects/${id}/sprints`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${id}/sprints`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${id}/sprints`;
 
   const queryParams: Record<string, string | number | undefined> = {};
 
@@ -60,7 +67,7 @@ export async function listSprintsFunc(
 }
 
 export async function createSprintFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   projectId: string,
   name: string,
   owners: string[],
@@ -70,7 +77,10 @@ export async function createSprintFunc(
   capacityHours?: number,
   operatorId?: string
 ): Promise<{ id: string }> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/projects/${projectId}/sprints`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${projectId}/sprints`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${projectId}/sprints`;
 
   const requestBody: Record<string, any> = {
     name,
@@ -106,7 +116,7 @@ export async function createSprintFunc(
 }
 
 export async function updateSprintFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   projectId: string,
   id: string,
   name: string,
@@ -117,7 +127,10 @@ export async function updateSprintFunc(
   capacityHours?: number,
   operatorId?: string
 ): Promise<void> {
-  const url = `/oapi/v1/projex/organizations/${organizationId}/projects/${projectId}/sprints/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/projects/${projectId}/sprints/${id}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/projects/${projectId}/sprints/${id}`;
 
   const requestBody: Record<string, any> = {
     name,

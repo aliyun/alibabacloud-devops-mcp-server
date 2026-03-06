@@ -1,0 +1,10 @@
+{
+  "name": "alibabacloud-devops-mcp-server",
+  "command": "node",
+  "args": [
+    "dist/index.js"
+  ],
+  "env": {
+    "YUNXIAO_ACCESS_TOKEN": "pt-nV4N64k2jKwLnyQ9qxixexXD_152714c6-12c5-4605-8dca-3ecbb0a4060c"
+  }
+}
