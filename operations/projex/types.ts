@@ -67,7 +67,8 @@ export const ProjectInfoSchema = z.object({
 
 // Sprint related types
 export const SprintInfoSchema = z.object({
-  identifier: z.string().optional().describe("Sprint identifier"),
+  id: z.string().optional().describe("Sprint unique identifier"),
+  identifier: z.string().optional().describe("Sprint identifier (alias for id)"),
   name: z.string().optional().describe("Sprint name"),
   goal: z.string().optional().describe("Sprint goal"),
   startDate: z.number().nullable().optional().describe("Start date"),
