@@ -9,7 +9,8 @@
  */
 
 import { z } from "zod";
-import {yunxiaoRequest, buildUrl, handleRepositoryIdEncoding} from "../../common/utils.js";
+import {yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, isRegionEdition} from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { 
   RepositorySchema
 } from "./types.js";
@@ -21,12 +22,15 @@ import {
  * @param repositoryId
  */
 export async function getRepositoryFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string
 ): Promise<z.infer<typeof RepositorySchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -46,7 +50,7 @@ export async function getRepositoryFunc(
  * @param archived
  */
 export async function listRepositoriesFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   page?: number,
   perPage?: number,
   orderBy?: string,
@@ -54,7 +58,10 @@ export async function listRepositoriesFunc(
   search?: string,
   archived?: boolean
 ): Promise<z.infer<typeof RepositorySchema>[]> {
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/repositories`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories`;
 
   const queryParams: Record<string, string | number | undefined> = {};
   
