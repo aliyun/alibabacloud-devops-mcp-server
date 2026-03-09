@@ -1,5 +1,6 @@
 import { z } from "zod";
-import {yunxiaoRequest, buildUrl, pathEscape} from "../../common/utils.js";
+import {yunxiaoRequest, buildUrl, pathEscape, isRegionEdition} from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { 
   FileContentSchema, 
   CreateFileResponseSchema, 
@@ -44,11 +45,12 @@ function handlePathEncoding(repositoryId: string, filePath: string): { encodedRe
  * @param ref
  */
 export async function getFileBlobsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   filePath: string,
   ref: string
 ): Promise<z.infer<typeof FileContentSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   // const { encodedRepoId, encodedFilePath } = handlePathEncoding(repositoryId, filePath);
   let encodedRepoId = repositoryId;
   let encodedFilePath = filePath;
@@ -69,7 +71,9 @@ export async function getFileBlobsFunc(
     encodedFilePath = encodeURIComponent(filePath);
   }
 
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/files/${encodedFilePath}`;
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/files/${encodedFilePath}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/files/${encodedFilePath}`;
   
   // 构建查询参数
   const queryParams: Record<string, string | number | undefined> = {
@@ -97,7 +101,7 @@ export async function getFileBlobsFunc(
  * @param encoding
  */
 export async function createFileFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   filePath: string,
   content: string,
@@ -105,6 +109,7 @@ export async function createFileFunc(
   branch: string,
   encoding?: string
 ): Promise<z.infer<typeof CreateFileResponseSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   let encodedRepoId = repositoryId;
   let encodedFilePath = filePath;
 
@@ -124,7 +129,9 @@ export async function createFileFunc(
     encodedFilePath = pathEscape(filePath);
   }
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/files`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/files`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/files`;
 
   const body = {
     branch: branch,
@@ -153,7 +160,7 @@ export async function createFileFunc(
  * @param encoding
  */
 export async function updateFileFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   filePath: string,
   content: string,
@@ -161,6 +168,7 @@ export async function updateFileFunc(
   branch: string,
   encoding?: string
 ): Promise<z.infer<typeof CreateFileResponseSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   //const { encodedRepoId, encodedFilePath } = handlePathEncoding(repositoryId, filePath);
   let encodedRepoId = repositoryId;
   let encodedFilePath = filePath;
@@ -183,7 +191,9 @@ export async function updateFileFunc(
     encodedFilePath = encodeURIComponent(pathToEncode);
   }
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/files/${encodedFilePath}`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/files/${encodedFilePath}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/files/${encodedFilePath}`;
 
   const body = {
     branch: branch,
@@ -209,12 +219,13 @@ export async function updateFileFunc(
  * @param branch
  */
 export async function deleteFileFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   filePath: string,
   commitMessage: string,
   branch: string
 ): Promise<z.infer<typeof DeleteFileResponseSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   let encodedRepoId = repositoryId;
   let encodedFilePath = filePath;
 
@@ -234,7 +245,9 @@ export async function deleteFileFunc(
     encodedFilePath = encodeURIComponent(filePath);
   }
 
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/files/${encodedFilePath}`;
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/files/${encodedFilePath}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/files/${encodedFilePath}`;
   
   // 构建查询参数
   const queryParams: Record<string, string | number | undefined> = {
@@ -261,12 +274,13 @@ export async function deleteFileFunc(
  * @param type
  */
 export async function listFilesFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   path?: string,
   ref?: string,
   type?: string // Possible values: DIRECT, RECURSIVE, FLATTEN
 ): Promise<z.infer<typeof FileInfoSchema>[]> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   // 自动处理repositoryId中未编码的斜杠
   let encodedRepoId = repositoryId;
   if (repositoryId.includes("/")) {
@@ -280,7 +294,9 @@ export async function listFilesFunc(
     }
   }
 
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/files/tree`;
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/files/tree`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/files/tree`;
   
   // 构建查询参数
   const queryParams: Record<string, string | number | undefined> = {};
