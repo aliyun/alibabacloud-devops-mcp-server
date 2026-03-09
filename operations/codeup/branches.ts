@@ -1,5 +1,6 @@
 import { z } from "zod";
-import {buildUrl, yunxiaoRequest} from "../../common/utils.js";
+import {buildUrl, yunxiaoRequest, isRegionEdition} from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import {
   CodeupBranchSchema
 } from "./types.js";
@@ -17,11 +18,12 @@ interface DeleteBranchResponse {
  * @param ref
  */
 export async function createBranchFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     repositoryId: string,
     branch: string,
     ref: string = "master"
 ): Promise<z.infer<typeof CodeupBranchSchema>>{
+  const finalOrgId = await resolveOrganizationId(organizationId);
   // Automatically handle unencoded slashes in repositoryId
   if (repositoryId.includes("/")) {
     // Found unencoded slash, automatically URL encode it
@@ -34,7 +36,9 @@ export async function createBranchFunc(
     }
   }
 
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${repositoryId}/branches`;
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${repositoryId}/branches`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${repositoryId}/branches`;
 
   // Build query parameters
   const queryParams: Record<string, string | number | undefined> = {
@@ -58,10 +62,11 @@ export async function createBranchFunc(
  * @param branchName
  */
 export async function getBranchFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     repositoryId: string,
     branchName: string
 ): Promise<z.infer<typeof CodeupBranchSchema>>{
+  const finalOrgId = await resolveOrganizationId(organizationId);
   // Automatically handle unencoded slashes in repositoryId
   if (repositoryId.includes("/")) {
     // Found unencoded slash, automatically URL encode it
@@ -79,7 +84,9 @@ export async function getBranchFunc(
     branchName = encodeURIComponent(branchName);
   }
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${repositoryId}/branches/${branchName}`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${repositoryId}/branches/${branchName}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${repositoryId}/branches/${branchName}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -94,10 +101,11 @@ export async function getBranchFunc(
  * @param branchName
  */
 export async function deleteBranchFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     repositoryId: string,
     branchName: string
 ): Promise<DeleteBranchResponse> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   // Automatically handle unencoded slashes in repositoryId
   if (repositoryId.includes("/")) {
     // Found unencoded slash, automatically URL encode it
@@ -115,7 +123,9 @@ export async function deleteBranchFunc(
     branchName = encodeURIComponent(branchName);
   }
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${repositoryId}/branches/${branchName}`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${repositoryId}/branches/${branchName}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${repositoryId}/branches/${branchName}`;
 
   const response = await yunxiaoRequest(url, {
     method: "DELETE",
@@ -136,13 +146,14 @@ export async function deleteBranchFunc(
  * @param search
  */
 export async function listBranchesFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     repositoryId: string,
     page?: number,
     perPage?: number,
     sort?: string, // Possible values: name_asc, name_desc, updated_asc, updated_desc
     search?: string
 ): Promise<z.infer<typeof CodeupBranchSchema>[]> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   console.error("listBranchesFunc page:" + page + " perPage:" + perPage + " sort:" + sort + " search:" + search);
   // Automatically handle unencoded slashes in repositoryId
   if (repositoryId.includes("/")) {
@@ -156,7 +167,9 @@ export async function listBranchesFunc(
     }
   }
 
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${repositoryId}/branches`;
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${repositoryId}/branches`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${repositoryId}/branches`;
 
   // Build query parameters - use lowercase parameter names as expected by the API
   const queryParams: Record<string, string | number | undefined> = {};

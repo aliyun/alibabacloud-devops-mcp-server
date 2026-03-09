@@ -1,13 +1,17 @@
 import { z } from "zod";
-import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, floatToIntString } from "../../common/utils.js";
+import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, floatToIntString, isRegionEdition } from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { 
   ChangeRequestSchema, 
   PatchSetSchema
 } from "./types.js";
 
 // 通过API获取仓库的数字ID
-async function getRepositoryNumericId(organizationId: string, repositoryId: string): Promise<string> {
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${repositoryId}`;
+async function getRepositoryNumericId(organizationId: string | undefined, repositoryId: string): Promise<string> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${repositoryId}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${repositoryId}`;
   
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -33,13 +37,16 @@ async function getRepositoryNumericId(organizationId: string, repositoryId: stri
  * @param localId 合并请求局部ID，示例：'1'
  */
 export async function getChangeRequestFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   localId: string
 ): Promise<z.infer<typeof ChangeRequestSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/changeRequests/${localId}`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -66,7 +73,7 @@ export async function getChangeRequestFunc(
  * @param createdAfter 截止创建时间，ISO 8601格式，示例：'2024-04-05T15:30:45Z'
  */
 export async function listChangeRequestsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   page?: number,
   perPage?: number,
   projectIds?: string,
@@ -79,7 +86,10 @@ export async function listChangeRequestsFunc(
   createdBefore?: string,
   createdAfter?: string
 ): Promise<z.infer<typeof ChangeRequestSchema>[]> {
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/changeRequests`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/changeRequests`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/changeRequests`;
   
   // 构建查询参数
   const queryParams: Record<string, string | number | undefined> = {};
@@ -153,13 +163,16 @@ export async function listChangeRequestsFunc(
  * @param localId 合并请求局部ID，示例：'1'
  */
 export async function listChangeRequestPatchSetsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   localId: string
 ): Promise<z.infer<typeof PatchSetSchema>[]> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/changeRequests/${localId}/diffs/patches`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}/diffs/patches`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}/diffs/patches`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -191,7 +204,7 @@ export async function listChangeRequestPatchSetsFunc(
  * @param triggerAIReviewRun 是否触发AI评审，默认 false
  */
 export async function createChangeRequestFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   title: string,
   sourceBranch: string,
@@ -204,6 +217,7 @@ export async function createChangeRequestFunc(
   createFrom: string = "WEB", // Possible values: WEB, COMMAND_LINE
   triggerAIReviewRun: boolean = false // Whether to trigger AI review
 ): Promise<z.infer<typeof ChangeRequestSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
   
   // 检查和获取sourceProjectId和targetProjectId
@@ -253,7 +267,9 @@ export async function createChangeRequestFunc(
     throw new Error("Could not get targetProjectId, please provide this parameter manually");
   }
   
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/changeRequests`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests`;
   
   // 准备payload
   const payload: Record<string, any> = {
