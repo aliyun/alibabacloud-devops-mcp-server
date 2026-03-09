@@ -1,12 +1,13 @@
 import { z } from "zod";
-import {yunxiaoRequest, buildUrl, handleRepositoryIdEncoding} from "../../common/utils.js";
+import {yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, isRegionEdition} from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { 
   CompareSchema
 } from "./types.js";
 
 
 export async function getCompareFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   from: string,
   to: string,
@@ -14,9 +15,12 @@ export async function getCompareFunc(
   targetType?: string, // Possible values: branch, tag
   straight?: string
 ): Promise<z.infer<typeof CompareSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/compares`;
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/compares`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/compares`;
 
   const queryParams: Record<string, string | undefined> = {
     from,
