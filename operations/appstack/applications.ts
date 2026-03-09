@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 import { YunxiaoError } from '../../common/errors.js';
 
 // Schema for the ListApplications API
@@ -91,6 +92,7 @@ export type UpdateApplicationResponse = z.infer<typeof UpdateApplicationResponse
  */
 export async function listApplications(params: ListApplicationsRequest): Promise<ListApplicationsResponse> {
   const { organizationId, ...queryParams } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {};
@@ -102,7 +104,10 @@ export async function listApplications(params: ListApplicationsRequest): Promise
   
   try {
     // Build the full URL with query parameters
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/apps:search`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps:search`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps:search`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,
@@ -124,10 +129,14 @@ export async function listApplications(params: ListApplicationsRequest): Promise
  */
 export async function getApplication(params: GetApplicationRequest): Promise<GetApplicationResponse> {
   const { organizationId, appName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}`,
+      url,
       {
         method: 'GET',
       }
@@ -146,10 +155,14 @@ export async function getApplication(params: GetApplicationRequest): Promise<Get
  */
 export async function createApplication(params: CreateApplicationRequest): Promise<CreateApplicationResponse> {
   const { organizationId, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps`,
+      url,
       {
         method: 'POST',
         body: body,
@@ -169,10 +182,14 @@ export async function createApplication(params: CreateApplicationRequest): Promi
  */
 export async function updateApplication(params: UpdateApplicationRequest): Promise<UpdateApplicationResponse> {
   const { organizationId, appName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}`,
+      url,
       {
         method: 'PUT',
         body: body,
