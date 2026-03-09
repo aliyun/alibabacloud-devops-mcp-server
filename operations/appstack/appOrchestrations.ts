@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Define the referenced schemas based on their usage
 // Since we can't find the full definitions, we'll create simplified versions
@@ -156,10 +157,14 @@ export type UpdateAppOrchestrationResponse = z.infer<typeof UpdateAppOrchestrati
  */
 export async function getLatestOrchestration(params: GetLatestOrchestrationRequest): Promise<GetLatestOrchestrationResponse> {
   const { organizationId, appName, envName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/envs/${envName}/orchestration:latestAvailable`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/envs/${envName}/orchestration:latestAvailable`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/envs/${envName}/orchestration:latestAvailable`,
+      url,
       {
         method: 'GET',
       }
@@ -178,10 +183,14 @@ export async function getLatestOrchestration(params: GetLatestOrchestrationReque
  */
 export async function listAppOrchestration(params: ListAppOrchestrationRequest): Promise<ListAppOrchestrationResponse> {
   const { organizationId, appName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/orchestrations`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/orchestrations`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/orchestrations`,
+      url,
       {
         method: 'GET',
       }
@@ -200,10 +209,14 @@ export async function listAppOrchestration(params: ListAppOrchestrationRequest):
  */
 export async function createAppOrchestration(params: CreateAppOrchestrationRequest): Promise<CreateAppOrchestrationResponse> {
   const { organizationId, appName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/orchestrations`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/orchestrations`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/orchestrations`,
+      url,
       {
         method: 'POST',
         body: body,
@@ -223,10 +236,14 @@ export async function createAppOrchestration(params: CreateAppOrchestrationReque
  */
 export async function deleteAppOrchestration(params: DeleteAppOrchestrationRequest): Promise<DeleteAppOrchestrationResponse> {
   const { organizationId, appName, sn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/orchestrations/${sn}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/orchestrations/${sn}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/orchestrations/${sn}`,
+      url,
       {
         method: 'DELETE',
       }
@@ -245,6 +262,7 @@ export async function deleteAppOrchestration(params: DeleteAppOrchestrationReque
  */
 export async function getAppOrchestration(params: GetAppOrchestrationRequest): Promise<GetAppOrchestrationResponse> {
   const { organizationId, appName, sn, tagName, sha } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {};
@@ -252,7 +270,10 @@ export async function getAppOrchestration(params: GetAppOrchestrationRequest): P
   if (sha) query.sha = sha;
   
   try {
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/orchestrations/${sn}`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/orchestrations/${sn}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/orchestrations/${sn}`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,
@@ -274,10 +295,14 @@ export async function getAppOrchestration(params: GetAppOrchestrationRequest): P
  */
 export async function updateAppOrchestration(params: UpdateAppOrchestrationRequest): Promise<UpdateAppOrchestrationResponse> {
   const { organizationId, appName, sn, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/orchestrations/${sn}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/orchestrations/${sn}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/orchestrations/${sn}`,
+      url,
       {
         method: 'PUT',
         body: body,

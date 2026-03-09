@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Schema for the CreateAppTag API
 export const CreateAppTagRequestSchema = z.object({
@@ -74,10 +75,14 @@ export type UpdateAppTagBindRequest = z.infer<typeof UpdateAppTagBindRequestSche
  */
 export async function createAppTag(params: CreateAppTagRequest): Promise<CreateAppTagResponse> {
   const { organizationId, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/appTags`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/appTags`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/appTags`,
+      url,
       {
         method: 'POST',
         body: body,
@@ -97,10 +102,14 @@ export async function createAppTag(params: CreateAppTagRequest): Promise<CreateA
  */
 export async function updateAppTag(params: UpdateAppTagRequest): Promise<UpdateAppTagResponse> {
   const { organizationId, name, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/appTags/updateTag?name=${name}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/appTags/updateTag?name=${name}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/appTags/updateTag?name=${name}`,
+      url,
       {
         method: 'PUT',
         body: body,
@@ -119,10 +128,14 @@ export async function updateAppTag(params: UpdateAppTagRequest): Promise<UpdateA
  */
 export async function deleteAppTag(params: DeleteAppTagRequest): Promise<void> {
   const { organizationId, name } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/appTags/deleteTag?name=${name}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/appTags/deleteTag?name=${name}`;
     await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/appTags/deleteTag?name=${name}`,
+      url,
       {
         method: 'DELETE',
       }
@@ -140,6 +153,7 @@ export async function deleteAppTag(params: DeleteAppTagRequest): Promise<void> {
  */
 export async function searchAppTag(params: SearchAppTagRequest): Promise<SearchAppTagResponse> {
   const { organizationId, current, pageSize, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {};
@@ -147,7 +161,10 @@ export async function searchAppTag(params: SearchAppTagRequest): Promise<SearchA
   if (pageSize) query.pageSize = pageSize;
   
   try {
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/appTags:search`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/appTags:search`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/appTags:search`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,
@@ -169,10 +186,14 @@ export async function searchAppTag(params: SearchAppTagRequest): Promise<SearchA
  */
 export async function updateAppTagBind(params: UpdateAppTagBindRequest): Promise<void> {
   const { organizationId, appName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/appTags`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/appTags`;
     await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/appTags`,
+      url,
       {
         method: 'PUT',
         body: body,

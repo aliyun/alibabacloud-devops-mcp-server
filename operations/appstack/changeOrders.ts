@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Schema for EnvDeployRequest
 export const EnvDeployRequestSchema = z.object({
@@ -183,10 +184,14 @@ export type ListChangeOrdersByOriginResponse = z.infer<typeof ListChangeOrdersBy
  */
 export async function createChangeOrder(params: CreateChangeOrderRequest): Promise<CreateChangeOrderResponse> {
   const { organizationId, appName, changeOrder } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeOrders`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeOrders`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeOrders`,
+      url,
       {
         method: 'POST',
         body: changeOrder,
@@ -206,6 +211,7 @@ export async function createChangeOrder(params: CreateChangeOrderRequest): Promi
  */
 export async function listChangeOrderVersions(params: ListChangeOrderVersionsRequest): Promise<ListChangeOrderVersionsResponse> {
   const { organizationId, appName, envNames, creators, current, pageSize } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
     const query: Record<string, any> = {
@@ -221,7 +227,10 @@ export async function listChangeOrderVersions(params: ListChangeOrderVersionsReq
       query.creators = creators;
     }
     
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeOrders/versions`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeOrders/versions`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeOrders/versions`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(url, {
       method: 'GET',
@@ -240,10 +249,14 @@ export async function listChangeOrderVersions(params: ListChangeOrderVersionsReq
  */
 export async function getChangeOrder(params: GetChangeOrderRequest): Promise<GetChangeOrderResponse> {
   const { organizationId, appName, changeOrderSn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeOrders/${changeOrderSn}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeOrders/${changeOrderSn}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeOrders/${changeOrderSn}`,
+      url,
       {
         method: 'GET',
       }
@@ -262,9 +275,13 @@ export async function getChangeOrder(params: GetChangeOrderRequest): Promise<Get
  */
 export async function listChangeOrderJobLogs(params: ListChangeOrderJobLogsRequest): Promise<ListChangeOrderJobLogsResponse> {
   const { organizationId, appName, changeOrderSn, jobSn, current, pageSize } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}/logs`, {
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}/logs`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}/logs`;
+    const url = buildUrl(baseUrl, {
       current,
       pageSize
     });
@@ -286,10 +303,14 @@ export async function listChangeOrderJobLogs(params: ListChangeOrderJobLogsReque
  */
 export async function findTaskOperationLog(params: FindTaskOperationLogRequest): Promise<FindTaskOperationLogResponse> {
   const { organizationId, appName, changeOrderSn, jobSn, stageSn, taskSn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}/stages/${stageSn}/tasks/${taskSn}/operationLog`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}/stages/${stageSn}/tasks/${taskSn}/operationLog`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}/stages/${stageSn}/tasks/${taskSn}/operationLog`,
+      url,
       {
         method: 'GET',
       }
@@ -308,10 +329,14 @@ export async function findTaskOperationLog(params: FindTaskOperationLogRequest):
  */
 export async function executeJobAction(params: ExecuteJobActionRequest): Promise<ExecuteJobActionResponse> {
   const { organizationId, appName, changeOrderSn, jobSn, action } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}:execute`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}:execute`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeOrders/${changeOrderSn}/jobs/${jobSn}:execute`,
+      url,
       {
         method: 'PUT',
         body: action,
@@ -331,6 +356,7 @@ export async function executeJobAction(params: ExecuteJobActionRequest): Promise
  */
 export async function listChangeOrdersByOrigin(params: ListChangeOrdersByOriginRequest): Promise<ListChangeOrdersByOriginResponse> {
   const { organizationId, originType, originId, appName, envName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
     const query: Record<string, any> = {
@@ -346,7 +372,10 @@ export async function listChangeOrdersByOrigin(params: ListChangeOrdersByOriginR
       query.envName = envName;
     }
     
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/changeOrders:byOrigin`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/changeOrders:byOrigin`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/changeOrders:byOrigin`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(url, {
       method: 'GET',

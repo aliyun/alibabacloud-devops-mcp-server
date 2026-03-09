@@ -4,8 +4,8 @@ import {
   GetOrganizationMemberInfo,
   MemberInfoSchema, SearchOrganizationMembersResult, SearchOrganizationMembersResultSchema,
 } from './types.js';
-import {buildUrl, yunxiaoRequest} from "../../common/utils.js";
-import {debug} from "util";
+import {buildUrl, yunxiaoRequest, isRegionEdition} from "../../common/utils.js";
+import {resolveOrganizationId} from "./organization.js";
 
 /**
  * 查询组织成员列表
@@ -15,12 +15,15 @@ import {debug} from "util";
  * @returns 组织成员列表
  */
 export const getOrganizationMembersFunc = async (
-  organizationId: string,
+  organizationId: string | undefined,
   page: number = 1,
   perPage: number = 100
 ): Promise<OrganizationMembers> => {
+  const finalOrgId = await resolveOrganizationId(organizationId);
 
-  const url = `/oapi/v1/platform/organizations/${organizationId}/members`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/platform/members`
+    : `/oapi/v1/platform/organizations/${finalOrgId}/members`;
 
   const params = {
     page: page,
@@ -43,12 +46,13 @@ export const getOrganizationMembersFunc = async (
  * @returns 组织成员详细信息
  */
 export const getOrganizationMemberInfoFunc = async (
-  organizationId: string,
+  organizationId: string | undefined,
   memberId: string
 ): Promise<GetOrganizationMemberInfo> => {
-  const url = `/oapi/v1/platform/organizations/${organizationId}/members/${memberId}`;
-
-  console.log("aaa", url)
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/platform/members/${memberId}`
+    : `/oapi/v1/platform/organizations/${finalOrgId}/members/${memberId}`;
   const response = await yunxiaoRequest(url, {
     method: "GET",
   });
@@ -70,7 +74,7 @@ export const getOrganizationMemberInfoFunc = async (
  * @returns 搜索到的组织成员列表
  */
 export const searchOrganizationMembersFunc = async (
-    organizationId: string,
+    organizationId: string | undefined,
     includeChildren: boolean = false,
     page: number = 1,
     perPage: number = 100,
@@ -81,7 +85,10 @@ export const searchOrganizationMembersFunc = async (
     statuses?: string[],
 
 ): Promise<SearchOrganizationMembersResult> => {
-  const url = `/oapi/v1/platform/organizations/${organizationId}/members:search`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/platform/members:search`
+    : `/oapi/v1/platform/organizations/${finalOrgId}/members:search`;
 
   const payload: Record<string, any> = {
     page: page,
@@ -124,10 +131,13 @@ export const searchOrganizationMembersFunc = async (
  * @returns 组织成员详细信息
  */
 export const getOrganizationMemberByUserIdInfoFunc = async (
-  organizationId: string,
+  organizationId: string | undefined,
   userId: string
 ): Promise<GetOrganizationMemberInfo> => {
-  const url = `/oapi/v1/platform/organizations/${organizationId}/members:readByUser`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/platform/members:readByUser`
+    : `/oapi/v1/platform/organizations/${finalOrgId}/members:readByUser`;
   const params = {
     userId: userId
   };

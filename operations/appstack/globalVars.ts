@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Define the referenced schemas based on their usage
 const VariableSchema = z.object({
@@ -127,10 +128,14 @@ export type ListGlobalVarsResponse = z.infer<typeof ListGlobalVarsResponseSchema
  */
 export async function createGlobalVar(params: CreateGlobalVarRequest): Promise<CreateGlobalVarResponse> {
   const { organizationId, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/globalVars`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/globalVars`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/globalVars`,
+      url,
       {
         method: 'POST',
         body: body,
@@ -150,10 +155,14 @@ export async function createGlobalVar(params: CreateGlobalVarRequest): Promise<C
  */
 export async function deleteGlobalVar(params: DeleteGlobalVarRequest): Promise<DeleteGlobalVarResponse> {
   const { organizationId, name } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/globalVars/${name}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/globalVars/${name}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/globalVars/${name}`,
+      url,
       {
         method: 'DELETE',
       }
@@ -172,13 +181,17 @@ export async function deleteGlobalVar(params: DeleteGlobalVarRequest): Promise<D
  */
 export async function getGlobalVar(params: GetGlobalVarRequest): Promise<GetGlobalVarResponse> {
   const { organizationId, name, revisionSha } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {};
   if (revisionSha) query.revisionSha = revisionSha;
   
   try {
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/globalVars/${name}`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/globalVars/${name}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/globalVars/${name}`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,
@@ -200,10 +213,14 @@ export async function getGlobalVar(params: GetGlobalVarRequest): Promise<GetGlob
  */
 export async function updateGlobalVar(params: UpdateGlobalVarRequest): Promise<UpdateGlobalVarResponse> {
   const { organizationId, name, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/globalVars/${name}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/globalVars/${name}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/globalVars/${name}`,
+      url,
       {
         method: 'PUT',
         body: body,
@@ -223,6 +240,7 @@ export async function updateGlobalVar(params: UpdateGlobalVarRequest): Promise<U
  */
 export async function listGlobalVars(params: ListGlobalVarsRequest): Promise<ListGlobalVarsResponse> {
   const { organizationId, current, pageSize, search } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {
@@ -231,7 +249,10 @@ export async function listGlobalVars(params: ListGlobalVarsRequest): Promise<Lis
   };
   
   try {
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/globalVars:search`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/globalVars:search`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/globalVars:search`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,

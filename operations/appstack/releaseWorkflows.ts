@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Schema for Label
 export const LabelSchema = z.object({
@@ -137,10 +138,14 @@ export type ExecuteReleaseStageResponse = z.infer<typeof ExecuteReleaseStageResp
  */
 export async function listSystemAllReleaseWorkflows(params: ListSystemAllReleaseWorkflowsRequest): Promise<ListSystemAllReleaseWorkflowsResponse> {
   const { organizationId, systemName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/systems/${systemName}/releaseWorkflows`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/systems/${systemName}/releaseWorkflows`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/systems/${systemName}/releaseWorkflows`,
+      url,
       {
         method: 'GET',
       }
@@ -159,10 +164,14 @@ export async function listSystemAllReleaseWorkflows(params: ListSystemAllRelease
  */
 export async function createSystemReleaseWorkflows(params: CreateSystemReleaseWorkflowsRequest): Promise<CreateSystemReleaseWorkflowsResponse> {
   const { organizationId, systemName, workflow } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/systems/${systemName}/releaseWorkflows`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/systems/${systemName}/releaseWorkflows`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/systems/${systemName}/releaseWorkflows`,
+      url,
       {
         method: 'POST',
         body: workflow,
@@ -182,10 +191,14 @@ export async function createSystemReleaseWorkflows(params: CreateSystemReleaseWo
  */
 export async function updateSystemReleaseStage(params: UpdateSystemReleaseStageRequest): Promise<UpdateSystemReleaseStageResponse> {
   const { organizationId, systemName, releaseWorkflowSn, releaseStageSn, stage } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/systems/${systemName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/systems/${systemName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/systems/${systemName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}`,
+      url,
       {
         method: 'PUT',
         body: stage,
@@ -205,10 +218,14 @@ export async function updateSystemReleaseStage(params: UpdateSystemReleaseStageR
  */
 export async function executeReleaseStage(params: ExecuteReleaseStageRequest): Promise<ExecuteReleaseStageResponse> {
   const { organizationId, systemName, releaseWorkflowSn, releaseStageSn, execution } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/systems/${systemName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}:execute`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/systems/${systemName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}:execute`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/systems/${systemName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}:execute`,
+      url,
       {
         method: 'POST',
         body: execution,
@@ -386,10 +403,14 @@ export type SkipChangeRequestStagePipelineResponse = z.infer<typeof SkipChangeRe
  */
 export async function listAllReleaseWorkflows(params: ListAllReleaseWorkflowsRequest): Promise<ListAllReleaseWorkflowsResponse> {
   const { organizationId, appName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows`,
+      url,
       {
         method: 'GET',
       }
@@ -405,10 +426,14 @@ export async function listAllReleaseWorkflows(params: ListAllReleaseWorkflowsReq
  */
 export async function listAllReleaseWorkflowBriefs(params: ListAllReleaseWorkflowBriefsRequest): Promise<ListAllReleaseWorkflowBriefsResponse> {
   const { organizationId, appName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflowBriefs`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflowBriefs`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflowBriefs`,
+      url,
       {
         method: 'GET',
       }
@@ -424,10 +449,14 @@ export async function listAllReleaseWorkflowBriefs(params: ListAllReleaseWorkflo
  */
 export async function getReleaseWorkflowStage(params: GetReleaseWorkflowStageRequest): Promise<GetReleaseWorkflowStageResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflow/${releaseWorkflowSn}/releaseStage/${releaseStageSn}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflow/${releaseWorkflowSn}/releaseStage/${releaseStageSn}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflow/${releaseWorkflowSn}/releaseStage/${releaseStageSn}`,
+      url,
       {
         method: 'GET',
       }
@@ -443,10 +472,14 @@ export async function getReleaseWorkflowStage(params: GetReleaseWorkflowStageReq
  */
 export async function listAllReleaseStageBriefs(params: ListAllReleaseStageBriefsRequest): Promise<ListAllReleaseStageBriefsResponse> {
   const { organizationId, appName, releaseWorkflowSn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflow/${releaseWorkflowSn}/releaseStageBriefs`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflow/${releaseWorkflowSn}/releaseStageBriefs`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflow/${releaseWorkflowSn}/releaseStageBriefs`,
+      url,
       {
         method: 'GET',
       }
@@ -462,10 +495,14 @@ export async function listAllReleaseStageBriefs(params: ListAllReleaseStageBrief
  */
 export async function updateAppReleaseStage(params: UpdateAppReleaseStageRequest): Promise<UpdateAppReleaseStageResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, stage } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}`,
+      url,
       {
         method: 'PUT',
         body: stage,
@@ -482,6 +519,7 @@ export async function updateAppReleaseStage(params: UpdateAppReleaseStageRequest
  */
 export async function listAppReleaseStageRuns(params: ListAppReleaseStageRunsRequest): Promise<ListAppReleaseStageRunsResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, pagination, perPage, orderBy, sort, nextToken, page } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   const query: Record<string, string | number> = {};
   if (pagination) query.pagination = pagination;
@@ -492,10 +530,10 @@ export async function listAppReleaseStageRuns(params: ListAppReleaseStageRunsReq
   if (page !== undefined) query.page = page;
   
   try {
-    const url = buildUrl(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions`,
-      query
-    );
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions`;
+    const url = buildUrl(baseUrl, query);
     const response = await yunxiaoRequest(url, { method: 'GET' });
     return ListAppReleaseStageRunsResponseSchema.parse(response);
   } catch (error) {
@@ -508,10 +546,14 @@ export async function listAppReleaseStageRuns(params: ListAppReleaseStageRunsReq
  */
 export async function executeChangeRequestReleaseStage(params: ExecuteChangeRequestReleaseStageRequest): Promise<ExecuteChangeRequestReleaseStageResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, execution } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}:execute`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}:execute`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}:execute`,
+      url,
       {
         method: 'POST',
         body: execution,
@@ -528,10 +570,14 @@ export async function executeChangeRequestReleaseStage(params: ExecuteChangeRequ
  */
 export async function cancelExecutionReleaseStage(params: CancelExecutionReleaseStageRequest): Promise<CancelExecutionReleaseStageResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:cancel`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:cancel`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:cancel`,
+      url,
       {
         method: 'POST',
       }
@@ -547,10 +593,14 @@ export async function cancelExecutionReleaseStage(params: CancelExecutionRelease
  */
 export async function retryChangeRequestStagePipeline(params: RetryChangeRequestStagePipelineRequest): Promise<RetryChangeRequestStagePipelineResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:retry`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:retry`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:retry`,
+      url,
       {
         method: 'POST',
       }
@@ -566,10 +616,14 @@ export async function retryChangeRequestStagePipeline(params: RetryChangeRequest
  */
 export async function skipChangeRequestStagePipeline(params: SkipChangeRequestStagePipelineRequest): Promise<SkipChangeRequestStagePipelineResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:skip`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:skip`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:skip`,
+      url,
       {
         method: 'POST',
       }
@@ -694,10 +748,14 @@ export type GetAppReleaseStageExecutionPipelineJobLogResponse = z.infer<typeof G
  */
 export async function listAppReleaseStageExecutionIntegratedMetadata(params: ListAppReleaseStageExecutionIntegratedMetadataRequest): Promise<ListAppReleaseStageExecutionIntegratedMetadataResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}/integratedMetadata`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}/integratedMetadata`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}/integratedMetadata`,
+      url,
       {
         method: 'GET',
       }
@@ -713,10 +771,14 @@ export async function listAppReleaseStageExecutionIntegratedMetadata(params: Lis
  */
 export async function getReleaseStagePipelineRun(params: GetReleaseStagePipelineRunRequest): Promise<GetReleaseStagePipelineRunResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:getPipelineRun`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:getPipelineRun`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:getPipelineRun`,
+      url,
       {
         method: 'GET',
       }
@@ -732,15 +794,16 @@ export async function getReleaseStagePipelineRun(params: GetReleaseStagePipeline
  */
 export async function passReleaseStagePipelineValidate(params: PassReleaseStagePipelineValidateRequest): Promise<PassReleaseStagePipelineValidateResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber, jobId } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   const query: Record<string, string> = {};
   if (jobId) query.jobId = jobId;
   
   try {
-    const url = buildUrl(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:passPipelineValidate`,
-      query
-    );
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:passPipelineValidate`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:passPipelineValidate`;
+    const url = buildUrl(baseUrl, query);
     const response = await yunxiaoRequest(url, { method: 'POST' });
     return PassReleaseStagePipelineValidateResponseSchema.parse(response);
   } catch (error) {
@@ -753,15 +816,16 @@ export async function passReleaseStagePipelineValidate(params: PassReleaseStageP
  */
 export async function getAppReleaseStageExecutionPipelineJobLog(params: GetAppReleaseStageExecutionPipelineJobLogRequest): Promise<GetAppReleaseStageExecutionPipelineJobLogResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber, jobId } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   const query: Record<string, string> = {};
   if (jobId) query.jobId = jobId;
   
   try {
-    const url = buildUrl(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:pipelineJobLog`,
-      query
-    );
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:pipelineJobLog`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:pipelineJobLog`;
+    const url = buildUrl(baseUrl, query);
     const response = await yunxiaoRequest(url, { method: 'GET' });
     return GetAppReleaseStageExecutionPipelineJobLogResponseSchema.parse(response);
   } catch (error) {
@@ -774,15 +838,16 @@ export async function getAppReleaseStageExecutionPipelineJobLog(params: GetAppRe
  */
 export async function refuseReleaseStagePipelineValidate(params: RefuseReleaseStagePipelineValidateRequest): Promise<RefuseReleaseStagePipelineValidateResponse> {
   const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber, jobId } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   const query: Record<string, string> = {};
   if (jobId) query.jobId = jobId;
   
   try {
-    const url = buildUrl(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:refusePipelineValidate`,
-      query
-    );
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:refusePipelineValidate`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:refusePipelineValidate`;
+    const url = buildUrl(baseUrl, query);
     const response = await yunxiaoRequest(url, { method: 'POST' });
     return RefuseReleaseStagePipelineValidateResponseSchema.parse(response);
   } catch (error) {

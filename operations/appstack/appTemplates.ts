@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Schema for the SearchAppTemplates API
 export const SearchAppTemplatesRequestSchema = z.object({
@@ -43,6 +44,7 @@ export type SearchAppTemplatesResponse = z.infer<typeof SearchAppTemplatesRespon
  */
 export async function searchAppTemplates(params: SearchAppTemplatesRequest): Promise<SearchAppTemplatesResponse> {
   const { organizationId, ...queryParams } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {};
@@ -56,7 +58,10 @@ export async function searchAppTemplates(params: SearchAppTemplatesRequest): Pro
   
   try {
     // Build the full URL with query parameters
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/appTemplates:search`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/appTemplates:search`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/appTemplates:search`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,

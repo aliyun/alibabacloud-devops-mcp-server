@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Define the referenced schemas based on their definitions in appstack.swagger.json
 const DeployMachineLogSchema = z.object({
@@ -210,6 +211,7 @@ export type UpdateResourceInstanceResponse = z.infer<typeof UpdateResourceInstan
  */
 export async function getMachineDeployLog(params: GetMachineDeployLogRequest): Promise<GetMachineDeployLogResponse> {
   const { organizationId, tunnelId, machineSn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {};
@@ -217,7 +219,10 @@ export async function getMachineDeployLog(params: GetMachineDeployLogRequest): P
   if (machineSn) query.machineSn = machineSn;
   
   try {
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/host/deployLog`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/host/deployLog`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/host/deployLog`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,
@@ -239,10 +244,14 @@ export async function getMachineDeployLog(params: GetMachineDeployLogRequest): P
  */
 export async function addHostListToHostGroup(params: AddHostListToHostGroupRequest): Promise<AddHostListToHostGroupResponse> {
   const { organizationId, instanceName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/pools/instances/${instanceName}/addHostList`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/pools/instances/${instanceName}/addHostList`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/pools/instances/${instanceName}/addHostList`,
+      url,
       {
         method: 'PUT',
         body: body,
@@ -262,10 +271,14 @@ export async function addHostListToHostGroup(params: AddHostListToHostGroupReque
  */
 export async function addHostListToDeployGroup(params: AddHostListToDeployGroupRequest): Promise<AddHostListToDeployGroupResponse> {
   const { organizationId, instanceName, groupName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/pools/instances/${instanceName}/deployGroup/${groupName}/addHostList`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/pools/instances/${instanceName}/deployGroup/${groupName}/addHostList`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/pools/instances/${instanceName}/deployGroup/${groupName}/addHostList`,
+      url,
       {
         method: 'PUT',
         body: body,
@@ -285,10 +298,14 @@ export async function addHostListToDeployGroup(params: AddHostListToDeployGroupR
  */
 export async function deleteHostListFromDeployGroup(params: DeleteHostListFromDeployGroupRequest): Promise<DeleteHostListFromDeployGroupResponse> {
   const { organizationId, instanceName, groupName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/pools/instances/${instanceName}/deployGroup/${groupName}/removeHostList`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/pools/instances/${instanceName}/deployGroup/${groupName}/removeHostList`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/pools/instances/${instanceName}/deployGroup/${groupName}/removeHostList`,
+      url,
       {
         method: 'PUT',
         body: body,
@@ -308,10 +325,14 @@ export async function deleteHostListFromDeployGroup(params: DeleteHostListFromDe
  */
 export async function deleteHostListFromHostGroup(params: DeleteHostListFromHostGroupRequest): Promise<DeleteHostListFromHostGroupResponse> {
   const {organizationId, instanceName, ...body} = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
 
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/pools/instances/${instanceName}/removeHostList`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/pools/instances/${instanceName}/removeHostList`;
     const response = await yunxiaoRequest(
-        `/oapi/v1/appstack/organizations/${organizationId}/pools/instances/${instanceName}/removeHostList`,
+        url,
         {
           method: 'PUT',
           body: body,

@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Define the Variable schema based on the definition in appstack.swagger.json
 const VariableSchema = z.object({
@@ -128,10 +129,14 @@ export type GetAppVariableGroupsRevisionResponse = z.infer<typeof GetAppVariable
  */
 export async function getEnvVariableGroups(params: GetEnvVariableGroupsRequest): Promise<GetEnvVariableGroupsResponse> {
   const { organizationId, appName, envName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/envs/${envName}/variableGroups`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/envs/${envName}/variableGroups`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/envs/${envName}/variableGroups`,
+      url,
       {
         method: 'GET',
       }
@@ -150,10 +155,14 @@ export async function getEnvVariableGroups(params: GetEnvVariableGroupsRequest):
  */
 export async function createVariableGroup(params: CreateVariableGroupRequest): Promise<CreateVariableGroupResponse> {
   const { organizationId, appName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/variableGroup`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/variableGroup`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/variableGroup`,
+      url,
       {
         method: 'POST',
         body: body,
@@ -173,10 +182,14 @@ export async function createVariableGroup(params: CreateVariableGroupRequest): P
  */
 export async function deleteVariableGroup(params: DeleteVariableGroupRequest): Promise<DeleteVariableGroupResponse> {
   const { organizationId, appName, variableGroupName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/variableGroup/${variableGroupName}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/variableGroup/${variableGroupName}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/variableGroup/${variableGroupName}`,
+      url,
       {
         method: 'DELETE',
       }
@@ -195,10 +208,14 @@ export async function deleteVariableGroup(params: DeleteVariableGroupRequest): P
  */
 export async function getVariableGroup(params: GetVariableGroupRequest): Promise<GetVariableGroupResponse> {
   const { organizationId, appName, variableGroupName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/variableGroup/${variableGroupName}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/variableGroup/${variableGroupName}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/variableGroup/${variableGroupName}`,
+      url,
       {
         method: 'GET',
       }
@@ -217,10 +234,14 @@ export async function getVariableGroup(params: GetVariableGroupRequest): Promise
  */
 export async function updateVariableGroup(params: UpdateVariableGroupRequest): Promise<UpdateVariableGroupResponse> {
   const { organizationId, appName, variableGroupName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/variableGroup/${variableGroupName}`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/variableGroup/${variableGroupName}`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/variableGroup/${variableGroupName}`,
+      url,
       {
         method: 'PUT',
         body: body,
@@ -240,10 +261,14 @@ export async function updateVariableGroup(params: UpdateVariableGroupRequest): P
  */
 export async function getAppVariableGroups(params: GetAppVariableGroupsRequest): Promise<GetAppVariableGroupsResponse> {
   const { organizationId, appName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/variableGroups`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/variableGroups`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/variableGroups`,
+      url,
       {
         method: 'GET',
       }
@@ -262,10 +287,14 @@ export async function getAppVariableGroups(params: GetAppVariableGroupsRequest):
  */
 export async function getAppVariableGroupsRevision(params: GetAppVariableGroupsRevisionRequest): Promise<GetAppVariableGroupsRevisionResponse> {
   const { organizationId, appName } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/variableGroups:revision`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/variableGroups:revision`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/variableGroups:revision`,
+      url,
       {
         method: 'GET',
       }

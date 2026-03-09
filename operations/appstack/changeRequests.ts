@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest, buildUrl } from '../../common/utils.js';
+import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Define the referenced schemas based on their definitions in appstack.swagger.json
 const AuditItemSchema = z.object({
@@ -173,10 +174,14 @@ export type CloseChangeRequestResponse = z.infer<typeof CloseChangeRequestRespon
  */
 export async function createChangeRequest(params: CreateChangeRequestRequest): Promise<CreateChangeRequestResponse> {
   const { organizationId, appName, ...body } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeRequests`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeRequests`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeRequests`,
+      url,
       {
         method: 'POST',
         body: body,
@@ -196,13 +201,17 @@ export async function createChangeRequest(params: CreateChangeRequestRequest): P
  */
 export async function getChangeRequestAuditItems(params: GetChangeRequestAuditItemsRequest): Promise<GetChangeRequestAuditItemsResponse> {
   const { organizationId, appName, sn, refType } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {};
   if (refType) query.refType = refType;
   
   try {
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeRequests/${sn}/auditItems`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeRequests/${sn}/auditItems`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeRequests/${sn}/auditItems`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,
@@ -224,6 +233,7 @@ export async function getChangeRequestAuditItems(params: GetChangeRequestAuditIt
  */
 export async function listChangeRequestExecutions(params: ListChangeRequestExecutionsRequest): Promise<ListChangeRequestExecutionsResponse> {
   const { organizationId, appName, sn, perPage, page, orderBy, sort, releaseWorkflowSn, releaseStageSn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // Build query string properly
   const query: Record<string, string | number> = {};
@@ -235,7 +245,10 @@ export async function listChangeRequestExecutions(params: ListChangeRequestExecu
   if (releaseStageSn) query.releaseStageSn = releaseStageSn;
   
   try {
-    const url = buildUrl(`/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeRequests/${sn}/executions`, query);
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeRequests/${sn}/executions`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeRequests/${sn}/executions`;
+    const url = buildUrl(baseUrl, query);
     
     const response = await yunxiaoRequest(
       url,
@@ -257,10 +270,14 @@ export async function listChangeRequestExecutions(params: ListChangeRequestExecu
  */
 export async function listChangeRequestWorkItems(params: ListChangeRequestWorkItemsRequest): Promise<ListChangeRequestWorkItemsResponse> {
   const { organizationId, appName, sn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeRequests/${sn}/workItems`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeRequests/${sn}/workItems`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeRequests/${sn}/workItems`,
+      url,
       {
         method: 'GET',
       }
@@ -279,10 +296,14 @@ export async function listChangeRequestWorkItems(params: ListChangeRequestWorkIt
  */
 export async function cancelChangeRequest(params: CancelChangeRequestRequest): Promise<CancelChangeRequestResponse> {
   const { organizationId, appName, sn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeRequests/${sn}:cancel`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeRequests/${sn}:cancel`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeRequests/${sn}:cancel`,
+      url,
       {
         method: 'POST',
       }
@@ -301,10 +322,14 @@ export async function cancelChangeRequest(params: CancelChangeRequestRequest): P
  */
 export async function closeChangeRequest(params: CloseChangeRequestRequest): Promise<CloseChangeRequestResponse> {
   const { organizationId, appName, sn } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeRequests/${sn}:finish`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeRequests/${sn}:finish`;
     const response = await yunxiaoRequest(
-      `/oapi/v1/appstack/organizations/${organizationId}/apps/${appName}/changeRequests/${sn}:finish`,
+      url,
       {
         method: 'POST',
       }
