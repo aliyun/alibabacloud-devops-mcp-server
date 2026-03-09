@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding } from "../../common/utils.js";
+import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, isRegionEdition } from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { 
   DevopsCommitVOSchema as DevopsCommitVOSchemaType
 } from "./types.js";
@@ -74,9 +75,12 @@ export async function listCommits(params: z.infer<typeof ListCommitsRequestSchem
     committerIds
   } = params;
 
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
   
-  const baseUrl = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/commits`;
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/commits`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/commits`;
 
   const queryParams: Record<string, string | number | undefined> = {
     refName: refName
@@ -130,9 +134,12 @@ export async function listCommits(params: z.infer<typeof ListCommitsRequestSchem
 export async function getCommit(params: z.infer<typeof GetCommitRequestSchema>) {
   const { organizationId, repositoryId, sha } = params;
   
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/commits/${sha}`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/commits/${sha}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/commits/${sha}`;
 
   const response: any = await yunxiaoRequest(url, {
     method: "GET",
@@ -144,9 +151,12 @@ export async function getCommit(params: z.infer<typeof GetCommitRequestSchema>) 
 export async function createCommitComment(params: z.infer<typeof CreateCommitCommentRequestSchema>) {
   const { organizationId, repositoryId, sha, content } = params;
   
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/commits/${sha}/comments`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/commits/${sha}/comments`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/commits/${sha}/comments`;
 
   const response: any = await yunxiaoRequest(url, { 
     method: "POST",
