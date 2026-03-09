@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest } from '../../common/utils.js';
+import { yunxiaoRequest, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 import { isYunxiaoError } from '../../common/errors.js';
 
 // Schema for TestPlanDTO
@@ -90,10 +91,11 @@ export type UpdateTestResultResponse = z.infer<typeof UpdateTestResultResponseSc
  */
 export async function listTestPlan(params: ListTestPlanRequest): Promise<ListTestPlanResponse> {
   const { organizationId } = params;
-  const response = await yunxiaoRequest(
-    `/oapi/v1/projex/organizations/${organizationId}/testPlan/list`,
-    { method: 'POST', body: {} }
-  );
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/testPlan/list`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/testPlan/list`;
+  const response = await yunxiaoRequest(url, { method: 'POST', body: {} });
   return ListTestPlanResponseSchema.parse(response);
 }
 
@@ -103,21 +105,22 @@ export async function listTestPlan(params: ListTestPlanRequest): Promise<ListTes
  */
 export async function getTestResultList(params: GetTestResultListRequest): Promise<GetTestResultListResponse> {
   const { organizationId, testPlanIdentifier, directoryIdentifier } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
   
   // 首先尝试使用 projex API
   try {
-    const response = await yunxiaoRequest(
-      `/oapi/v1/projex/organizations/${organizationId}/${testPlanIdentifier}/result/list/${directoryIdentifier}`,
-      { method: 'POST', body: {} }
-    );
+    const url = isRegionEdition()
+      ? `/oapi/v1/projex/${testPlanIdentifier}/result/list/${directoryIdentifier}`
+      : `/oapi/v1/projex/organizations/${finalOrgId}/${testPlanIdentifier}/result/list/${directoryIdentifier}`;
+    const response = await yunxiaoRequest(url, { method: 'POST', body: {} });
     return GetTestResultListResponseSchema.parse(response);
   } catch (error) {
     // 如果是 404 错误，尝试使用 testhub API
     if (isYunxiaoError(error) && error.status === 404) {
-      const response = await yunxiaoRequest(
-        `/oapi/v1/testhub/organizations/${organizationId}/${testPlanIdentifier}/result/list/${directoryIdentifier}`,
-        { method: 'POST', body: {} }
-      );
+      const url = isRegionEdition()
+        ? `/oapi/v1/testhub/${testPlanIdentifier}/result/list/${directoryIdentifier}`
+        : `/oapi/v1/testhub/organizations/${finalOrgId}/${testPlanIdentifier}/result/list/${directoryIdentifier}`;
+      const response = await yunxiaoRequest(url, { method: 'POST', body: {} });
       return GetTestResultListResponseSchema.parse(response);
     }
     // 其他错误直接抛出
@@ -130,6 +133,10 @@ export async function getTestResultList(params: GetTestResultListRequest): Promi
  */
 export async function updateTestResult(params: UpdateTestResultRequest): Promise<UpdateTestResultResponse> {
   const { organizationId, testplanId, testcaseId, executor, status } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testPlans/${testplanId}/testcases/${testcaseId}`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testPlans/${testplanId}/testcases/${testcaseId}`;
   const body: any = {};
   if (executor !== undefined) {
     body.executor = executor;
@@ -137,10 +144,6 @@ export async function updateTestResult(params: UpdateTestResultRequest): Promise
   if (status !== undefined) {
     body.status = status;
   }
-  const response = await yunxiaoRequest(
-    `/oapi/v1/testhub/organizations/${organizationId}/testPlans/${testplanId}/testcases/${testcaseId}`,
-    { method: 'PUT', body }
-  );
+  const response = await yunxiaoRequest(url, { method: 'PUT', body });
   return UpdateTestResultResponseSchema.parse(response);
 }
-

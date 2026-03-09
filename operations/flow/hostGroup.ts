@@ -1,4 +1,5 @@
 import * as utils from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { HostGroupSchema, HostGroup, ListHostGroupsSchema } from "./types.js";
 
 /**
@@ -8,7 +9,7 @@ import { HostGroupSchema, HostGroup, ListHostGroupsSchema } from "./types.js";
  * @returns 主机组列表
  */
 export async function listHostGroupsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   options?: {
     ids?: string;
     name?: string;
@@ -21,7 +22,10 @@ export async function listHostGroupsFunc(
     pageOrder?: string;
   }
 ): Promise<HostGroup[]> {
-  const baseUrl = `/oapi/v1/flow/organizations/${organizationId}/hostGroups`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = utils.isRegionEdition()
+    ? `/oapi/v1/flow/hostGroups`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/hostGroups`;
   
   // 构建查询参数
   const queryParams: Record<string, string | number | undefined> = {};

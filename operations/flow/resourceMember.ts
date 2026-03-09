@@ -1,4 +1,5 @@
 import * as utils from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { z } from "zod";
 
 // 定义资源成员的Zod模式
@@ -49,12 +50,15 @@ export type UpdateResourceOwnerParams = z.infer<typeof UpdateResourceOwnerSchema
  * @returns 是否成功
  */
 export async function deleteResourceMemberFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   resourceType: string,
   resourceId: string,
   userId: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`;
   
   const queryParams = { userId };
   const fullUrl = utils.buildUrl(url, queryParams);
@@ -74,11 +78,14 @@ export async function deleteResourceMemberFunc(
  * @returns 资源成员列表
  */
 export async function listResourceMembersFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   resourceType: string,
   resourceId: string
 ): Promise<ResourceMember[]> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",
@@ -106,13 +113,16 @@ export async function listResourceMembersFunc(
  * @returns 是否成功
  */
 export async function updateResourceMemberFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   resourceType: string,
   resourceId: string,
   roleName: string,
   userId: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`;
   
   const queryParams = { roleName, userId };
   const fullUrl = utils.buildUrl(url, queryParams);
@@ -134,13 +144,16 @@ export async function updateResourceMemberFunc(
  * @returns 是否成功
  */
 export async function createResourceMemberFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   resourceType: string,
   resourceId: string,
   roleName: string,
   userId: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}`;
   
   const queryParams = { roleName, userId };
   const fullUrl = utils.buildUrl(url, queryParams);
@@ -161,12 +174,15 @@ export async function createResourceMemberFunc(
  * @returns 是否成功
  */
 export async function updateResourceOwnerFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   resourceType: string,
   resourceId: string,
   newOwnerId: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}/transfer/owner`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}/transfer/owner`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/resourceMembers/resourceTypes/${resourceType}/resourceIds/${resourceId}/transfer/owner`;
   
   const queryParams = { newOwnerId };
   const fullUrl = utils.buildUrl(url, queryParams);

@@ -4,6 +4,7 @@
  */
 
 import * as utils from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import {
   PipelineJobItemSchema,
   PipelineJobItem,
@@ -21,11 +22,14 @@ import {
  * @returns 任务列表
  */
 export async function listPipelineJobsByCategoryFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   category: string
 ): Promise<PipelineJobItem[]> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/listTasksByCategory/${category}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/listTasksByCategory/${category}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/listTasksByCategory/${category}`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",
@@ -49,7 +53,7 @@ export async function listPipelineJobsByCategoryFunc(
  * @returns Job history list and pagination information
  */
 export async function listPipelineJobHistorysFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   category: string,
   identifier: string,
@@ -66,7 +70,10 @@ export async function listPipelineJobHistorysFunc(
     totalPages: number
   }
 }> {
-  const baseUrl = `/oapi/v1/flow/organizations/${organizationId}/pipelines/getComponentsWithoutButtons`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/getComponentsWithoutButtons`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/getComponentsWithoutButtons`;
 
   const queryParams: Record<string, string | number> = {
     pipelineId,
@@ -138,12 +145,15 @@ export async function listPipelineJobHistorysFunc(
  * @returns Whether the operation was successful
  */
 export async function executePipelineJobRunFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   pipelineRunId: string,
   jobId: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/pipelineRuns/${pipelineRunId}/jobs/${jobId}/start`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/pipelineRuns/${pipelineRunId}/jobs/${jobId}/start`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/pipelineRuns/${pipelineRunId}/jobs/${jobId}/start`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "POST",
@@ -161,12 +171,15 @@ export async function executePipelineJobRunFunc(
  * @returns Log content and metadata
  */
 export async function getPipelineJobRunLogFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   pipelineRunId: string,
   jobId: string
 ): Promise<PipelineJobRunLog> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/runs/${pipelineRunId}/job/${jobId}/log`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/runs/${pipelineRunId}/job/${jobId}/log`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/runs/${pipelineRunId}/job/${jobId}/log`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",

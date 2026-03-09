@@ -1,4 +1,5 @@
 import * as utils from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { z } from "zod";
 
 // 定义VM部署单相关的Zod模式
@@ -99,11 +100,14 @@ export type GetVMDeployMachineLogParams = z.infer<typeof GetVMDeployMachineLogSc
  * @returns 是否成功
  */
 export async function stopVMDeployOrderFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   deployOrderId: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/deploy/${deployOrderId}/stop`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/deploy/${deployOrderId}/stop`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/deploy/${deployOrderId}/stop`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "PUT",
@@ -121,12 +125,15 @@ export async function stopVMDeployOrderFunc(
  * @returns 是否成功
  */
 export async function skipVMDeployMachineFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   deployOrderId: string,
   machineSn: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/skip`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/skip`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/skip`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "PUT",
@@ -144,12 +151,15 @@ export async function skipVMDeployMachineFunc(
  * @returns 是否成功
  */
 export async function retryVMDeployMachineFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   deployOrderId: string,
   machineSn: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/retry`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/retry`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/retry`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "PUT",
@@ -166,11 +176,14 @@ export async function retryVMDeployMachineFunc(
  * @returns 是否成功
  */
 export async function resumeVMDeployOrderFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   deployOrderId: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/deploy/${deployOrderId}/resume`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/deploy/${deployOrderId}/resume`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/deploy/${deployOrderId}/resume`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "PUT",
@@ -187,11 +200,14 @@ export async function resumeVMDeployOrderFunc(
  * @returns 部署单详情
  */
 export async function getVMDeployOrderFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   deployOrderId: string
 ): Promise<DeployOrder> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/deploy/${deployOrderId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/deploy/${deployOrderId}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/deploy/${deployOrderId}`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",
@@ -209,12 +225,15 @@ export async function getVMDeployOrderFunc(
  * @returns 机器部署日志
  */
 export async function getVMDeployMachineLogFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   deployOrderId: string,
   machineSn: string
 ): Promise<DeployOrderLog> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/log`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/log`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/deploy/${deployOrderId}/machine/${machineSn}/log`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",

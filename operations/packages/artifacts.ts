@@ -1,4 +1,5 @@
-import { yunxiaoRequest, buildUrl } from "../../common/utils.js";
+import { yunxiaoRequest, buildUrl, isRegionEdition } from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import {
   ArtifactSchema,
   Artifact,
@@ -17,7 +18,7 @@ import {
  * @returns 制品信息列表
  */
 export async function listArtifactsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repoId: string,
   repoType: string,
   page?: number,
@@ -26,7 +27,10 @@ export async function listArtifactsFunc(
   orderBy: string = "latestUpdate",
   sort: string = "desc"
 ): Promise<Artifact[]> {
-  const baseUrl = `/oapi/v1/packages/organizations/${organizationId}/repositories/${repoId}/artifacts`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/packages/repositories/${repoId}/artifacts`
+    : `/oapi/v1/packages/organizations/${finalOrgId}/repositories/${repoId}/artifacts`;
 
   const queryParams: Record<string, string | number | undefined> = {
     repoType,
@@ -69,12 +73,15 @@ export async function listArtifactsFunc(
  * @returns 制品信息
  */
 export async function getArtifactFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repoId: string,
   id: number,
   repoType: string
 ): Promise<Artifact | null> {
-  const baseUrl = `/oapi/v1/packages/organizations/${organizationId}/repositories/${repoId}/artifacts/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/packages/repositories/${repoId}/artifacts/${id}`
+    : `/oapi/v1/packages/organizations/${finalOrgId}/repositories/${repoId}/artifacts/${id}`;
 
   const queryParams: Record<string, string | number | undefined> = {
     repoType,

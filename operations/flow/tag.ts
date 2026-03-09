@@ -1,4 +1,5 @@
 import * as utils from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { z } from "zod";
 
 // 定义标签和标签分类的Zod模式
@@ -77,12 +78,15 @@ export type GetTagGroupParams = z.infer<typeof GetTagGroupSchema>;
  * @returns 标签 id
  */
 export async function createTagFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   name: string,
   color: string,
   flowTagGroupId: number
 ): Promise<number> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/tags`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/tags`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/tags`;
   
   const queryParams = { name, color, flowTagGroupId };
   const fullUrl = utils.buildUrl(url, queryParams);
@@ -101,10 +105,13 @@ export async function createTagFunc(
  * @returns 标签分类 id
  */
 export async function createTagGroupFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   name: string
 ): Promise<number> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/tagGroups`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/tagGroups`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/tagGroups`;
   
   const queryParams = { name };
   const fullUrl = utils.buildUrl(url, queryParams);
@@ -122,9 +129,12 @@ export async function createTagGroupFunc(
  * @returns 流水线分类列表
  */
 export async function listTagGroupsFunc(
-  organizationId: string
+  organizationId: string | undefined
 ): Promise<TagGroup[]> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/tagGroups`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/tagGroups`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/tagGroups`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",
@@ -144,10 +154,13 @@ export async function listTagGroupsFunc(
  * @returns 是否成功
  */
 export async function deleteTagGroupFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: number
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/tagGroups/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/tagGroups/${id}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/tagGroups/${id}`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "DELETE",
@@ -164,11 +177,14 @@ export async function deleteTagGroupFunc(
  * @returns 是否成功
  */
 export async function updateTagGroupFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: number,
   name: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/tagGroups/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/tagGroups/${id}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/tagGroups/${id}`;
   
   const queryParams = { name };
   const fullUrl = utils.buildUrl(url, queryParams);
@@ -187,10 +203,13 @@ export async function updateTagGroupFunc(
  * @returns 标签分类
  */
 export async function getTagGroupFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: number
 ): Promise<TagGroupWithTags> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/tagGroups/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/tagGroups/${id}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/tagGroups/${id}`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",
@@ -206,10 +225,13 @@ export async function getTagGroupFunc(
  * @returns 是否成功
  */
 export async function deleteTagFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: number
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/tags/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/tags/${id}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/tags/${id}`;
 
   const response = await utils.yunxiaoRequest(url, {
     method: "DELETE",
@@ -228,13 +250,16 @@ export async function deleteTagFunc(
  * @returns 是否成功
  */
 export async function updateTagFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: number,
   name: string,
   color: string,
   flowTagGroupId: number
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/tags/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/tags/${id}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/tags/${id}`;
   
   const queryParams = { name, color, flowTagGroupId };
   const fullUrl = utils.buildUrl(url, queryParams);

@@ -47,7 +47,7 @@ export async function getPipelineFunc(
  * @returns 流水线列表
  */
 export async function listPipelinesFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   options?: Omit<ListPipelinesOptions, 'organizationId'>
 ): Promise<{
   items: PipelineListItem[],
@@ -60,7 +60,10 @@ export async function listPipelinesFunc(
     totalPages: number
   }
 }> {
-  const baseUrl = `/oapi/v1/flow/organizations/${organizationId}/pipelines`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines`;
   
   // 构建查询参数
   const queryParams: Record<string, string | number | undefined> = {};
@@ -133,7 +136,7 @@ export async function listPipelinesFunc(
  * @returns 流水线列表
  */
 export async function smartListPipelinesFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   timeReference?: string,
   options?: Omit<ListPipelinesOptions, 'organizationId' | 'executeStartTime' | 'executeEndTime'>
 ): Promise<{
@@ -168,11 +171,14 @@ export async function smartListPipelinesFunc(
  * @returns 流水线运行ID
  */
 export async function createPipelineRunFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   options?: Partial<Omit<CreatePipelineRunOptions, 'organizationId' | 'pipelineId'>>
 ): Promise<number> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/runs`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/runs`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/runs`;
   
   // 如果用户已经提供了格式化的params，直接使用
   if (options?.params) {
@@ -345,10 +351,13 @@ export async function createPipelineRunFunc(
  * @returns 最近一次流水线运行信息
  */
 export async function getLatestPipelineRunFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string
 ): Promise<PipelineRun> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/runs/latestPipelineRun`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/runs/latestPipelineRun`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/runs/latestPipelineRun`;
   
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",
@@ -365,11 +374,14 @@ export async function getLatestPipelineRunFunc(
  * @returns 流水线运行实例信息
  */
 export async function getPipelineRunFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   pipelineRunId: string
 ): Promise<PipelineRun> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/runs/${pipelineRunId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/runs/${pipelineRunId}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/runs/${pipelineRunId}`;
   
   const response = await utils.yunxiaoRequest(url, {
     method: "GET",
@@ -386,7 +398,7 @@ export async function getPipelineRunFunc(
  * @returns 流水线运行实例列表和分页信息
  */
 export async function listPipelineRunsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   options?: Omit<ListPipelineRunsOptions, 'organizationId' | 'pipelineId'>
 ): Promise<{
@@ -400,7 +412,10 @@ export async function listPipelineRunsFunc(
     totalPages: number
   }
 }> {
-  const baseUrl = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}/runs`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/runs`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/runs`;
   
   // 构建查询参数
   const queryParams: Record<string, string | number | undefined> = {};
@@ -463,11 +478,14 @@ export async function listPipelineRunsFunc(
  * @returns 流水线ID
  */
 export async function createPipelineFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   name: string,
   content: string
 ): Promise<number> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines`;
   
   const body = {
     name: name,
@@ -606,7 +624,7 @@ export async function generatePipelineYamlFunc(
  * @returns 创建结果，包含流水线ID和生成的YAML
  */
 export async function createPipelineWithOptionsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   options: {
     // 基础信息
     name: string;
@@ -660,11 +678,14 @@ export async function createPipelineWithOptionsFunc(
   pipelineId: number;
   generatedYaml: string;
 }> {
+  // 解析最终的 organizationId
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  
   // 获取默认服务连接ID（如果用户没有明确指定）
   let defaultServiceConnectionId: string | null = null;
   const hasServiceConnectionId = options.serviceConnectionId;
   if (!hasServiceConnectionId) {
-    defaultServiceConnectionId = await getDefaultServiceConnectionId(organizationId);
+    defaultServiceConnectionId = await getDefaultServiceConnectionId(finalOrgId);
   }
   
   // 获取默认Packages服务连接ID（如果用户没有明确指定且需要packages上传）
@@ -672,7 +693,7 @@ export async function createPipelineWithOptionsFunc(
   const hasPackagesServiceConnectionId = options.packagesServiceConnection;
   const needsPackagesUpload = !options.uploadType || options.uploadType === 'packages';
   if (!hasPackagesServiceConnectionId && needsPackagesUpload) {
-    defaultPackagesServiceConnectionId = await getDefaultPackagesServiceConnectionId(organizationId);
+    defaultPackagesServiceConnectionId = await getDefaultPackagesServiceConnectionId(finalOrgId);
   }
   
   // 获取默认主机组ID（如果用户没有明确指定且需要VM部署）
@@ -680,7 +701,7 @@ export async function createPipelineWithOptionsFunc(
   const hasMachineGroupId = options.machineGroupId;
   const needsVMDeploy = options.deployTarget === 'vm';
   if (!hasMachineGroupId && needsVMDeploy) {
-    defaultMachineGroupId = await getDefaultHostGroupId(organizationId);
+    defaultMachineGroupId = await getDefaultHostGroupId(finalOrgId);
   }
   
   // 自动从repoUrl解析serviceName（如果用户没有明确指定）
@@ -852,12 +873,15 @@ async function getDefaultHostGroupId(organizationId: string): Promise<string | n
  * @param content
  */
 export async function updatePipelineFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   pipelineId: string,
   name: string,
   content: string
 ): Promise<boolean> {
-  const url = `/oapi/v1/flow/organizations/${organizationId}/pipelines/${pipelineId}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}`;
   const body = { name, content };
   const response = await utils.yunxiaoRequest(url, {
     method: "PUT",
