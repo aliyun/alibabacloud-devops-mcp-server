@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding } from "../../common/utils.js";
+import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, isRegionEdition } from "../../common/utils.js";
+import { resolveOrganizationId } from "../organization/organization.js";
 import { 
   ChangeRequestCommentSchema
 } from "./types.js";
@@ -31,7 +32,7 @@ import {
  * @param parent_comment_biz_id 父评论ID（用于回复），示例：'1d8171cf0cc2453197fae0e0a27d5ece'
  */
 export async function createChangeRequestCommentFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   localId: string,
   comment_type: string, // Possible values: GLOBAL_COMMENT, INLINE_COMMENT
@@ -45,9 +46,12 @@ export async function createChangeRequestCommentFunc(
   to_patchset_biz_id?: string,
   parent_comment_biz_id?: string
 ): Promise<z.infer<typeof ChangeRequestCommentSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/changeRequests/${localId}/comments`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}/comments`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}/comments`;
 
   // 准备payload
   const payload: Record<string, any> = {
@@ -98,7 +102,7 @@ export async function createChangeRequestCommentFunc(
  * @param filePath 文件路径过滤（仅行内评论），示例：'/src/main/java/com/example/MyClass.java'
  */
 export async function listChangeRequestCommentsFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   localId: string,
   patchSetBizIds?: string[],
@@ -107,9 +111,12 @@ export async function listChangeRequestCommentsFunc(
   resolved: boolean = false,
   filePath?: string
 ): Promise<z.infer<typeof ChangeRequestCommentSchema>[]> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/changeRequests/${localId}/comments/list`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}/comments/list`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}/comments/list`;
 
   // 准备payload
   const payload: Record<string, any> = {
@@ -150,16 +157,19 @@ export async function listChangeRequestCommentsFunc(
  * @param resolved 是否已解决（可选），示例：false
  */
 export async function updateChangeRequestCommentFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   repositoryId: string,
   localId: string,
   commentBizId: string,
   content?: string,
   resolved?: boolean
 ): Promise<{ result: boolean }> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
 
-  const url = `/oapi/v1/codeup/organizations/${organizationId}/repositories/${encodedRepoId}/changeRequests/${localId}/comments/${commentBizId}`;
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}/comments/${commentBizId}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}/comments/${commentBizId}`;
 
   // 准备payload
   const payload: Record<string, any> = {};
