@@ -197,7 +197,47 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 
 ## 用法
 
+### Region 站点支持
 
+本工具支持云效中心站和 Region 站两种部署模式：
+
+- **中心站**：使用 `https://openapi-rdc.aliyuncs.com` 作为 API 域名
+- **Region 站**：使用组织专属域名，如 `https://your-org.devops.aliyuncs.com`
+
+#### 自动判定机制
+
+工具会根据配置的 API 基础 URL 自动判断部署模式：
+
+- 如果 URL 包含 `openapi-rdc.aliyuncs.com`，则为中心站模式
+- 否则为 Region 站模式
+
+#### 配置 Region 站点
+
+使用 Region 站点时，需要设置环境变量 `YUNXIAO_API_BASE_URL`：
+
+```json
+{
+  "mcpServers": {
+    "yunxiao": {
+      "command": "npx",
+      "args": ["-y", "alibabacloud-devops-mcp-server"],
+      "env": {
+        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>",
+        "YUNXIAO_API_BASE_URL": "https://your-org.devops.aliyuncs.com"
+      }
+    }
+  }
+}
+```
+
+#### Region 模式下的 organizationId 参数
+
+在 Region 模式下，`organizationId` 参数变为可选：
+
+- **中心站模式**：`organizationId` 为必填参数，需要用户显式提供
+- **Region 模式**：`organizationId` 可省略，系统会自动使用默认值 `"default"`
+
+这意味着在 Region 模式下，用户无需关心组织 ID，工具会自动处理。
 
 ### 先决条件
 * node 版本  >= 18.0.0
