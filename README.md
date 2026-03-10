@@ -265,7 +265,8 @@ Add the following configuration to your MCP client configuration file:
         "alibabacloud-devops-mcp-server"
       ],
       "env": {
-        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>"
+        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>",
+        "YUNXIAO_API_BASE_URL": "https://openapi-rdc.aliyuncs.com" // if you use region version, please replace to your instanc domain, https://your-org.devops.aliyuncs.com etc.
       }
     }
   }

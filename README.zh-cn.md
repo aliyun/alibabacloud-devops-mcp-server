@@ -230,17 +230,8 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 }
 ```
 
-#### Region 模式下的 organizationId 参数
-
-在 Region 模式下，`organizationId` 参数变为可选：
-
-- **中心站模式**：`organizationId` 为必填参数，需要用户显式提供
-- **Region 模式**：`organizationId` 可省略，系统会自动使用默认值 `"default"`
-
-这意味着在 Region 模式下，用户无需关心组织 ID，工具会自动处理。
-
 ### 先决条件
-* node 版本  >= 18.0.0
+* node 版本  >= 20.0.0
 * 阿里云[云效](https://www.aliyun.com/product/yunxiao)个人访问令牌，[点击前往](https://help.aliyun.com/zh/yunxiao/developer-reference/obtain-personal-access-token)，授予组织管理、项目协作、代码管理、流水线、制品仓库、应用交付、测试管理下所有api的读写权限。令牌的到期时间注意选择一个长期有效的时间。
   
   ![个人令牌授权页面](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/img_8.jpg)
@@ -263,7 +254,8 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
         "alibabacloud-devops-mcp-server"
       ],
       "env": {
-        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>"
+        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>",
+        "YUNXIAO_API_BASE_URL": "https://openapi-rdc.aliyuncs.com"  //中心站可以不用配置，region站点则配置你的云效实例地址，比如https://your-org.devops.aliyuncs.com
       }
     }
   }
@@ -273,6 +265,7 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 > **说明**: 
 > - 将 `<YOUR_TOKEN>` 替换为您的云效访问令牌
 > - `-y` 参数会自动确认安装，无需手动确认
+> - YUNXIAO_API_BASE_URL为云效mcp tool背后调用的云效open api的站点地址，如果你使用的是云效中心站，则无需配置，如果你使用的是region站点，请配置你的云效实例地址，如https://your-org.devops.aliyuncs.com
 > - 这种方式使用 **stdio 模式**，通过标准输入输出与 MCP 客户端通信
 
 ### 方式二：通过 MCP 市场安装
@@ -321,7 +314,8 @@ docker build -t alibabacloud/alibabacloud-devops-mcp-server .
         "build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:v0.2.0"
       ],
       "env": {
-        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>"
+        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>",
+        "YUNXIAO_API_BASE_URL": "https://openapi-rdc.aliyuncs.com"
       }
     }
   }
