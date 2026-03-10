@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { yunxiaoRequest } from '../../common/utils.js';
+import { yunxiaoRequest, isRegionEdition } from '../../common/utils.js';
+import { resolveOrganizationId } from '../organization/organization.js';
 
 // Schema for TestcaseDirectoryDTO
 export const TestcaseDirectoryDTOSchema = z.object({
@@ -194,10 +195,11 @@ export type DeleteTestcaseResponse = z.infer<typeof DeleteTestcaseResponseSchema
  */
 export async function listDirectories(params: ListDirectoriesRequest): Promise<ListDirectoriesResponse> {
   const { organizationId, testRepoId } = params;
-  const response = await yunxiaoRequest(
-    `/oapi/v1/testhub/organizations/${organizationId}/testRepos/${testRepoId}/directories`,
-    { method: 'GET' }
-  );
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/directories`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/directories`;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
   return ListDirectoriesResponseSchema.parse(response);
 }
 
@@ -206,14 +208,15 @@ export async function listDirectories(params: ListDirectoriesRequest): Promise<L
  */
 export async function createTestcaseDirectory(params: CreateTestcaseDirectoryRequest): Promise<CreateTestcaseDirectoryResponse> {
   const { organizationId, testRepoId, name, parentIdentifier } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/directories`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/directories`;
   const body: any = { name };
   if (parentIdentifier) {
     body.parentIdentifier = parentIdentifier;
   }
-  const response = await yunxiaoRequest(
-    `/oapi/v1/testhub/organizations/${organizationId}/testRepos/${testRepoId}/directories`,
-    { method: 'POST', body }
-  );
+  const response = await yunxiaoRequest(url, { method: 'POST', body });
   return CreateTestcaseDirectoryResponseSchema.parse(response);
 }
 
@@ -222,10 +225,11 @@ export async function createTestcaseDirectory(params: CreateTestcaseDirectoryReq
  */
 export async function getTestcaseFieldConfig(params: GetTestcaseFieldConfigRequest): Promise<GetTestcaseFieldConfigResponse> {
   const { organizationId, testRepoId } = params;
-  const response = await yunxiaoRequest(
-    `/oapi/v1/testhub/organizations/${organizationId}/testRepos/${testRepoId}/testcases/fields`,
-    { method: 'GET' }
-  );
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases/fields`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/testcases/fields`;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
   return GetTestcaseFieldConfigResponseSchema.parse(response);
 }
 
@@ -234,10 +238,11 @@ export async function getTestcaseFieldConfig(params: GetTestcaseFieldConfigReque
  */
 export async function createTestcase(params: CreateTestcaseRequest): Promise<CreateTestcaseResponse> {
   const { organizationId, testRepoId, ...body } = params;
-  const response = await yunxiaoRequest(
-    `/oapi/v1/testhub/organizations/${organizationId}/testRepos/${testRepoId}/testcases`,
-    { method: 'POST', body }
-  );
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/testcases`;
+  const response = await yunxiaoRequest(url, { method: 'POST', body });
   return CreateTestcaseResponseSchema.parse(response);
 }
 
@@ -246,10 +251,11 @@ export async function createTestcase(params: CreateTestcaseRequest): Promise<Cre
  */
 export async function searchTestcases(params: SearchTestcasesRequest): Promise<SearchTestcasesResponse> {
   const { organizationId, testRepoId, ...body } = params;
-  const response = await yunxiaoRequest(
-    `/oapi/v1/testhub/organizations/${organizationId}/testRepos/${testRepoId}/testcases:search`,
-    { method: 'POST', body }
-  );
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases:search`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/testcases:search`;
+  const response = await yunxiaoRequest(url, { method: 'POST', body });
   return SearchTestcasesResponseSchema.parse(response);
 }
 
@@ -258,10 +264,11 @@ export async function searchTestcases(params: SearchTestcasesRequest): Promise<S
  */
 export async function getTestcase(params: GetTestcaseRequest): Promise<GetTestcaseResponse> {
   const { organizationId, testRepoId, testcaseId } = params;
-  const response = await yunxiaoRequest(
-    `/oapi/v1/testhub/organizations/${organizationId}/testRepos/${testRepoId}/testcases/${testcaseId}`,
-    { method: 'GET' }
-  );
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases/${testcaseId}`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/testcases/${testcaseId}`;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
   return GetTestcaseResponseSchema.parse(response);
 }
 
@@ -270,10 +277,11 @@ export async function getTestcase(params: GetTestcaseRequest): Promise<GetTestca
  */
 export async function deleteTestcase(params: DeleteTestcaseRequest): Promise<DeleteTestcaseResponse> {
   const { organizationId, testRepoId, testcaseId } = params;
-  const response = await yunxiaoRequest(
-    `/oapi/v1/testhub/organizations/${organizationId}/testRepos/${testRepoId}/testcases/${testcaseId}`,
-    { method: 'DELETE' }
-  );
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases/${testcaseId}`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/testcases/${testcaseId}`;
+  const response = await yunxiaoRequest(url, { method: 'DELETE' });
   return DeleteTestcaseResponseSchema.parse(response);
 }
 

@@ -55,10 +55,13 @@ export async function getUserOrganizationsFunc(
 }
 
 export async function getOrganizationDepartmentsFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     parentId?: string
 ): Promise<z.infer<typeof OrganizationDepartmentsSchema>> {
-  const baseUrl = `/oapi/v1/platform/organizations/${organizationId}/departments`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/platform/departments`
+    : `/oapi/v1/platform/organizations/${finalOrgId}/departments`;
 
   const params: Record<string, string | undefined> = {};
   if (parentId) {
@@ -75,10 +78,13 @@ export async function getOrganizationDepartmentsFunc(
 }
 
 export async function getOrganizationDepartmentInfoFunc(
-  organizationId: string,
+  organizationId: string | undefined,
   id: string
 ): Promise<z.infer<typeof DepartmentInfoSchema>> {
-  const url = `/oapi/v1/platform/organizations/${organizationId}/departments/${id}`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/platform/departments/${id}`
+    : `/oapi/v1/platform/organizations/${finalOrgId}/departments/${id}`;
 
   const response = await yunxiaoRequest(url, {
     method: "GET",
@@ -88,9 +94,12 @@ export async function getOrganizationDepartmentInfoFunc(
 }
 
 export async function getOrganizationDepartmentAncestorsFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     id: string): Promise<z.infer<typeof OrganizationDepartmentsSchema>>  {
-  const url = `/oapi/v1/platform/organizations/${organizationId}/departments/${id}/ancestors`;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/platform/departments/${id}/ancestors`
+    : `/oapi/v1/platform/organizations/${finalOrgId}/departments/${id}/ancestors`;
   const response = await yunxiaoRequest(url, {
     method: "GET",
   })
@@ -98,9 +107,12 @@ export async function getOrganizationDepartmentAncestorsFunc(
 };
 
 export async function listOrganizationRolesFunc(
-    organizationId: string
+    organizationId: string | undefined
 ): Promise<z.infer<typeof OrganizationRole>> {
-    const url = `/oapi/v1/platform/organizations/${organizationId}/roles`;
+    const finalOrgId = await resolveOrganizationId(organizationId);
+    const url = isRegionEdition()
+        ? `/oapi/v1/platform/roles`
+        : `/oapi/v1/platform/organizations/${finalOrgId}/roles`;
 
     const response = await yunxiaoRequest(url, {
         method: "GET"
@@ -110,10 +122,13 @@ export async function listOrganizationRolesFunc(
 }
 
 export async function getOrganizationRoleFunc(
-    organizationId: string,
+    organizationId: string | undefined,
     roleId: string
 ): Promise<z.infer<typeof OrganizationRoleSchema>> {
-    const url = `/oapi/v1/platform/organizations/${organizationId}/roles/${roleId}`;
+    const finalOrgId = await resolveOrganizationId(organizationId);
+    const url = isRegionEdition()
+        ? `/oapi/v1/platform/roles/${roleId}`
+        : `/oapi/v1/platform/organizations/${finalOrgId}/roles/${roleId}`;
 
     const response = await yunxiaoRequest(url, {
         method: "GET"
