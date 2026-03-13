@@ -179,6 +179,40 @@ export const VersionSchema = z.object({
   name: z.string().nullable().optional().describe("Version name"),
 });
 
+// Version DTO for API responses
+export const VersionDTOSchema = z.object({
+  id: z.string().nullable().optional().describe("Version ID"),
+  name: z.string().nullable().optional().describe("Version name"),
+  status: z.string().nullable().optional().describe("Status: TODO (not started), DOING (in progress), ARCHIVED (released)"),
+  startDate: z.string().nullable().optional().describe("Start date"),
+  publishDate: z.string().nullable().optional().describe("Publish date"),
+  locked: z.boolean().nullable().optional().describe("Whether locked"),
+  gmtCreate: z.string().nullable().optional().describe("Creation time"),
+  gmtModified: z.string().nullable().optional().describe("Last modified time"),
+  creator: z.object({
+    id: z.string().nullable().optional().describe("User ID"),
+    name: z.string().nullable().optional().describe("User name"),
+  }).nullable().optional().describe("Creator"),
+  modifier: z.object({
+    id: z.string().nullable().optional().describe("User ID"),
+    name: z.string().nullable().optional().describe("User name"),
+  }).nullable().optional().describe("Modifier"),
+  owners: z.array(z.object({
+    id: z.string().nullable().optional().describe("User ID"),
+    name: z.string().nullable().optional().describe("User name"),
+  })).nullable().optional().describe("Owners"),
+});
+
+// List Program Versions Schema
+export const ListProgramVersionsSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  id: z.string().describe("Program (Project Set) unique identifier"),
+  status: z.array(z.enum(["TODO", "DOING", "ARCHIVED"])).optional().describe("Filter by status: TODO (not started), DOING (in progress), ARCHIVED (released)"),
+  name: z.string().nullable().optional().describe("Filter by name"),
+  page: z.number().int().min(1).default(1).optional().describe("Page number, default is 1"),
+  perPage: z.number().int().min(1).max(100).default(20).optional().describe("Page size, default is 20"),
+});
+
 export const WorkItemSchema = z.object({
   id: z.string().describe("Work item ID"),
   subject: z.string().nullable().optional().describe("Title"),
@@ -263,6 +297,25 @@ export const SearchProjectsSchema = z.object({
   sort: z.string().optional().default("desc").describe("Sort order, default is desc, options: desc (descending), asc (ascending)"),
 });
 
+// Program (Project Set) related schemas
+export const SearchProgramsSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+
+  // Simplified search parameters
+  name: z.string().nullable().optional().describe("Name search (fuzzy matching)"),
+  status: z.string().nullable().optional().describe("Status identifiers (supports multiple, separated by commas)"),
+  gmtCreateStart: z.string().nullable().optional().describe("Creation time start (format: yyyy-MM-dd HH:mm:ss)"),
+  gmtCreateEnd: z.string().nullable().optional().describe("Creation time end (format: yyyy-MM-dd HH:mm:ss)"),
+  creator: z.string().nullable().optional().describe("Creator identifier (supports multiple, separated by commas)"),
+  users: z.string().nullable().optional().describe("User identifiers (supports multiple, separated by commas, used for extraConditions)"),
+
+  // Pagination and sorting parameters
+  page: z.number().int().min(1).default(1).optional().describe("Pagination parameter, page number, default is 1"),
+  perPage: z.number().int().min(0).max(200).default(20).optional().describe("Pagination parameter, page size, 0-200, default is 20"),
+  orderBy: z.enum(["gmtCreate", "name"]).optional().default("gmtCreate").describe("Sort field, currently only supports name and creation time, default is gmtCreate. gmtCreate: creation time, name: name"),
+  sort: z.enum(["asc", "desc"]).optional().default("desc").describe("Sort order, default is desc. desc: descending, asc: ascending"),
+});
+
 // Work item related schemas
 export const GetWorkItemSchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
@@ -277,6 +330,7 @@ export const CreateWorkItemSchema = z.object({
   assignedTo: z.string().describe("Assignee user ID"),
   customFieldValues: z.record(z.string()).optional().describe("Custom field values"),
   description: z.string().optional().describe("Work item description"),
+  formatType: z.enum(["RICHTEXT", "MARKDOWN"]).optional().describe("Description format type. RICHTEXT (rich text, default) or MARKDOWN (markdown format). Use MARKDOWN when description contains markdown syntax"),
   labels: z.array(z.string()).optional().describe("Associated label IDs"),
   parentId: z.string().optional().describe("Parent work item ID"),
   participants: z.array(z.string()).optional().describe("Participant user IDs"),
@@ -289,7 +343,8 @@ export const CreateWorkItemSchema = z.object({
 export const SearchWorkitemsSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
   category: z.string().describe("Search for work item types, such as Req (requirement), Task (task), Bug (defect), etc., multiple values separated by commas"),
-  spaceId: z.string().describe("Project ID, project unique identifier"),
+  spaceId: z.string().describe("Project ID or Program ID. Use with spaceType to specify the space type"),
+  spaceType: z.enum(["Project", "Program"]).optional().default("Project").describe("Space type: Project (project) or Program (project set). Default is Project. Use 'Program' when spaceId refers to a program (project set) ID"),
 
   // Simplified search parameters
   subject: z.string().nullable().optional().describe("Text contained in the title"),
@@ -438,6 +493,7 @@ export const GetWorkItemWorkflowSchema = z.object({
 export const UpdateWorkItemFieldSchema = z.object({
   subject: z.string().optional().describe("工作项标题"),
   description: z.string().optional().describe("工作项描述"),
+  formatType: z.enum(["RICHTEXT", "MARKDOWN"]).optional().describe("描述格式类型。RICHTEXT（富文本，默认）或 MARKDOWN（Markdown格式）。当描述内容包含Markdown语法时使用MARKDOWN"),
   status: z.string().optional().describe("状态Id"),
   assignedTo: z.string().optional().describe("指派人userId"),
   priority: z.string().optional().describe("优先级Id"),

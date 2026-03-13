@@ -1,0 +1,607 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API文档",
+    "description": "这是描述信息",
+    "version": "1.0"
+  },
+  "servers": [],
+  "tags": [
+    {
+      "name": "版本",
+      "description": "版本相关接口"
+    }
+  ],
+  "paths": {
+    "/projex/organizations/{organizationId}/projects/{projectId}/versions/{id}": {
+      "put": {
+        "tags": [
+          "版本"
+        ],
+        "summary": "更新版本",
+        "operationId": "UpdateVersion",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "版本唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "bfbb5f44f3aaab11460cd1****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVersionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "版本"
+        ],
+        "summary": "删除版本",
+        "operationId": "DeleteVersion",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "版本唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/programs/{id}/versions": {
+      "get": {
+        "tags": ["版本"],
+        "summary": "获取项目集版本列表",
+        "operationId": "ListProgramVersions",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "项目集唯一标识",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "过滤的状态，TODO,DOING,ARCHIVED，分别对应未开始，进行中，已完成",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["TODO", "DOING", "ARCHIVED"]
+              }
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "description": "过滤名称",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "分页参数，第几页",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "description": "分页参数，每页大小",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "headers": {
+              "x-page": {
+                "description": "当前页",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-next-page": {
+                "description": "下一页",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-prev-page": {
+                "description": "上一页",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-per-page": {
+                "description": "每页数据条数",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total": {
+                "description": "总数据量",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total-pages": {
+                "description": "总分页数",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VersionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects/{id}/versions": {
+      "get": {
+        "tags": [
+          "版本"
+        ],
+        "summary": "获取版本列表",
+        "operationId": "ListVersions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "过滤的状态，TODO,DOING,ARCHIVED，分别对应未开始，进行中，已完成",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "TODO,DOING"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "过滤名称",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "test"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "分页参数，第几页",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            },
+            "example": 1
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "分页参数，每页大小",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            },
+            "example": 20
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "headers": {
+              "x-page": {
+                "description": "当前页",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-per-page": {
+                "description": "每页数据条数",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-next-page": {
+                "description": "下一页",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total": {
+                "description": "总数据量",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total-pages": {
+                "description": "总分页数",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-prev-page": {
+                "description": "上一页",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VersionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "版本"
+        ],
+        "summary": "创建版本",
+        "operationId": "CreateVersion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVersionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentifierDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateVersionRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效",
+            "example": "user-xxx",
+            "default": "操作者的id，个人token时该参数无效"
+          },
+          "name": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "description": "版本名称"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "开始日期",
+            "example": "2023-01-01"
+          },
+          "publishDate": {
+            "type": "string",
+            "description": "发布日期",
+            "example": "2023-03-01"
+          },
+          "owners": {
+            "type": "array",
+            "description": "负责人userIds",
+            "items": {
+              "type": "string",
+              "description": "负责人userIds"
+            }
+          }
+        }
+      },
+      "CreateVersionRequest": {
+        "required": [
+          "name",
+          "owners"
+        ],
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效",
+            "example": "user-xxx",
+            "default": "操作者的id，个人token时该参数无效"
+          },
+          "name": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "description": "版本名称"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "开始日期",
+            "format": "date-time"
+          },
+          "publishDate": {
+            "type": "string",
+            "description": "发布日期",
+            "format": "date-time"
+          },
+          "owners": {
+            "type": "array",
+            "description": "负责人userIds",
+            "items": {
+              "type": "string",
+              "description": "负责人userIds"
+            }
+          }
+        }
+      },
+      "IdentifierDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "1111"
+          }
+        }
+      },
+      "MiniUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "用户名",
+            "example": "user-name-xxx"
+          },
+          "id": {
+            "type": "string",
+            "description": "用户id",
+            "example": "674d96abd497cd558d68****"
+          }
+        },
+        "description": "负责人"
+      },
+      "VersionDTO": {
+        "type": "object",
+        "properties": {
+          "creator": {
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "modifier": {
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "gmtCreate": {
+            "type": "string",
+            "description": "创建时间的时间戳",
+            "format": "date-time"
+          },
+          "gmtModified": {
+            "type": "string",
+            "description": "更新时间的时间戳",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string",
+            "description": "版本名称",
+            "example": "1111"
+          },
+          "status": {
+            "type": "string",
+            "description": "状态，未开始对应TODO，进行中对应DOING，已发布对应ARCHIVED",
+            "example": "TODO"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "开始日期",
+            "format": "date-time"
+          },
+          "publishDate": {
+            "type": "string",
+            "description": "发布日期",
+            "format": "date-time"
+          },
+          "owners": {
+            "type": "array",
+            "description": "负责人",
+            "items": {
+              "$ref": "#/components/schemas/MiniUser"
+            }
+          },
+          "locked": {
+            "type": "boolean",
+            "description": "是否被锁定",
+            "example": false
+          },
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "1111"
+          }
+        }
+      },
+      "OperatorIdRequest": {
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效",
+            "example": "user-xxx",
+            "default": "操作者的id，个人token时该参数无效"
+          }
+        },
+        "description": "操作者的id，个人token时该参数无效"
+      }
+    }
+  }
+}

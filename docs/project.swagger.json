@@ -1,0 +1,1327 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API文档",
+    "description": "这是描述信息",
+    "version": "1.0"
+  },
+  "servers": [],
+  "tags": [
+    {
+      "name": "项目",
+      "description": "项目相关接口"
+    },
+    {
+      "name": "项目模板",
+      "description": "项目模板相关接口"
+    },
+    {
+      "name": "项目成员",
+      "description": "项目成员相关接口"
+    }
+  ],
+  "paths": {
+    "/projex/organizations/{organizationId}/projects/{id}": {
+      "get": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "获取项目",
+        "operationId": "GetProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "更新项目",
+        "description": "更新的内容，body的格式为一个jsonobject，格式为:{\"fieldId\":\"value\"}。例如:{\"name\":\"test-update-by-api\"}。fieldId支持的值为：name、 description, customCode, scope 以及项目的自定义字段",
+        "operationId": "UpdateProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "需要更新的字段"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "删除项目",
+        "operationId": "DeleteProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects": {
+      "post": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "创建项目",
+        "operationId": "CreateProject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentifierDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects:search": {
+      "post": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "搜索项目",
+        "operationId": "SearchProjects",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "headers": {
+              "x-page": {
+                "description": "当前页",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-per-page": {
+                "description": "每页数据条数",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-next-page": {
+                "description": "下一页",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total": {
+                "description": "总数据量",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total-pages": {
+                "description": "总分页数",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-prev-page": {
+                "description": "上一页",
+                "style": "simple",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/programs:search": {
+      "post": {
+        "tags": ["项目"],
+        "summary": "搜索项目集",
+        "operationId": "SearchPrograms",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "搜索对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchProgramRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "headers": {
+              "x-page": {
+                "description": "当前页",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-next-page": {
+                "description": "下一页",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-prev-page": {
+                "description": "上一页",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-per-page": {
+                "description": "每页数据条数",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total": {
+                "description": "总数据量",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total-pages": {
+                "description": "总分页数",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects/{id}/starred": {
+      "post": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "收藏项目",
+        "operationId": "CreateStarredProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "取消收藏项目",
+        "operationId": "DeleteStarredProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects/{id}/members": {
+      "get": {
+        "tags": [
+          "项目成员"
+        ],
+        "summary": "获取项目成员列表",
+        "operationId": "ListProjectMembers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "名称过滤",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "test"
+          },
+          {
+            "name": "roleId",
+            "in": "query",
+            "description": "角色id过滤，例如管理员的值为project.admin",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "project.admin"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MemberDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "项目成员"
+        ],
+        "summary": "添加项目成员",
+        "operationId": "CreateProjectMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "项目成员"
+        ],
+        "summary": "删除项目成员",
+        "operationId": "DeleteProjectMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteProjectMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projects/{id}/archived": {
+      "post": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "归档项目",
+        "operationId": "CreateArchivedProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "项目"
+        ],
+        "summary": "取消归档项目",
+        "operationId": "DeleteArchivedProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "项目唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "589c53d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projectTemplates": {
+      "get": {
+        "tags": [
+          "项目模板"
+        ],
+        "summary": "获取项目模版",
+        "operationId": "ListProjectTemplates",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectTemplateDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/projectTemplates/{id}/fields": {
+      "get": {
+        "tags": [
+          "项目模板"
+        ],
+        "summary": "获取项目模版字段配置",
+        "operationId": "GetProjectTemplateFieldConfig",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "模板唯一标识",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "a5c253d622cc8521793e08****"
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SimpleFiled"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateProjectRequest": {
+        "required": [
+          "customCode",
+          "name",
+          "scope",
+          "templateId"
+        ],
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效",
+            "example": "user-xxx",
+            "default": "操作者的id，个人token时该参数无效"
+          },
+          "name": {
+            "type": "string",
+            "description": "项目名称",
+            "example": "project-test"
+          },
+          "scope": {
+            "type": "string",
+            "description": "公开性, public or private",
+            "example": "public",
+            "enum": [
+              "public, private"
+            ]
+          },
+          "customCode": {
+            "type": "string",
+            "description": "项目编号，四到六位大写字母，组织下唯一",
+            "example": "CCDD"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "test"
+          },
+          "customFieldValues": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "description": "格式为:{\"fieldId\":\"value\"}，多值value用逗号隔开，例如：{\"fieldId\": \"value1,value2\"}。例如：{\"priority\":\"888853d622cc8eae793e085e27\"}。fieldId的可选值为\"获取项目模板\"接口返回的字段type值为CustomField的字段，value为希望更新的值。 ",
+              "example": {
+                "priority": "888853d622cc8eae793e085e27"
+              }
+            },
+            "description": "格式为:{\"fieldId\":\"value\"}，多值value用逗号隔开，例如：{\"fieldId\": \"value1,value2\"}。例如：{\"priority\":\"888853d622cc8eae793e085e27\"}。fieldId的可选值为\"获取项目模板\"接口返回的字段type值为CustomField的字段，value为希望更新的值。 ",
+            "example": {
+              "priority": "888853d622cc8eae793e085e27"
+            }
+          },
+          "templateId": {
+            "type": "string",
+            "description": "模板id，可以通过获取项目模版列表接口获取",
+            "example": "template-test"
+          }
+        }
+      },
+      "IdentifierDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "1111"
+          }
+        }
+      },
+      "SearchProjectRequest": {
+        "type": "object",
+        "properties": {
+          "conditions": {
+            "type": "string",
+            "description": "过滤条件， 是一个json串，格式为{\"conditionGroups\":[[filterObject,filterObject,...]]}， 目前支持name,status,gmtCreate,creator,project.admin,logicalStatus六个条件搜索，以下为一个完整的搜索条件(真实场景中可以按需选取对应的值){\"conditionGroups\":[[{\"className\":\"status\",\"fieldIdentifier\":\"status\",\"format\":\"list\",\"operator\":\"CONTAINS\",\"toValue\":null,\"value\":[\"8a4058a71159b682541b0864\",\"cc961a18adf770c6e423ccc5\",\"faf4893ebf92851b6717511a9e\",\"e22f2f8dcbffe9aa03eae7e8ba\"]},{\"className\":\"string\",\"fieldIdentifier\":\"name\",\"format\":\"input\",\"operator\":\"BETWEEN\",\"toValue\":null,\"value\":[\"ffffff\"]},{\"className\":\"date\",\"fieldIdentifier\":\"gmtCreate\",\"format\":\"input\",\"operator\":\"BETWEEN\",\"toValue\":\"2023-09-06 23:59:59\",\"value\":[\"2023-08-03 00:00:00\"]},{\"className\":\"user\",\"fieldIdentifier\":\"creator\",\"format\":\"list\",\"operator\":\"CONTAINS\",\"toValue\":null,\"value\":[\"43578d02-c84c-4fef-8c34-50c05304809a\",\"d222d052-4c0e-4a03-b961-bb3f5fd556a0\"]},{\"className\":\"user\",\"fieldIdentifier\":\"project.admin\",\"format\":\"multiList\",\"operator\":\"CONTAINS\",\"toValue\":null,\"value\":[\"d222d052-4c0e-4a03-b961-bb3f5fd556a0\",\"bccd35ab-6380-4e03-b280-8b6f966e635c\"]},{\"className\":\"string\",\"fieldIdentifier\":\"logicalStatus\",\"format\":\"list\",\"operator\":\"CONTAINS\",\"toValue\":null,\"value\":[\"NORMAL\"]}]]}",
+            "example": "{\"conditionGroups\":[[{\"className\":\"string\",\"fieldIdentifier\":\"name\",\"format\":\"input\",\"operator\":\"BETWEEN\",\"toValue\":null,\"value\":[\"test\"]}]]}"
+          },
+          "extraConditions": {
+            "type": "string",
+            "description": "额外的过滤条件，该参数主要设定一个基础查询范围，例如我管理的、我参与的，我收藏的等。 可以参考页面的项目列表的ajax接口project/search/list中的extraConditions参数",
+            "example": ""
+          },
+          "page": {
+            "minimum": 1,
+            "type": "integer",
+            "description": "分页参数，第几页",
+            "format": "int32",
+            "example": 1
+          },
+          "perPage": {
+            "maximum": 200,
+            "type": "integer",
+            "description": "分页参数，每页大小，0-200，默认值20",
+            "format": "int32",
+            "example": 20
+          },
+          "orderBy": {
+            "type": "string",
+            "description": "排序字段，目前只支持名称和创建时间，不填值则默认为gmtCreate, gmtCreate：创建时间,name：名称",
+            "example": "gmtCreate"
+          },
+          "sort": {
+            "type": "string",
+            "description": "排序方式，默认为desc，desc对应降序; asc对应升序",
+            "example": "desc"
+          }
+        }
+      },
+      "FieldDisplayValue": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "description": "值的唯一标识",
+            "example": "111"
+          },
+          "displayValue": {
+            "type": "string",
+            "description": "值的显示名称",
+            "example": "111"
+          }
+        }
+      },
+      "FieldValue": {
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "type": "string",
+            "description": "字段名称",
+            "example": "field-test"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldDisplayValue"
+            }
+          },
+          "fieldId": {
+            "type": "string",
+            "description": "字段ID",
+            "example": "fieldId1"
+          }
+        },
+        "description": "自定义字段值"
+      },
+      "MiniStatus": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "状态名称",
+            "example": "进行中"
+          },
+          "id": {
+            "type": "string",
+            "description": "状态id",
+            "example": "1111"
+          }
+        },
+        "description": "状态"
+      },
+      "MiniUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "用户名",
+            "example": "user-name-xxx"
+          },
+          "id": {
+            "type": "string",
+            "description": "用户id",
+            "example": "674d96abd497cd558d68****"
+          }
+        },
+        "description": "修改人"
+      },
+      "ProjectDTO": {
+        "type": "object",
+        "properties": {
+          "creator": {
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "modifier": {
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "gmtCreate": {
+            "type": "string",
+            "description": "创建时间的时间戳",
+            "format": "date-time"
+          },
+          "gmtModified": {
+            "type": "string",
+            "description": "更新时间的时间戳",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "project-test"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "test"
+          },
+          "scope": {
+            "type": "string",
+            "description": "公开类型，枚举值为： public、private ",
+            "example": "public"
+          },
+          "customCode": {
+            "type": "string",
+            "description": "编号",
+            "example": "CCDD"
+          },
+          "icon": {
+            "type": "string",
+            "description": "icon",
+            "example": "xxx"
+          },
+          "logicalStatus": {
+            "type": "string",
+            "description": "逻辑状态",
+            "example": "normal"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MiniStatus"
+          },
+          "customFieldValues": {
+            "type": "array",
+            "description": "自定义字段值",
+            "items": {
+              "$ref": "#/components/schemas/FieldValue"
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "1111"
+          }
+        }
+      },
+      "OperatorIdRequest": {
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效",
+            "example": "user-xxx",
+            "default": "操作者的id，个人token时该参数无效"
+          }
+        }
+      },
+      "CreateProjectMemberRequest": {
+        "required": [
+          "roleId",
+          "userIds"
+        ],
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效",
+            "example": "user-xxx",
+            "default": "操作者的id，个人token时该参数无效"
+          },
+          "userIds": {
+            "type": "array",
+            "description": "用户ids",
+            "example": [
+              "11234"
+            ],
+            "items": {
+              "type": "string",
+              "description": "用户ids",
+              "example": "[\"11234\"]"
+            }
+          },
+          "roleId": {
+            "type": "string",
+            "description": "角色id",
+            "example": "project.participant"
+          }
+        }
+      },
+      "MemberDTO": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "description": "用户名称",
+            "example": "user-test"
+          },
+          "userAvatar": {
+            "type": "string",
+            "description": "用户头像地址",
+            "example": "xxx"
+          },
+          "roleName": {
+            "type": "string",
+            "description": "角色名称",
+            "example": "管理员"
+          },
+          "userId": {
+            "type": "string",
+            "description": "用户唯一标识",
+            "example": "user-xxx"
+          },
+          "roleId": {
+            "type": "string",
+            "description": "角色的唯一标识",
+            "example": "project.admin"
+          }
+        }
+      },
+      "ProjectTemplateDTO": {
+        "type": "object",
+        "properties": {
+          "creator": {
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "modifier": {
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "gmtCreate": {
+            "type": "string",
+            "description": "创建时间的时间戳",
+            "format": "date-time"
+          },
+          "gmtModified": {
+            "type": "string",
+            "description": "更新时间的时间戳",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string",
+            "description": "模板名",
+            "example": "Scrum敏捷交付空间"
+          },
+          "description": {
+            "type": "string",
+            "description": "模板描述",
+            "example": "快速、有效的落地Scrum，合理规划并形成交付节奏，持续提升敏捷交付能力"
+          },
+          "type": {
+            "type": "integer",
+            "description": "模板类型 0-system/4-custom/16-instance",
+            "format": "int32",
+            "example": 0
+          },
+          "icon": {
+            "type": "string",
+            "description": "图标链接",
+            "example": "test"
+          },
+          "withControl": {
+            "type": "boolean",
+            "description": "是否是管控模板",
+            "example": true
+          },
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "1111"
+          }
+        }
+      },
+      "FieldMiniOptionDTO": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "可选值",
+            "example": "测试"
+          },
+          "valueEn": {
+            "type": "string",
+            "description": "可选值的英文",
+            "example": "test"
+          },
+          "displayValue": {
+            "type": "string",
+            "description": "可选值的显示值",
+            "example": "测试"
+          },
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "1"
+          }
+        },
+        "description": "可选值"
+      },
+      "SimpleFiled": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "test"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "test"
+          },
+          "type": {
+            "type": "string",
+            "description": "字段类型,区分不同的类型，如系统字段：NativeField，用户自定义字段：CustomField",
+            "example": "NativeField"
+          },
+          "defaultValue": {
+            "type": "string",
+            "description": "默认值",
+            "example": "test"
+          },
+          "options": {
+            "type": "array",
+            "description": "可选值",
+            "items": {
+              "$ref": "#/components/schemas/FieldMiniOptionDTO"
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "是否必填",
+            "example": true
+          },
+          "id": {
+            "type": "string",
+            "description": "字段id",
+            "example": "id"
+          }
+        }
+      },
+      "SearchProgramRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "状态标识符（支持多个，用逗号分隔）",
+            "example": "8a4058a71159b682541b0864,cc961a18adf770c6e423ccc5"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称搜索（模糊匹配）",
+            "example": "dd"
+          },
+          "gmtCreateStart": {
+            "type": "string",
+            "description": "创建时间开始（格式：yyyy-MM-dd HH:mm:ss）",
+            "example": "2025-12-01 00:00:00"
+          },
+          "gmtCreateEnd": {
+            "type": "string",
+            "description": "创建时间结束（格式：yyyy-MM-dd HH:mm:ss）",
+            "example": "2026-01-10 23:59:59"
+          },
+          "creator": {
+            "type": "string",
+            "description": "创建人标识符（支持多个，用逗号分隔）",
+            "example": "5e6f6c1403283833284f3a95"
+          },
+          "users": {
+            "type": "string",
+            "description": "用户标识符（支持多个，用逗号分隔，用于extraConditions）",
+            "example": "5e6f6c1403283833284f3a95"
+          },
+          "page": {
+            "type": "integer",
+            "description": "分页参数，第几页",
+            "default": 1,
+            "minimum": 1,
+            "example": 1
+          },
+          "perPage": {
+            "type": "integer",
+            "description": "分页参数，每页大小，0-200，默认值20",
+            "default": 20,
+            "minimum": 0,
+            "maximum": 200,
+            "example": 20
+          },
+          "orderBy": {
+            "type": "string",
+            "description": "排序字段，目前只支持名称和创建时间，不填值则默认为gmtCreate<br>gmtCreate：创建时间<br>name：名称",
+            "example": "gmtCreate",
+            "enum": ["gmtCreate", "name"]
+          },
+          "sort": {
+            "type": "string",
+            "description": "排序方式，默认为desc<br>desc：降序<br>asc：升序",
+            "default": "desc",
+            "example": "desc",
+            "enum": ["asc", "desc"]
+          }
+        }
+      },
+      "DeleteProjectRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效",
+            "example": "user-xxx",
+            "default": "操作者的id，个人token时该参数无效"
+          },
+          "name": {
+            "type": "string",
+            "description": "项目名称",
+            "example": "project-test"
+          }
+        }
+      },
+      "DeleteProjectMemberRequest": {
+        "required": [
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效",
+            "example": "user-xxx",
+            "default": "操作者的id，个人token时该参数无效"
+          },
+          "roleIds": {
+            "type": "array",
+            "description": "角色ids",
+            "example": [
+              "project.participant"
+            ],
+            "items": {
+              "type": "string",
+              "description": "角色ids",
+              "example": "[\"project.participant\"]"
+            }
+          },
+          "userId": {
+            "type": "string",
+            "description": "用户id",
+            "example": "11234"
+          }
+        }
+      }
+    }
+  }
+}

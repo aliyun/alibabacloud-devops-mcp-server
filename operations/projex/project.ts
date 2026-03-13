@@ -16,6 +16,9 @@ import {
   ConditionsSchema
 } from "./types.js";
 
+// Re-export SearchProgramsSchema for use in handlers
+export { SearchProgramsSchema } from "./types.js";
+
 /**
  * 获取项目详情
  * @param organizationId
@@ -130,6 +133,92 @@ export async function searchProjectsFunc(
   }
 
   return response.map(project => ProjectInfoSchema.parse(project));
+}
+
+/**
+ * 搜索项目集
+ * @param organizationId
+ * @param name
+ * @param status
+ * @param gmtCreateStart
+ * @param gmtCreateEnd
+ * @param creator
+ * @param users
+ * @param orderBy
+ * @param page
+ * @param perPage
+ * @param sort
+ */
+export async function searchProgramsFunc(
+  organizationId: string | undefined,
+  name?: string,
+  status?: string,
+  gmtCreateStart?: string,
+  gmtCreateEnd?: string,
+  creator?: string,
+  users?: string,
+  orderBy?: string,
+  page?: number,
+  perPage?: number,
+  sort?: string
+): Promise<z.infer<typeof ProjectInfoSchema>[]> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/programs:search`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/programs:search`;
+
+  const payload: Record<string, any> = {};
+
+  if (name) {
+    payload.name = name;
+  }
+
+  if (status) {
+    payload.status = status;
+  }
+
+  if (gmtCreateStart) {
+    payload.gmtCreateStart = gmtCreateStart;
+  }
+
+  if (gmtCreateEnd) {
+    payload.gmtCreateEnd = gmtCreateEnd;
+  }
+
+  if (creator) {
+    payload.creator = creator;
+  }
+
+  if (users) {
+    payload.users = users;
+  }
+
+  if (orderBy) {
+    payload.orderBy = orderBy;
+  }
+
+  if (page !== undefined) {
+    payload.page = page;
+  }
+
+  if (perPage !== undefined) {
+    payload.perPage = perPage;
+  }
+
+  if (sort) {
+    payload.sort = sort;
+  }
+
+  const response = await yunxiaoRequest(url, {
+    method: "POST",
+    body: payload,
+  });
+
+  if (!Array.isArray(response)) {
+    return [];
+  }
+
+  return response.map(program => ProjectInfoSchema.parse(program));
 }
 
 /**

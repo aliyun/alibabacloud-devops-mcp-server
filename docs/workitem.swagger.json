@@ -196,7 +196,7 @@
           "工作项"
         ],
         "summary": "更新工作项",
-        "description": "更新的内容，body的格式为一个jsonobject，格式为:{\"fieldId\":\"value\"}，如果是多值格式为:{\"fieldId\":[\"value1\"],\"value2\"]}。例如:更改标题： {\"subject\":\"test-update-by-api\"},更改状态： {\"status\":\"statusId\"},更改负责人： {\"assignedTo\":\"userId\"},更改优先级： {\"priority\":\"priorityId\"},fieldId的可选值可以通过\"获取工作项类型字段配置\"接口获取，value为希望更新的值。 指定操作人时参数增加\"operatorId\":\"userId\"，该参数在个人token场景无效",
+        "description": "更新的内容，body的格式为一个jsonobject，格式为:{\"fieldId\":\"value\"}，如果是多值格式为:{\"fieldId\":[\"value1\"],\"value2\"]}。例如:更改标题： {\"subject\":\"test-update-by-api\"},更改描述和描述类型：{\"description\": \"## 这是Markdown格式的描述内容\", \"formatType\": \"MARKDOWN\"}, formatType为描述格式类型，可选值：RICHTEXT（富文本，默认）、MARKDOWN; 更改状态： {\"status\":\"statusId\"},更改负责人： {\"assignedTo\":\"userId\"},更改优先级： {\"priority\":\"priorityId\"},fieldId的可选值可以通过\"获取工作项类型字段配置\"接口获取，value为希望更新的值。 指定操作人时参数增加\"operatorId\":\"userId\"，该参数在个人token场景无效",
         "operationId": "UpdateWorkitem",
         "parameters": [
           {
@@ -466,7 +466,7 @@
           "工作项"
         ],
         "summary": "搜索工作项",
-        "description": "搜索工作项，参数中spaceId为项目id，该接口不支持跨多个项目进行数据搜索\nconditions为过滤条件，是一个json串，格式为{\"conditionGroups\":[[filterObject,filterObject,...]]}， 每个字段如何拼接可参考需求列表页面过滤时请求的ajax接口: workitem/list. 可在页面上先选择好条件进行过滤，后直接取workitem/list接口中的conditions参数 \n几个常见的filterObject: \n标题包含test的条件：\n{\"fieldIdentifier\": \"subject\",\"operator\": \"CONTAINS\",\"value\": [\"test\"],\"toValue\": null,\"className\": \"string\",\"format\": \"input\"},\n状态包含指定状态的条件：\n{\"fieldIdentifier\": \"status\",\"operator\": \"CONTAINS\",\"value\": [\"28\",\"30\",\"32\",\"100010\"],\"toValue\": null,\"className\": \"status\",\"format\": \"list\"},\n负责人包含用户id为5f2bfdacb69dd0f7311e2932的条件\n{\"fieldIdentifier\": \"assignedTo\",\"operator\": \"CONTAINS\",\"value\": [\"5f2bfdacb69dd0f7311e2932\"],\"toValue\": null,\"className\": \"user\",\"format\": \"list\"}\n创建人包含用户id为5f2bfdacb69dd0f7311e2932的条件\n{\"fieldIdentifier\": \"creator\",\"operator\": \"CONTAINS\",\"value\": [\"5f2bfdacb69dd0f7311e2932\"],\"toValue\": null,\"className\": \"user\",\"format\": \"list\"}\n包含标签id为1589a2b0ae967141c6929f1a78的条件\n{\"fieldIdentifier\": \"tag\",\"operator\": \"CONTAINS\",\"value\": [\"1589a2b0ae967141c6929f1a78\"],\"toValue\": null,\"className\": \"tag\",\"format\": \"multiList\"}\n更新时间介入的条件：\n{\"fieldIdentifier\": \"gmtCreate\",\"operator\": \"BETWEEN\",\"value\": [\"2022-04-01 00:00:00\"],\"toValue\": \"2023-03-31 23:59:59\",\"className\": \"dateTime\",\"format\": \"input\"}",
+        "description": "搜索工作项，参数中spaceId为项目id或项目集id，该接口不支持跨多个项目进行数据搜索",
         "operationId": "SearchWorkitems",
         "parameters": [
           {
@@ -574,13 +574,13 @@
         "tags": [
           "工作项类型"
         ],
-        "summary": "获取工作项类型列表",
+        "summary": "获取项目下工作项类型列表",
         "operationId": "ListWorkitemTypes",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "工作项唯一标识",
+            "description": "项目唯一标识",
             "required": true,
             "style": "simple",
             "schema": {
@@ -640,7 +640,7 @@
         "tags": [
           "工作项类型"
         ],
-        "summary": "获取工作项类型字段配置",
+        "summary": "获取项目下工作项类型字段配置",
         "operationId": "GetWorkitemTypeFieldConfig",
         "parameters": [
           {
@@ -877,12 +877,78 @@
         }
       }
     },
+    "/projex/organizations/{organizationId}/workitems/{id}/workflow": {
+      "get": {
+        "tags": ["工作项"],
+        "summary": "获取工作项工作流信息",
+        "operationId": "GetWorkitemWorkflowInfo",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "组织ID"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "工作项唯一标识"
+          },
+          {
+            "name": "X-Tenant-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "租户ID"
+          },
+          {
+            "name": "x-yunxiao-userid",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "云效用户ID"
+          },
+          {
+            "name": "x-yunxiao-appid",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "云效应用ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkitemWorkflow"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/projex/organizations/{organizationId}/projects/{projectId}/workitemTypes/{id}/workflows": {
       "get": {
         "tags": [
           "工作项工作流"
         ],
-        "summary": "获取工作项工作流信息",
+        "summary": "获取工作项工作流的状态列表",
         "operationId": "GetWorkitemWorkflow",
         "parameters": [
           {
@@ -1038,13 +1104,18 @@
           },
           "customFieldValues": {
             "type": "object",
-            "description": "格式为:{\"fieldId\":\"value\"}，多值value用逗号隔开，例如：{\"fieldId\": \"value1,value2\"}。例如：\n{\"priority\":\"888853d622cc8eae793e085e27\"},fieldId的可选值为\"工作项创建时需要的字段信息\"接口返回的字段type值为SystemCustomField和CustomField的字段，value为希望更新的值。 ",
+            "description": "格式为:{\"fieldId\":\"value\"}，多值value用逗号隔开，例如：{\"fieldId\": \"value1,value2\"}。例如：<br>{\"priority\":\"888853d622cc8eae793e085e27\"},fieldId的可选值为\"工作项创建时需要的字段信息\"接口返回的字段type值为SystemCustomField和CustomField的字段，value为希望更新的值。 ",
             "example": "{\"priority\":\"888853d622cc8eae793e085e27\"}"
           },
           "description": {
             "type": "string",
             "description": "工作项描述",
             "example": "描述test"
+          },
+          "formatType":{
+            "type": "string",
+            "description": "描述格式类型，可选值：RICHTEXT（富文本，默认）、MARKDOWN",
+            "example": "RICHTEXT"
           },
           "labels": {
             "type": "array",
@@ -1382,12 +1453,12 @@
           },
           "conditions": {
             "type": "string",
-            "description": "过滤条件， 是一个json串，格式为{\"conditionGroups\":[[filterObject,filterObject,...]]}， 每个字段如何拼接可参考需求列表页面过滤时请求的ajax接口: /workitem/list，以下为一个完整的搜索条件(真实场景中可以按需选取对应的值){\"conditionGroups\":[[{\"fieldIdentifier\":\"status\",\"operator\":\"CONTAINS\",\"value\":[\"100005\",\"100010\",\"154395\"],\"toValue\":null,\"className\":\"status\",\"format\":\"list\"}]]}",
+            "description": "过滤条件，是一个json串，格式为{\"conditionGroups\":[[filterObject,filterObject,...]]}， 每个字段如何拼接可参考需求列表页面过滤时请求的ajax接口: workitem/list. 可在页面上先选择好条件进行过滤，后直接取workitem/list接口中的conditions参数 <br>几个常见的filterObject: <br>标题包含test的条件：<br>{\"fieldIdentifier\": \"subject\",\"operator\": \"CONTAINS\",\"value\": [\"test\"],\"toValue\": null,\"className\": \"string\",\"format\": \"input\"},<br>状态包含指定状态的条件：<br>{\"fieldIdentifier\": \"status\",\"operator\": \"CONTAINS\",\"value\": [\"28\",\"30\",\"32\",\"100010\"],\"toValue\": null,\"className\": \"status\",\"format\": \"list\"},<br>负责人包含用户id为5f2bfdacb69dd0f7311e2932的条件<br>{\"fieldIdentifier\": \"assignedTo\",\"operator\": \"CONTAINS\",\"value\": [\"5f2bfdacb69dd0f7311e2932\"],\"toValue\": null,\"className\": \"user\",\"format\": \"list\"}<br>创建人包含用户id为5f2bfdacb69dd0f7311e2932的条件<br>{\"fieldIdentifier\": \"creator\",\"operator\": \"CONTAINS\",\"value\": [\"5f2bfdacb69dd0f7311e2932\"],\"toValue\": null,\"className\": \"user\",\"format\": \"list\"}<br>包含标签id为1589a2b0ae967141c6929f1a78的条件<br>{\"fieldIdentifier\": \"tag\",\"operator\": \"CONTAINS\",\"value\": [\"1589a2b0ae967141c6929f1a78\"],\"toValue\": null,\"className\": \"tag\",\"format\": \"multiList\"}<br>更新时间介入的条件：<br>{\"fieldIdentifier\": \"gmtCreate\",\"operator\": \"BETWEEN\",\"value\": [\"2022-04-01 00:00:00\"],\"toValue\": \"2023-03-31 23:59:59\",\"className\": \"dateTime\",\"format\": \"input\"}",
             "example": "{\"conditionGroups\":[[{\"fieldIdentifier\":\"status\",\"operator\":\"CONTAINS\",\"value\":[\"100005\",\"100010\",\"154395\"],\"toValue\":null,\"className\":\"status\",\"format\":\"list\"}]]}"
           },
           "orderBy": {
             "type": "string",
-            "description": "排序字段，默认为gmtCreate\ngmtCreate：创建时间\nname：名称",
+            "description": "排序字段，默认为gmtCreate<br>gmtCreate：创建时间<br>name：名称",
             "example": "gmtCreate"
           },
           "page": {
@@ -1404,12 +1475,17 @@
           },
           "sort": {
             "type": "string",
-            "description": "排序方式，默认为desc\ndesc：降序\nasc：升序",
+            "description": "排序方式，默认为desc<br>desc：降序<br>asc：升序",
             "example": "desc"
           },
           "spaceId": {
             "type": "string",
-            "description": "项目id"
+            "description": "项目id或项目集id"
+          },
+          "spaceType": {
+            "type": "string",
+            "description": "空间类型，Project（项目）或 Program（项目集），默认为 Project",
+            "example": "Project"
           }
         }
       },
@@ -1434,7 +1510,7 @@
           "disabledOptions": {
             "type": "array",
             "description": "字段待选值，只有字段是全局字段且是列表类型时才有效",
-            "example": "[test]",
+            "example": "[\"a\"]",
             "items": {
               "type": "string"
             }
@@ -1461,7 +1537,7 @@
           "options": {
             "type": "array",
             "description": "字段待选值，只有字段是列表类型时才有效",
-            "example": "[test]",
+            "example": "[\"a\",\"b\",\"c\"]",
             "items": {
               "type": "string"
             }

@@ -14,6 +14,18 @@ export const getProjectManagementTools = () => [
     description: "[Project Management] Search for Yunxiao Project List. A Project is a project management unit that includes work items and sprints, and it is different from a code repository (Repository).\n\nUse Cases:\n\nQuery projects I am involved in\nQuery projects I have created",
     inputSchema: zodToJsonSchema(types.SearchProjectsSchema),
   },
+  {
+    name: "search_programs",
+    description: "[Project Management] Search for Yunxiao Program (Project Set) List. A Program is a collection of multiple related projects, used for unified management and coordination of large projects.\n\nUse Cases:\n\nQuery programs by name\nQuery programs by status\nQuery programs by creator",
+    inputSchema: zodToJsonSchema(types.SearchProgramsSchema),
+  },
+
+  // Version Operations
+  {
+    name: "list_program_versions",
+    description: "[Project Management] List versions for a Yunxiao Program (Project Set). Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a program\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
+    inputSchema: zodToJsonSchema(types.ListProgramVersionsSchema),
+  },
 
   // Sprint Operations
   {

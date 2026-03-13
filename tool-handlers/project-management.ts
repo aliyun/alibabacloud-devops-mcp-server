@@ -1,6 +1,7 @@
 import * as project from '../operations/projex/project.js';
 import * as workitem from '../operations/projex/workitem.js';
 import * as sprint from '../operations/projex/sprint.js';
+import * as version from '../operations/projex/version.js';
 import * as types from '../common/types.js';
 import { z } from 'zod';
 
@@ -40,6 +41,42 @@ export const handleProjectManagementTools = async (request: any) => {
       );
       return {
         content: [{ type: "text", text: JSON.stringify(projects, null, 2) }],
+      };
+    }
+
+    case "search_programs": {
+      const args = types.SearchProgramsSchema.parse(request.params.arguments);
+      const programs = await project.searchProgramsFunc(
+        args.organizationId,
+        args.name ?? undefined,
+        args.status ?? undefined,
+        args.gmtCreateStart ?? undefined,
+        args.gmtCreateEnd ?? undefined,
+        args.creator ?? undefined,
+        args.users ?? undefined,
+        args.orderBy,
+        args.page,
+        args.perPage,
+        args.sort,
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(programs, null, 2) }],
+      };
+    }
+
+    // Version Operations
+    case "list_program_versions": {
+      const args = types.ListProgramVersionsSchema.parse(request.params.arguments);
+      const versions = await version.listProgramVersionsFunc(
+        args.organizationId,
+        args.id,
+        args.status ?? undefined,
+        args.name ?? undefined,
+        args.page,
+        args.perPage,
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(versions, null, 2) }],
       };
     }
 
@@ -119,7 +156,7 @@ export const handleProjectManagementTools = async (request: any) => {
 
     case "create_work_item": {
       const args = types.CreateWorkItemSchema.parse(request.params.arguments);
-      const workItemInfo = await workitem.createWorkItemFunc(args.organizationId, args.assignedTo, args.spaceId, args.subject, args.workitemTypeId, args.customFieldValues, args.description, args.labels, args.parentId, args.participants, args.sprint, args.trackers, args.verifier, args.versions);
+      const workItemInfo = await workitem.createWorkItemFunc(args.organizationId, args.assignedTo, args.spaceId, args.subject, args.workitemTypeId, args.customFieldValues, args.description, args.formatType ?? undefined, args.labels, args.parentId, args.participants, args.sprint, args.trackers, args.verifier, args.versions);
       return {
         content: [{ type: "text", text: JSON.stringify(workItemInfo, null, 2) }],
       };
@@ -131,6 +168,7 @@ export const handleProjectManagementTools = async (request: any) => {
         args.organizationId,
         args.category,
         args.spaceId,
+        args.spaceType ?? undefined,
         args.subject ?? undefined,
         args.status ?? undefined,
         args.createdAfter ?? undefined,

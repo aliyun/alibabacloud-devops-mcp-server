@@ -78,6 +78,11 @@ export {
   // Project schemas
   GetProjectSchema,
   SearchProjectsSchema,
+  SearchProgramsSchema,
+  
+  // Version schemas
+  VersionDTOSchema,
+  ListProgramVersionsSchema,
   
   // Sprint schemas
   GetSprintSchema,

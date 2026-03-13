@@ -58,6 +58,7 @@ export async function searchWorkitemsFunc(
   organizationId: string | undefined,
   category: string,
   spaceId: string,
+  spaceType?: string,
   subject?: string,
   status?: string,
   createdAfter?: string,
@@ -116,6 +117,11 @@ export async function searchWorkitemsFunc(
     category: category,
     spaceId: spaceId,
   };
+
+  // 添加 spaceType 参数，用于区分项目和项目集
+  if (spaceType) {
+    payload.spaceType = spaceType;
+  }
 
   const conditions = buildWorkitemConditions({
     subject,
@@ -549,6 +555,7 @@ export async function createWorkItemFunc(
     workitemTypeId: string,
     customFieldValues?: RecordType<string, string> | undefined,
     description?: string | undefined,
+    formatType?: string | undefined,
     labels?: string[],
     parentId?: string | undefined,
     participants?: string[] | undefined,
@@ -575,6 +582,10 @@ export async function createWorkItemFunc(
 
   if (description !== undefined) {
     payload.description = description;
+  }
+
+  if (formatType !== undefined) {
+    payload.formatType = formatType;
   }
 
   if (labels && labels.length > 0) {
@@ -632,6 +643,9 @@ export async function updateWorkItemFunc(
   }
   if (updateWorkItemFields.description !== undefined) {
     requestBody.description = updateWorkItemFields.description;
+  }
+  if (updateWorkItemFields.formatType !== undefined) {
+    requestBody.formatType = updateWorkItemFields.formatType;
   }
   if (updateWorkItemFields.status !== undefined) {
     requestBody.status = updateWorkItemFields.status;
