@@ -83,6 +83,10 @@ export {
   // Version schemas
   VersionDTOSchema,
   ListProgramVersionsSchema,
+  ListVersionsSchema,
+  CreateVersionSchema,
+  UpdateVersionSchema,
+  DeleteVersionSchema,
   
   // Sprint schemas
   GetSprintSchema,

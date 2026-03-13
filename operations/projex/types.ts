@@ -213,6 +213,44 @@ export const ListProgramVersionsSchema = z.object({
   perPage: z.number().int().min(1).max(100).default(20).optional().describe("Page size, default is 20"),
 });
 
+// List Project Versions Schema
+export const ListVersionsSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  id: z.string().describe("Project unique identifier"),
+  status: z.array(z.string()).optional().describe("Filter by status: TODO (not started), DOING (in progress), ARCHIVED (released)"),
+  name: z.string().nullable().optional().describe("Filter by name"),
+  page: z.number().int().min(1).default(1).optional().describe("Page number, default is 1"),
+  perPage: z.number().int().min(1).max(100).default(20).optional().describe("Page size, default is 20"),
+});
+
+// Create Version Schema
+export const CreateVersionSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  id: z.string().describe("Project unique identifier"),
+  name: z.string().min(1).max(50).describe("Version name, max length 50 characters"),
+  owners: z.array(z.string()).min(1).describe("Owner user IDs, at least one required"),
+  startDate: z.string().nullable().optional().describe("Start date, format: YYYY-MM-DD"),
+  publishDate: z.string().nullable().optional().describe("Publish date, format: YYYY-MM-DD"),
+});
+
+// Update Version Schema
+export const UpdateVersionSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  projectId: z.string().describe("Project unique identifier"),
+  id: z.string().describe("Version unique identifier"),
+  name: z.string().min(1).max(50).describe("Version name, max length 50 characters"),
+  owners: z.array(z.string()).optional().describe("Owner user IDs"),
+  startDate: z.string().nullable().optional().describe("Start date, format: YYYY-MM-DD"),
+  publishDate: z.string().nullable().optional().describe("Publish date, format: YYYY-MM-DD"),
+});
+
+// Delete Version Schema
+export const DeleteVersionSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  projectId: z.string().describe("Project unique identifier"),
+  id: z.string().describe("Version unique identifier"),
+});
+
 export const WorkItemSchema = z.object({
   id: z.string().describe("Work item ID"),
   subject: z.string().nullable().optional().describe("Title"),

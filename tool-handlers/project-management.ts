@@ -80,6 +80,64 @@ export const handleProjectManagementTools = async (request: any) => {
       };
     }
 
+    case "list_versions": {
+      const args = types.ListVersionsSchema.parse(request.params.arguments);
+      const versions = await version.listVersionsFunc(
+        args.organizationId,
+        args.id,
+        args.status ?? undefined,
+        args.name ?? undefined,
+        args.page,
+        args.perPage,
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(versions, null, 2) }],
+      };
+    }
+
+    case "create_version": {
+      const args = types.CreateVersionSchema.parse(request.params.arguments);
+      const result = await version.createVersionFunc(
+        args.organizationId,
+        args.id,
+        args.name,
+        args.owners,
+        args.startDate ?? undefined,
+        args.publishDate ?? undefined,
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case "update_version": {
+      const args = types.UpdateVersionSchema.parse(request.params.arguments);
+      await version.updateVersionFunc(
+        args.organizationId,
+        args.projectId,
+        args.id,
+        args.name,
+        args.owners ?? undefined,
+        args.startDate ?? undefined,
+        args.publishDate ?? undefined,
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: true, message: "Version updated successfully" }, null, 2) }],
+      };
+    }
+
+    case "delete_version": {
+      const args = types.DeleteVersionSchema.parse(request.params.arguments);
+      await version.deleteVersionFunc(
+        args.organizationId,
+        args.projectId,
+        args.id,
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: true, message: "Version deleted successfully" }, null, 2) }],
+      };
+    }
+
     // Sprint Operations
     case "get_sprint": {
       const args = types.GetSprintSchema.parse(request.params.arguments);

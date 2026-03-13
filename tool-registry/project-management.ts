@@ -26,6 +26,26 @@ export const getProjectManagementTools = () => [
     description: "[Project Management] List versions for a Yunxiao Program (Project Set). Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a program\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
     inputSchema: zodToJsonSchema(types.ListProgramVersionsSchema),
   },
+  {
+    name: "list_versions",
+    description: "[Project Management] List versions for a Yunxiao Project. Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a project\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
+    inputSchema: zodToJsonSchema(types.ListVersionsSchema),
+  },
+  {
+    name: "create_version",
+    description: "[Project Management] Create a new version in a Yunxiao Project. Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nCreate a new release version\nPlan project milestones\nSet version owners and dates",
+    inputSchema: zodToJsonSchema(types.CreateVersionSchema),
+  },
+  {
+    name: "update_version",
+    description: "[Project Management] Update an existing version in a Yunxiao Project. Can update version name, owners, start date, and publish date.\n\nUse Cases:\n\nUpdate version name\nChange version owners\nModify version dates",
+    inputSchema: zodToJsonSchema(types.UpdateVersionSchema),
+  },
+  {
+    name: "delete_version",
+    description: "[Project Management] Delete a version from a Yunxiao Project.\n\nUse Cases:\n\nRemove obsolete versions\nClean up project versions",
+    inputSchema: zodToJsonSchema(types.DeleteVersionSchema),
+  },
 
   // Sprint Operations
   {
