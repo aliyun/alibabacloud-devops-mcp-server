@@ -187,8 +187,8 @@ export const VersionDTOSchema = z.object({
   startDate: z.string().nullable().optional().describe("Start date"),
   publishDate: z.string().nullable().optional().describe("Publish date"),
   locked: z.boolean().nullable().optional().describe("Whether locked"),
-  gmtCreate: z.string().nullable().optional().describe("Creation time"),
-  gmtModified: z.string().nullable().optional().describe("Last modified time"),
+  gmtCreate: z.number().int().nullable().optional().describe("Creation time in milliseconds"),
+  gmtModified: z.number().int().nullable().optional().describe("Last modified time in milliseconds"),
   creator: z.object({
     id: z.string().nullable().optional().describe("User ID"),
     name: z.string().nullable().optional().describe("User name"),

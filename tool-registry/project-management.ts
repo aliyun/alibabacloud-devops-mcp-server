@@ -28,7 +28,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "list_versions",
-    description: "[Project Management] List versions for a Yunxiao Project. Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a project\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
+    description: "[Project Management] List versions for a Yunxiao Project or Yunxiao Program. Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a project\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
     inputSchema: zodToJsonSchema(types.ListVersionsSchema),
   },
   {
