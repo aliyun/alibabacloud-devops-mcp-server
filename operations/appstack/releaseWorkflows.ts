@@ -305,7 +305,7 @@ export const ListAppReleaseStageRunsRequestSchema = z.object({
   appName: z.string().describe("应用名"),
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
-  pagination: z.enum(["keyset", ""]).optional().describe("分页模式参数：keyset表示键集分页，不传表示页码分页"),
+  pagination: z.enum(["keyset"]).optional().describe("分页模式参数：keyset表示键集分页，不传表示页码分页"),
   perPage: z.number().min(1).max(100).default(20).optional().describe("分页尺寸参数，决定一页最多返回多少对象"),
   orderBy: z.enum(["id", "gmtCreate"]).optional().describe("分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性"),
   sort: z.enum(["asc", "desc"]).optional().describe("分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序"),
