@@ -3333,7 +3333,7 @@
           "required" : false,
           "schema" : {
             "description" : "分页模式参数：keyset表示键集分页，不传表示页码分页",
-            "enum" : [ "keyset", "" ],
+            "enum" : [ "keyset" ],
             "example" : "keyset",
             "type" : "string"
           }
@@ -4312,7 +4312,7 @@
           "required": false,
           "schema": {
             "description" : "分页模式参数：keyset表示键集分页，不传表示页码分页",
-            "enum" : [ "keyset", "" ],
+            "enum" : [ "keyset" ],
             "example": "keyset",
             "type": "string"
           }
