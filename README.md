@@ -16,186 +16,6 @@ alibabacloud-devops-mcp-server provides the following capabilities for AI assist
 - `packages-management`: Artifact repository management tools (artifact repositories, artifact lists, etc.)
 - `test-management`: Test management tools (test case management, test case directories, test plans, test results, etc.)
 
-## Tools
-
-alibabacloud-devops-mcp-server integrates various tools, including:
-
-### Organization Management
-
-- `get_current_organization_Info`: Get current user's organization information
-- `get_user_organizations`: Get the list of organizations the current user has joined
-- `get_organization_role`: Get information about an organization role
-- `get_organization_departments`: Get the list of departments in an organization
-- `get_organization_department_info`: Get information about a department in an organization
-- `get_organization_department_ancestors`: Get the ancestors of a department in an organization
-- `get_organization_members`: Get the list of members in an organization
-- `get_organization_member_info`: Get information about a member in an organization
-- `get_organization_member_info_by_user_id`: Get information about a member in an organization by user ID
-- `search_organization_members`: Search for organization members
-- `list_organization_roles`: List organization roles
-- `get_organization_role`: Get information about an organization role
-
-### Code Management Tools
-
-- `create_branch`: Create a branch
-- `delete_branch`: Delete a branch
-- `get_branch`: Get branch information
-- `list_branches`: Get branch list
-- `create_file`: Create a file
-- `delete_file`: Delete a file
-- `get_file_blobs`: Get file content
-- `list_files`: Query file tree
-- `update_file`: Update file content
-- `create_change_request`: Create a merge request
-- `create_change_request_comment`: Create a comment on a merge request
-- `get_change_request`: Query merge request
-- `list_change_request_patch_sets`: Query merge request version list
-- `list_change_request`: Query merge request list
-- `list_change_request_comments`: Query merge request comment list
-- `get_compare`: Compare code
-- `get_repository`: Get repository details
-- `list_repositories`: Get repository list
-
-### Project Management Tools
-
-- `get_project`: Get project details
-- `search_projects`: Search projects
-- `get_sprint`: Get sprint details
-- `list_sprints`: List sprints in a project
-- `get_work_item`: Get work item details
-- `search_workitems`: Search work items
-- `get_work_item_types`: get work item types
-- `create_work_item`: create work item
-- `list_all_work_item_types`: List all work item types in an organization
-- `list_work_item_types`: List work item types in a project space
-- `get_work_item_type`: Get details of a specific work item type
-- `list_work_item_relation_work_item_types`: List work item types that can be related to a specific work item
-- `get_work_item_type_field_config`: Get field configuration for a specific work item type
-- `get_work_item_workflow`: Get workflow information for a specific work item type
-- `list_work_item_comments`: List comments for a specific work item
-- `create_work_item_comment`: Create a comment for a specific work item
-- `list_current_user_effort_records`: [Project Management] 获取用户的实际工时明细，结束时间和开始时间的间隔不能大于6个月
-- `list_effort_records`: [Project Management] 获取实际工时明细
-- `create_effort_record`: [Project Management] 登记实际工时
-- `list_estimated_efforts`: [Project Management] 获取预计工时明细
-- `create_estimated_effort`: [Project Management] 登记预计工时
-- `update_effort_record`: [Project Management] 更新登记实际工时
-- `update_estimated_effort`: [Project Management] 更新登记预计工时
-
-### Pipeline Management Tools
-
-- `get_pipeline`: Get pipeline details
-- `list_pipelines`: Get pipeline list
-- `smart_list_pipelines`: Smart pipeline search with natural language time references
-- `create_pipeline_run`: Create a pipeline run instance
-- `get_latest_pipeline_run`: Get the latest pipeline run instance
-- `get_pipeline_run`: Get pipeline run details
-- `list_pipeline_runs`: Get pipeline run list
-- `list_pipeline_jobs_by_category`: Get pipeline execution tasks by category
-- `list_pipeline_job_historys`: Get the execution history of a pipeline task
-- `execute_pipeline_job_run`: Manually run a pipeline task
-- `get_pipeline_job_run_log`: Get the execution logs of a pipeline job
-- `list_service_connections`: List service connections in organization
-- `create_pipeline_from_description`: Automatically generates YAML configuration and creates pipeline
-- `update_pipeline`: Update an existing pipeline in Yunxiao by pipelineId. Use this to update pipeline YAML, stages, jobs, etc.
-- `create_resource_member`: Create a resource member
-- `delete_resource_member`: Delete a resource member
-- `list_resource_members`: Get a list of resource members
-- `update_resource_member`: Update a resource member
-- `update_resource_owner`: Transfer resource owner
-- `create_tag`: Create a tag
-- `create_tag_group`: Create a tag group
-- `list_tag_groups`: Get a list of tag groups
-- `delete_tag_group`: Delete a tag group
-- `update_tag_group`: Update a tag group
-- `get_tag_group`: Get a tag group
-- `delete_tag`: Delete a tag
-- `update_tag`: Update a tag
-- `stop_vm_deploy_order`: Stop VM deploy order
-- `skip_vm_deploy_machine`: Skip VM deploy machine
-- `retry_vm_deploy_machine`: Retry VM deploy machine
-- `resume_vm_deploy_order`: Resume VM deploy order
-- `get_vm_deploy_order`: Get VM deploy order details
-- `get_vm_deploy_machine_log`: Get VM deploy machine log
-
-### Application Delivery Tools
-
-- `create_change_order`: [application delivery] 创建部署单
-- `list_change_order_versions`: [application delivery] 查看部署单版本列表
-- `get_change_order`: [application delivery] 读取部署单使用的物料和工单状态
-- `list_change_order_job_logs`: [application delivery] 查询环境部署单日志
-- `find_task_operation_log`: [application delivery] 查询部署任务执行日志，其中通常包含下游部署引擎的调度细节信息
-- `execute_job_action`: [application delivery] 操作环境部署单
-- `list_change_orders_by_origin`: [application delivery] 根据创建来源查询部署单
-- `create_appstack_change_request`: [application delivery] 创建变更请求
-- `get_appstack_change_request_audit_items`: [application delivery] 获取变更请求的审批项
-- `list_appstack_change_request_executions`: [application delivery] 列出变更请求的执行记录
-- `list_appstack_change_request_work_items`: [application delivery] 列出变更请求的工作项
-- `cancel_appstack_change_request`: [application delivery] 取消变更请求
-- `close_appstack_change_request`: [application delivery] 关闭变更请求
-- `list_applications`: [application delivery] List applications in an organization with pagination
-- `get_application`: [application delivery] Get application details by name
-- `create_application`: [application delivery] Create a new application
-- `update_application`: [application delivery] Update an existing application
-- `get_latest_orchestration`: [application delivery] Get the latest orchestration for an environment
-- `list_app_orchestration`: [application delivery] List application orchestrations
-- `create_app_orchestration`: [application delivery] Create an application orchestration
-- `delete_app_orchestration`: [application delivery] Delete an application orchestration
-- `get_app_orchestration`: [application delivery] Get an application orchestration
-- `update_app_orchestration`: [application delivery] Update an application orchestration
-- `get_env_variable_groups`: [application delivery] Get variable groups for an environment
-- `create_variable_group`: [application delivery] Create a variable group
-- `delete_variable_group`: [application delivery] Delete a variable group
-- `get_variable_group`: [application delivery] Get a variable group
-- `update_variable_group`: [application delivery] Update a variable group
-- `get_app_variable_groups`: [application delivery] Get variable groups for an application
-- `get_app_variable_groups_revision`: [application delivery] Get the revision of variable groups for an application
-- `search_app_templates`: [application delivery] Search application templates
-- `create_app_tag`: [application delivery] Create an application tag
-- `update_app_tag`: [application delivery] Update an application tag
-- `search_app_tags`: [application delivery] Search application tags
-- `update_app_tag_bind`: [application delivery] Update application tag bindings
-- `create_global_var`: [application delivery] Create a global variable group
-- `get_global_var`: [application delivery] Get a global variable group
-- `update_global_var`: [application delivery] Update a global variable group
-- `list_global_vars`: [application delivery] List global variable groups
-- `get_machine_deploy_log`: [application delivery] Get machine deployment log
-- `add_host_list_to_host_group`: [application delivery] Add host list to host group
-- `add_host_list_to_deploy_group`: [application delivery] Add host list to deploy group
-- `list_app_release_workflows`: [application delivery] List all release workflows for an application
-- `list_app_release_workflow_briefs`: [application delivery] List release workflow briefs for an application
-- `get_app_release_workflow_stage`: [application delivery] Get release workflow stage details
-- `list_app_release_stage_briefs`: [application delivery] List release stage briefs
-- `update_app_release_stage`: [application delivery] Update application release workflow stage
-- `list_app_release_stage_runs`: [application delivery] List release stage execution records
-- `execute_app_release_stage`: [application delivery] Execute release workflow stage for a change request
-- `cancel_app_release_stage_execution`: [application delivery] Cancel release workflow stage execution
-- `retry_app_release_stage_pipeline`: [application delivery] Retry release workflow stage pipeline
-- `skip_app_release_stage_pipeline`: [application delivery] Skip release workflow stage pipeline
-- `list_app_release_stage_metadata`: [application delivery] List integrated metadata for stage execution
-- `get_app_release_stage_pipeline_run`: [application delivery] Get release stage pipeline run instance
-- `pass_app_release_stage_validate`: [application delivery] Pass release workflow stage validation
-- `get_app_release_stage_job_log`: [application delivery] Get pipeline job execution log
-- `refuse_app_release_stage_validate`: [application delivery] Refuse release workflow stage validation
-
-### Packages Management Tools
-
-- `list_package_repositories`: Get package repositories details list
-- `list_artifacts`: Get artifacts details list
-- `get_artifact`: Get single artifact details
-
-### Test Management Tools
-
-- `list_testcase_directories`: [test management] Get test case directory list
-- `create_testcase_directory`: [test management] Create a test case directory
-- `get_testcase_field_config`: [test management] Get test case field configuration
-- `create_testcase`: [test management] Create a test case
-- `search_testcases`: [test management] Search test cases
-- `get_testcase`: [test management] Get test case information
-- `delete_testcase`: [test management] Delete a test case
-- `list_test_plans`: [test management] Get test plan list
-- `get_test_result_list`: [test management] Get test case list in a test plan
-- `update_test_result`: [test management] Update test result
 
 ## Usage
 
@@ -297,7 +117,7 @@ This method is similar to using npx directly, but runs through a Docker containe
 **Option 1: Use Official Image (Recommended)**
 
 ```shell
-docker pull build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:v0.2.0
+docker pull build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest
 ```
 
 **Option 2: Build Your Own Image**
@@ -321,7 +141,7 @@ Add the following to your MCP client configuration file:
         "--rm",
         "-e",
         "YUNXIAO_ACCESS_TOKEN",
-        "build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:v0.2.0"
+        "build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest"
       ],
       "env": {
         "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>"
@@ -349,7 +169,7 @@ docker run -d --name yunxiao-mcp \
   -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
   -e PORT=3000 \
   -e MCP_TRANSPORT=sse \
-  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:v0.2.0 \
+  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest \
   node dist/index.js --sse
 ```
 
@@ -500,7 +320,205 @@ DEVOPS_TOOLSETS=code-management,project-management npx -y alibabacloud-devops-mc
 
 If no toolsets are specified, all tools will be enabled by default.
 
-## Contact Us
+## Tools
+
+alibabacloud-devops-mcp-server integrates various tools, including:
+
+### Organization Management
+
+- `get_current_organization_Info`: Get current user's organization information
+- `get_user_organizations`: Get the list of organizations the current user has joined
+- `get_organization_role`: Get information about an organization role
+- `get_organization_departments`: Get the list of departments in an organization
+- `get_organization_department_info`: Get information about a department in an organization
+- `get_organization_department_ancestors`: Get the ancestors of a department in an organization
+- `get_organization_members`: Get the list of members in an organization
+- `get_organization_member_info`: Get information about a member in an organization
+- `get_organization_member_info_by_user_id`: Get information about a member in an organization by user ID
+- `search_organization_members`: Search for organization members
+- `list_organization_roles`: List organization roles
+- `get_organization_role`: Get information about an organization role
+
+### Code Management Tools
+
+- `create_branch`: Create a branch
+- `delete_branch`: Delete a branch
+- `get_branch`: Get branch information
+- `list_branches`: Get branch list
+- `create_file`: Create a file
+- `delete_file`: Delete a file
+- `get_file_blobs`: Get file content
+- `list_files`: Query file tree
+- `update_file`: Update file content
+- `create_change_request`: Create a merge request
+- `create_change_request_comment`: Create a comment on a merge request
+- `get_change_request`: Query merge request
+- `list_change_request_patch_sets`: Query merge request version list
+- `list_change_request`: Query merge request list
+- `list_change_request_comments`: Query merge request comment list
+- `get_compare`: Compare code
+- `get_repository`: Get repository details
+- `list_repositories`: Get repository list
+- `list_commits`: [Code Management] List commits in a repository
+- `get_commit`: [Code Management] Get commit details
+- `create_commit_comment`: [Code Management] Create a comment on a commit
+
+### Project Management Tools
+
+- `get_project`: Get project details
+- `search_projects`: Search projects
+- `get_sprint`: Get sprint details
+- `list_sprints`: List sprints in a project
+- `create_sprint`: [Project Management] Create a sprint
+- `update_sprint`: [Project Management] Update a sprint
+- `search_programs`: [Project Management] Search for programs
+- `list_program_versions`: [Project Management] List program versions
+- `list_versions`: [Project Management] List project versions
+- `create_version`: [Project Management] Create a version
+- `update_version`: [Project Management] Update a version
+- `delete_version`: [Project Management] Delete a version
+- `get_work_item`: Get work item details
+- `update_work_item`: [Project Management] Update a work item
+- `search_workitems`: Search work items
+- `get_work_item_types`: get work item types
+- `create_work_item`: create work item
+- `list_all_work_item_types`: List all work item types in an organization
+- `list_work_item_types`: List work item types in a project space
+- `get_work_item_type`: Get details of a specific work item type
+- `list_work_item_relation_work_item_types`: List work item types that can be related to a specific work item
+- `get_work_item_type_field_config`: Get field configuration for a specific work item type
+- `get_work_item_workflow`: Get workflow information for a specific work item type
+- `list_work_item_comments`: List comments for a specific work item
+- `create_work_item_comment`: Create a comment for a specific work item
+- `list_current_user_effort_records`: [Project Management] 获取用户的实际工时明细，结束时间和开始时间的间隔不能大于6个月
+- `list_effort_records`: [Project Management] 获取实际工时明细
+- `create_effort_record`: [Project Management] 登记实际工时
+- `list_estimated_efforts`: [Project Management] 获取预计工时明细
+- `create_estimated_effort`: [Project Management] 登记预计工时
+- `update_effort_record`: [Project Management] 更新登记实际工时
+- `update_estimated_effort`: [Project Management] 更新登记预计工时
+
+### Pipeline Management Tools
+
+- `get_pipeline`: Get pipeline details
+- `list_pipelines`: Get pipeline list
+- `smart_list_pipelines`: Smart pipeline search with natural language time references
+- `generate_pipeline_yaml`: [Pipeline Management] Generate pipeline YAML configuration
+- `create_pipeline_from_description`: Create a pipeline from natural language description
+- `update_pipeline`: [Pipeline Management] Update pipeline YAML content
+- `create_pipeline_run`: Create a pipeline run instance
+- `get_latest_pipeline_run`: Get the latest pipeline run instance
+- `get_pipeline_run`: Get pipeline run details
+- `list_pipeline_runs`: Get pipeline run list
+- `list_pipeline_jobs_by_category`: Get pipeline execution tasks by category
+- `list_pipeline_job_historys`: Get the execution history of a pipeline task
+- `execute_pipeline_job_run`: Manually run a pipeline task
+- `get_pipeline_job_run_log`: Get the execution logs of a pipeline job
+- `list_service_connections`: List service connections in organization
+- `create_pipeline_from_description`: Automatically generates YAML configuration and creates pipeline
+- `update_pipeline`: Update an existing pipeline in Yunxiao by pipelineId. Use this to update pipeline YAML, stages, jobs, etc.
+- `create_resource_member`: Create a resource member
+- `delete_resource_member`: Delete a resource member
+- `list_resource_members`: Get a list of resource members
+- `update_resource_member`: Update a resource member
+- `update_resource_owner`: Transfer resource owner
+- `create_tag`: Create a tag
+- `create_tag_group`: Create a tag group
+- `list_tag_groups`: Get a list of tag groups
+- `delete_tag_group`: Delete a tag group
+- `update_tag_group`: Update a tag group
+- `get_tag_group`: Get a tag group
+- `delete_tag`: Delete a tag
+- `update_tag`: Update a tag
+- `stop_vm_deploy_order`: Stop VM deploy order
+- `skip_vm_deploy_machine`: Skip VM deploy machine
+- `retry_vm_deploy_machine`: Retry VM deploy machine
+- `resume_vm_deploy_order`: Resume VM deploy order
+- `get_vm_deploy_order`: Get VM deploy order details
+- `get_vm_deploy_machine_log`: Get VM deploy machine log
+
+### Application Delivery Tools
+
+- `create_change_order`: [application delivery] 创建部署单
+- `list_change_order_versions`: [application delivery] 查看部署单版本列表
+- `get_change_order`: [application delivery] 读取部署单使用的物料和工单状态
+- `list_change_order_job_logs`: [application delivery] 查询环境部署单日志
+- `find_task_operation_log`: [application delivery] 查询部署任务执行日志，其中通常包含下游部署引擎的调度细节信息
+- `execute_job_action`: [application delivery] 操作环境部署单
+- `list_change_orders_by_origin`: [application delivery] 根据创建来源查询部署单
+- `create_appstack_change_request`: [application delivery] 创建变更请求
+- `get_appstack_change_request_audit_items`: [application delivery] 获取变更请求的审批项
+- `list_appstack_change_request_executions`: [application delivery] 列出变更请求的执行记录
+- `list_appstack_change_request_work_items`: [application delivery] 列出变更请求的工作项
+- `cancel_appstack_change_request`: [application delivery] 取消变更请求
+- `close_appstack_change_request`: [application delivery] 关闭变更请求
+- `list_applications`: [application delivery] List applications in an organization with pagination
+- `get_application`: [application delivery] Get application details by name
+- `create_application`: [application delivery] Create a new application
+- `update_application`: [application delivery] Update an existing application
+- `get_latest_orchestration`: [application delivery] Get the latest orchestration for an environment
+- `list_app_orchestration`: [application delivery] List application orchestrations
+- `create_app_orchestration`: [application delivery] Create an application orchestration
+- `delete_app_orchestration`: [application delivery] Delete an application orchestration
+- `get_app_orchestration`: [application delivery] Get an application orchestration
+- `update_app_orchestration`: [application delivery] Update an application orchestration
+- `get_env_variable_groups`: [application delivery] Get variable groups for an environment
+- `create_variable_group`: [application delivery] Create a variable group
+- `delete_variable_group`: [application delivery] Delete a variable group
+- `get_variable_group`: [application delivery] Get a variable group
+- `update_variable_group`: [application delivery] Update a variable group
+- `get_app_variable_groups`: [application delivery] Get variable groups for an application
+- `get_app_variable_groups_revision`: [application delivery] Get the revision of variable groups for an application
+- `search_app_templates`: [application delivery] Search application templates
+- `create_app_tag`: [application delivery] Create an application tag
+- `update_app_tag`: [application delivery] Update an application tag
+- `search_app_tags`: [application delivery] Search application tags
+- `update_app_tag_bind`: [application delivery] Update application tag bindings
+- `create_global_var`: [application delivery] Create a global variable group
+- `get_global_var`: [application delivery] Get a global variable group
+- `update_global_var`: [application delivery] Update a global variable group
+- `list_global_vars`: [application delivery] List global variable groups
+- `get_machine_deploy_log`: [application delivery] Get machine deployment log
+- `add_host_list_to_host_group`: [application delivery] Add host list to host group
+- `add_host_list_to_deploy_group`: [application delivery] Add host list to deploy group
+- `list_app_release_workflows`: [application delivery] List all release workflows for an application
+- `list_app_release_workflow_briefs`: [application delivery] List release workflow briefs for an application
+- `list_system_release_workflows`: [application delivery] List all system release workflows
+- `create_system_release_workflow`: [application delivery] Create a system release workflow
+- `update_system_release_stage`: [application delivery] Update system release workflow stage
+- `execute_system_release_stage`: [application delivery] Execute system release workflow stage
+- `get_app_release_workflow_stage`: [application delivery] Get release workflow stage details
+- `list_app_release_stage_briefs`: [application delivery] List release stage briefs
+- `update_app_release_stage`: [application delivery] Update application release workflow stage
+- `list_app_release_stage_runs`: [application delivery] List release stage execution records
+- `execute_app_release_stage`: [application delivery] Execute release workflow stage for a change request
+- `cancel_app_release_stage_execution`: [application delivery] Cancel release workflow stage execution
+- `retry_app_release_stage_pipeline`: [application delivery] Retry release workflow stage pipeline
+- `skip_app_release_stage_pipeline`: [application delivery] Skip release workflow stage pipeline
+- `list_app_release_stage_metadata`: [application delivery] List integrated metadata for stage execution
+- `get_app_release_stage_pipeline_run`: [application delivery] Get release stage pipeline run instance
+- `pass_app_release_stage_validate`: [application delivery] Pass release workflow stage validation
+- `get_app_release_stage_job_log`: [application delivery] Get pipeline job execution log
+- `refuse_app_release_stage_validate`: [application delivery] Refuse release workflow stage validation
+
+### Packages Management Tools
+
+- `list_package_repositories`: Get package repositories details list
+- `list_artifacts`: Get artifacts details list
+- `get_artifact`: Get single artifact details
+
+### Test Management Tools
+
+- `list_testcase_directories`: [test management] Get test case directory list
+- `create_testcase_directory`: [test management] Create a test case directory
+- `get_testcase_field_config`: [test management] Get test case field configuration
+- `create_testcase`: [test management] Create a test case
+- `search_testcases`: [test management] Search test cases
+- `get_testcase`: [test management] Get test case information
+- `delete_testcase`: [test management] Delete a test case
+- `list_test_plans`: [test management] Get test plan list
+- `get_test_result_list`: [test management] Get test case list in a test plan
+- `update_test_result`: [test management] Update test result
 
 ## Contact Us
 If you have any questions, please join the Alibaba Cloud Devops discussion group (134400004101) for discussion.
@@ -512,3 +530,5 @@ If you have any questions, please join the Alibaba Cloud Devops discussion group
 - [AlibabaCloud DevOps](https://www.aliyun.com/product/yunxiao)
 - [MCP market](https://modelscope.cn/mcp/servers/@aliyun/alibabacloud-devops-mcp-server)
 - [Example Use Cases](https://mp.weixin.qq.com/s/KQsN6dQlnNeCNATC-QD7pg)
+- [使用云效进行项目管理](https://mp.weixin.qq.com/s/2lxa18OlnQ_ly7wgAkCKTw)
+- [使用云效进行代码管理](https://mp.weixin.qq.com/s/pI5fbCK-nVDN7cLwx8K4Zg)
