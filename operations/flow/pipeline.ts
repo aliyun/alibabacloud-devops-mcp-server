@@ -276,20 +276,13 @@ export async function createPipelineRunFunc(
     if (Object.keys(runningTags).length > 0) {
       paramsObject.runningTags = runningTags;
     }
-  } else {
-    console.log('[DEBUG] No repositories to process, skipping runningBranchs/runningTags generation');
   }
   
 
   if (!paramsObject.runningBranchs && !paramsObject.runningTags) {
     // 如果没有生成 runningBranchs 或 runningTags，且有 branch 参数，使用 fallback
     if (options?.branch && !paramsObject.branchModeBranchs) {
-      console.log('[DEBUG] Using fallback: setting branchModeBranchs');
       paramsObject.branchModeBranchs = [options.branch];
-    }
-    // tag 无法使用 branchModeBranchs fallback，只能记录警告
-    if (options?.tag) {
-      console.warn('[WARN] Tag parameter provided but no repositories found, tag will be ignored');
     }
   }
   
@@ -331,9 +324,6 @@ export async function createPipelineRunFunc(
 
   if (Object.keys(paramsObject).length > 0) {
     body.params = JSON.stringify(paramsObject);
-    console.log('[DEBUG] Final body.params:', body.params);
-  } else {
-    console.log('[DEBUG] paramsObject is empty, no params will be sent');
   }
   
   const response = await utils.yunxiaoRequest(url, {

@@ -227,18 +227,6 @@ export const handlePipelineTools = async (request: any) => {
     case "create_pipeline_run": {
       const args = types.CreatePipelineRunSchema.parse(request.params.arguments);
       
-      // 调试日志：查看AI传递的原始参数
-      console.log('[DEBUG] Handler - Raw request.params.arguments:', JSON.stringify(request.params.arguments, null, 2));
-      console.log('[DEBUG] Handler - Parsed args:', JSON.stringify({
-        organizationId: args.organizationId,
-        pipelineId: args.pipelineId,
-        params: args.params,
-        branch: args.branch,
-        tag: args.tag,
-        branches: args.branches,
-        repositories: args.repositories
-      }, null, 2));
-      
       const runId = await pipeline.createPipelineRunFunc(
         args.organizationId,
         args.pipelineId,
