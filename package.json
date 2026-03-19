@@ -1,6 +1,6 @@
 {
   "name": "alibabacloud-devops-mcp-server",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "MCP Server for using the alibabacloud-devops API: allows AI assistants to directly participate in development collaboration, helping teams optimize development processes and improve efficiency.",
   "type": "module",
   "license": "Apache-2.0",
@@ -36,17 +36,17 @@
     "start:sse": "node dist/index.js --sse"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.1",
-    "dotenv": "^16.4.7",
-    "express": "^4.18.2",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
     "universal-user-agent": "^7.0.0",
-    "zod": "^3.22.4",
+    "zod": "^3.25.76",
     "zod-to-json-schema": "^3.22.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "@types/node": "^20.10.5",
+    "@types/node": "^22.13.10",
     "shx": "^0.3.4",
-    "typescript": "^5.8.2"
+    "typescript": "^5.9.3"
   }
 }

@@ -347,7 +347,7 @@ export const CreateChangeRequestSchema = z.object({
   targetBranch: z.string().describe("目标分支名称，即合并到的分支。示例：'master' 或 'main'"),
   targetProjectId: z.number().int().optional().describe("目标库ID，如果未提供，将尝试自动获取。示例：2813489"),
   reviewerUserIds: z.array(z.string()).nullable().optional().describe("评审人用户ID列表。示例：['62c795xxxb468af8'] 或 ['62c795xxxb468af8', '62c795xxxb468af9']"),
-  workItemIds: z.array(z.string()).nullable().optional().describe("关联工作项ID列表。示例：['workitem-123', 'workitem-456']"),
+  workItemIds: z.string().optional().describe("关联工作项ID列表，以字符串形式逗号分隔。示例值：722200214032b6b31e6f1434ab,xxx"),
   createFrom: z.enum(["WEB", "COMMAND_LINE"]).optional().default("WEB").describe("创建来源。WEB - 页面创建；COMMAND_LINE - 命令行创建。默认为WEB"),
   triggerAIReviewRun: z.boolean().optional().default(false).describe("是否触发AI评审。true - 触发AI评审；false - 不触发（默认）"),
 });

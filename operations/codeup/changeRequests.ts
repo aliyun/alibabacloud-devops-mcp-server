@@ -199,7 +199,7 @@ export async function listChangeRequestPatchSetsFunc(
  * @param sourceProjectId 源库ID（可选，未提供时将尝试自动获取），示例：2813489
  * @param targetProjectId 目标库ID（可选，未提供时将尝试自动获取），示例：2813489
  * @param reviewerUserIds 评审人用户ID列表（可选），示例：['62c795xxxb468af8']
- * @param workItemIds 关联工作项ID列表（可选），示例：['workitem-123']
+ * @param workItemIds 关联工作项ID列表（可选），以字符串形式逗号分隔。示例值：722200214032b6b31e6f1434ab,xxx
  * @param createFrom 创建来源，默认 'WEB'。可选值：'WEB' - 页面创建；'COMMAND_LINE' - 命令行创建
  * @param triggerAIReviewRun 是否触发AI评审，默认 false
  */
@@ -213,7 +213,7 @@ export async function createChangeRequestFunc(
   sourceProjectId?: number,
   targetProjectId?: number,
   reviewerUserIds?: string[],
-  workItemIds?: string[],
+  workItemIds?: string,
   createFrom: string = "WEB", // Possible values: WEB, COMMAND_LINE
   triggerAIReviewRun: boolean = false // Whether to trigger AI review
 ): Promise<z.infer<typeof ChangeRequestSchema>> {
