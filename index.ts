@@ -162,7 +162,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 });
 
-config();
+config({ quiet: true });
 
 // 解析启用的工具集
 const parseEnabledToolsets = (input: string | undefined): Toolset[] => {
