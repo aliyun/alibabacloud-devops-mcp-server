@@ -112,6 +112,11 @@ export {
   ListWorkItemCommentsSchema,
   CreateWorkItemCommentSchema,
   
+  // Attachment schemas
+  ListWorkitemAttachmentsSchema,
+  GetWorkitemFileSchema,
+  CreateWorkitemAttachmentSchema,
+  
   // Effort schemas
   ListCurrentUserEffortRecordsSchema,
   ListEffortRecordsSchema,

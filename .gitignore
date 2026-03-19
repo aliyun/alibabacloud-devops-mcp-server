@@ -5,3 +5,4 @@ dist
 .idea
 .vscode
 .env_region
+.qoder/

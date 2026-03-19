@@ -2,6 +2,7 @@ import * as project from '../operations/projex/project.js';
 import * as workitem from '../operations/projex/workitem.js';
 import * as sprint from '../operations/projex/sprint.js';
 import * as version from '../operations/projex/version.js';
+import * as attachment from '../operations/projex/attachment.js';
 import * as types from '../common/types.js';
 import { z } from 'zod';
 
@@ -379,6 +380,43 @@ export const handleProjectManagementTools = async (request: any) => {
       );
       return {
         content: [{ type: "text", text: JSON.stringify(comment, null, 2) }],
+      };
+    }
+
+    // Attachment Operations
+    case "list_workitem_attachments": {
+      const args = types.ListWorkitemAttachmentsSchema.parse(request.params.arguments);
+      const attachments = await attachment.listWorkitemAttachmentsFunc(
+        args.organizationId,
+        args.workItemId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(attachments, null, 2) }],
+      };
+    }
+
+    case "get_workitem_file": {
+      const args = types.GetWorkitemFileSchema.parse(request.params.arguments);
+      const file = await attachment.getWorkitemFileFunc(
+        args.organizationId,
+        args.workitemId,
+        args.id
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(file, null, 2) }],
+      };
+    }
+
+    case "create_workitem_attachment": {
+      const args = types.CreateWorkitemAttachmentSchema.parse(request.params.arguments);
+      const result = await attachment.createWorkitemAttachmentFunc(
+        args.organizationId,
+        args.workItemId,
+        args.filePath,
+        args.operatorId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
     }
 

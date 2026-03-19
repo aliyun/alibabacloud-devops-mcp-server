@@ -28,7 +28,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "list_versions",
-    description: "[Project Management] List versions for a Yunxiao Project or Yunxiao Program. Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a project\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
+    description: "[Project Management] List versions for a Yunxiao Project or Program. Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a project\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
     inputSchema: zodToJsonSchema(types.ListVersionsSchema),
   },
   {
@@ -140,5 +140,22 @@ export const getProjectManagementTools = () => [
     name: "create_work_item_comment",
     description: "[Project Management] Create a comment for a specific work item",
     inputSchema: zodToJsonSchema(types.CreateWorkItemCommentSchema),
+  },
+
+  // Attachment Operations
+  {
+    name: "list_workitem_attachments",
+    description: "[Project Management] List attachments for a specific work item. Returns attachment information including file name, size, suffix, download URL, and creator/modifier details.",
+    inputSchema: zodToJsonSchema(types.ListWorkitemAttachmentsSchema),
+  },
+  {
+    name: "get_workitem_file",
+    description: "[Project Management] Get file information for a specific work item. Returns file details including name, size, suffix, and a temporary download URL.",
+    inputSchema: zodToJsonSchema(types.GetWorkitemFileSchema),
+  },
+  {
+    name: "create_workitem_attachment",
+    description: "[Project Management] Upload a local file as an attachment to a specific work item. The MCP Server reads the file from the given local absolute path and uploads it. Supports any file type.",
+    inputSchema: zodToJsonSchema(types.CreateWorkitemAttachmentSchema),
   }
 ];

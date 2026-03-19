@@ -216,7 +216,7 @@ export const ListProgramVersionsSchema = z.object({
 // List Project Versions Schema
 export const ListVersionsSchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
-  id: z.string().describe("Project unique identifier"),
+  id: z.string().describe("Project unique identifier or Program unique identifier"),
   status: z.array(z.string()).optional().describe("Filter by status: TODO (not started), DOING (in progress), ARCHIVED (released)"),
   name: z.string().nullable().optional().describe("Filter by name"),
   page: z.number().int().min(1).default(1).optional().describe("Page number, default is 1"),
@@ -665,6 +665,53 @@ export const UpdateEstimatedEffortSchema = z.object({
   spentTime: z.number().positive().describe("预计工时"),
   workType: z.string().optional().describe("工作类别"),
 });
+
+// Attachment related schemas
+export const AttachmentDTOSchema = z.object({
+  creator: MiniUserSchema.nullable().optional().describe("创建人"),
+  fileId: z.string().nullable().optional().describe("文件id"),
+  fileName: z.string().nullable().optional().describe("文件名称"),
+  gmtCreate: z.string().nullable().optional().describe("创建时间"),
+  gmtModified: z.string().nullable().optional().describe("修改时间"),
+  id: z.string().nullable().optional().describe("id"),
+  modifier: MiniUserSchema.nullable().optional().describe("修改人"),
+  size: z.number().int().nullable().optional().describe("文件大小"),
+  suffix: z.string().nullable().optional().describe("文件后缀"),
+  url: z.string().nullable().optional().describe("文件下载地址，是个临时的下载地址，有时效性"),
+});
+
+export const WorkitemFileSchema = z.object({
+  id: z.string().nullable().optional().describe("id"),
+  name: z.string().nullable().optional().describe("名称"),
+  size: z.number().int().nullable().optional().describe("大小"),
+  suffix: z.string().nullable().optional().describe("后缀"),
+  url: z.string().nullable().optional().describe("文件下载地址，是个临时的下载地址，有时效性"),
+});
+
+export const ListWorkitemAttachmentsSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  workItemId: z.string().describe("工作项唯一标识"),
+});
+
+export const GetWorkitemFileSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  workitemId: z.string().describe("工作项唯一标识"),
+  id: z.string().describe("文件唯一标识"),
+});
+
+export const CreateWorkitemAttachmentSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  workItemId: z.string().describe("工作项唯一标识"),
+  filePath: z.string().describe("本地文件的绝对路径，MCP Server 将读取该文件并上传为工作项附件"),
+  operatorId: z.string().optional().describe("操作者的userId，个人token时该参数无效"),
+});
+
+// Attachment type exports
+export type AttachmentDTO = z.infer<typeof AttachmentDTOSchema>;
+export type WorkitemFile = z.infer<typeof WorkitemFileSchema>;
+export type ListWorkitemAttachmentsParams = z.infer<typeof ListWorkitemAttachmentsSchema>;
+export type GetWorkitemFileParams = z.infer<typeof GetWorkitemFileSchema>;
+export type CreateWorkitemAttachmentParams = z.infer<typeof CreateWorkitemAttachmentSchema>;
 
 // Type exports
 export type WorkItemTypeDetail = z.infer<typeof WorkItemTypeDetailSchema>;

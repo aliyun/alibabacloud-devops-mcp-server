@@ -1,0 +1,416 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API文档",
+    "description": "这是描述信息",
+    "version": "1.0"
+  },
+  "servers": [],
+  "tags": [
+    {
+      "name": "工作项附件",
+      "description": "项目协作工作项附件相关接口"
+    }
+  ],
+  "paths": {
+    "/projex/organizations/{organizationId}/workitems/{id}/attachments": {
+      "get": {
+        "tags": [
+          "工作项附件"
+        ],
+        "summary": "获取工作项附件列表",
+        "operationId": "ListWorkitemAttachments",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AttachmentDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "工作项附件"
+        ],
+        "summary": "上传工作项附件",
+        "operationId": "CreateWorkitemAttachment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "file",
+                    "format": "binary"
+                  },
+                  "operatorId": {
+                    "type": "string",
+                    "description": "操作者的id，个人token时该参数无效"
+                  }
+                }
+              },
+              "encoding": {
+                "operatorId": {
+                  "contentType": "text/plain"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              },
+              "multipart/form-data": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/projex/organizations/{organizationId}/workitems/{workitemId}/files/{id}": {
+      "get": {
+        "tags": [
+          "工作项附件"
+        ],
+        "summary": "获取工作文件信息",
+        "operationId": "GetWorkitemFile",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "style": "simple",
+            "allowReserved": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workitemId",
+            "in": "path",
+            "description": "工作项唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文件唯一标识",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkitemFile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AttachmentDTO": {
+        "title": "AttachmentDTO",
+        "type": "object",
+        "properties": {
+          "creator": {
+            "description": "创建人",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "文件id",
+            "example": "985353d622cc8521793e08****"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "文件名称",
+            "example": "file-name-xxx"
+          },
+          "gmtCreate": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time"
+          },
+          "gmtModified": {
+            "type": "string",
+            "description": "修改时间",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "id-xxx"
+          },
+          "modifier": {
+            "description": "修改人",
+            "$ref": "#/components/schemas/MiniUser"
+          },
+          "size": {
+            "type": "integer",
+            "description": "文件大小",
+            "format": "int32",
+            "example": 1024
+          },
+          "suffix": {
+            "type": "string",
+            "description": "文件后缀",
+            "example": ".png"
+          },
+          "url": {
+            "type": "string",
+            "description": "文件下载地址，是个临时的下载地址，有实效性",
+            "example": "https://xxx.test.com"
+          }
+        }
+      },
+      "MiniUser": {
+        "title": "MiniUser",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "用户id",
+            "example": "674d96abd497cd558d68****"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "name-xxx"
+          }
+        }
+      },
+      "ResponseEntity": {
+        "title": "ResponseEntity",
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object"
+          },
+          "statusCode": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "ALREADY_REPORTED",
+              "BAD_GATEWAY",
+              "BAD_REQUEST",
+              "BANDWIDTH_LIMIT_EXCEEDED",
+              "CHECKPOINT",
+              "CONFLICT",
+              "CONTINUE",
+              "CREATED",
+              "DESTINATION_LOCKED",
+              "EXPECTATION_FAILED",
+              "FAILED_DEPENDENCY",
+              "FORBIDDEN",
+              "FOUND",
+              "GATEWAY_TIMEOUT",
+              "GONE",
+              "HTTP_VERSION_NOT_SUPPORTED",
+              "IM_USED",
+              "INSUFFICIENT_SPACE_ON_RESOURCE",
+              "INSUFFICIENT_STORAGE",
+              "INTERNAL_SERVER_ERROR",
+              "I_AM_A_TEAPOT",
+              "LENGTH_REQUIRED",
+              "LOCKED",
+              "LOOP_DETECTED",
+              "METHOD_FAILURE",
+              "METHOD_NOT_ALLOWED",
+              "MOVED_PERMANENTLY",
+              "MOVED_TEMPORARILY",
+              "MULTIPLE_CHOICES",
+              "MULTI_STATUS",
+              "NETWORK_AUTHENTICATION_REQUIRED",
+              "NON_AUTHORITATIVE_INFORMATION",
+              "NOT_ACCEPTABLE",
+              "NOT_EXTENDED",
+              "NOT_FOUND",
+              "NOT_IMPLEMENTED",
+              "NOT_MODIFIED",
+              "NO_CONTENT",
+              "OK",
+              "PARTIAL_CONTENT",
+              "PAYLOAD_TOO_LARGE",
+              "PAYMENT_REQUIRED",
+              "PERMANENT_REDIRECT",
+              "PRECONDITION_FAILED",
+              "PRECONDITION_REQUIRED",
+              "PROCESSING",
+              "PROXY_AUTHENTICATION_REQUIRED",
+              "REQUESTED_RANGE_NOT_SATISFIABLE",
+              "REQUEST_ENTITY_TOO_LARGE",
+              "REQUEST_HEADER_FIELDS_TOO_LARGE",
+              "REQUEST_TIMEOUT",
+              "REQUEST_URI_TOO_LONG",
+              "RESET_CONTENT",
+              "SEE_OTHER",
+              "SERVICE_UNAVAILABLE",
+              "SWITCHING_PROTOCOLS",
+              "TEMPORARY_REDIRECT",
+              "TOO_EARLY",
+              "TOO_MANY_REQUESTS",
+              "UNAUTHORIZED",
+              "UNAVAILABLE_FOR_LEGAL_REASONS",
+              "UNPROCESSABLE_ENTITY",
+              "UNSUPPORTED_MEDIA_TYPE",
+              "UPGRADE_REQUIRED",
+              "URI_TOO_LONG",
+              "USE_PROXY",
+              "VARIANT_ALSO_NEGOTIATES"
+            ]
+          },
+          "statusCodeValue": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "WorkitemFile": {
+        "title": "WorkitemFile",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id",
+            "example": "id-xxx"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "name-xxx"
+          },
+          "size": {
+            "type": "integer",
+            "description": "大小",
+            "format": "int32",
+            "example": 1024
+          },
+          "suffix": {
+            "type": "string",
+            "description": "后缀",
+            "example": ".png"
+          },
+          "url": {
+            "type": "string",
+            "description": "文件下载地址，是个临时的下载地址，有实效性",
+            "example": "https://xxx.test.com"
+          }
+        }
+      }
+    }
+  }
+}
