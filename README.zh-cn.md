@@ -395,6 +395,9 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `generate_pipeline_yaml` - [流水线管理] 生成流水线YAML配置
 - `create_pipeline_from_description` - 根据自然语言描述生成流水线 YAML 并创建流水线
 - `update_pipeline` - [流水线管理] 更新流水线YAML内容
+- `list_flow_variable_groups` - [流水线管理] 列出组织中的 Flow 流水线变量组
+- `create_flow_variable_group` - [流水线管理] 创建可复用的 Flow 流水线变量组和密钥
+- `add_pipeline_relations` - [流水线管理] 添加流水线对象关联，例如将 Flow 变量组绑定到流水线
 - `create_pipeline_run` - 运行流水线
 - `get_latest_pipeline_run` - 获取最新运行信息
 - `get_pipeline_run` - 获取运行详情

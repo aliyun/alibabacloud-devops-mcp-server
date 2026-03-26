@@ -138,6 +138,10 @@ export {
   GetPipelineRunSchema,
   ListPipelineRunsSchema,
   UpdatePipelineSchema,
+  FlowVariableGroupSchema,
+  ListFlowVariableGroupsSchema,
+  CreateFlowVariableGroupSchema,
+  AddPipelineRelationsSchema,
   
   // Pipeline job schemas
   ListPipelineJobsByCategorySchema,

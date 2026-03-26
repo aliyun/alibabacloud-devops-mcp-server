@@ -1,5 +1,6 @@
 import * as pipeline from '../operations/flow/pipeline.js';
 import * as pipelineJob from '../operations/flow/pipelineJob.js';
+import * as flowVariableGroup from '../operations/flow/variableGroup.js';
 import * as types from '../common/types.js';
 import { z } from 'zod';
 
@@ -357,6 +358,35 @@ export const handlePipelineTools = async (request: any) => {
       );
       return {
         content: [{ type: "text", text: JSON.stringify({ success: result }) }]
+      };
+    }
+
+    case "list_flow_variable_groups": {
+      const args = types.ListFlowVariableGroupsSchema.parse(request.params.arguments);
+      const result = await flowVariableGroup.listFlowVariableGroupsFunc(args.organizationId, {
+        perPage: args.perPage,
+        page: args.page,
+        pageSort: args.pageSort,
+        pageOrder: args.pageOrder,
+      });
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case "create_flow_variable_group": {
+      const args = types.CreateFlowVariableGroupSchema.parse(request.params.arguments);
+      const result = await flowVariableGroup.createFlowVariableGroupFunc(args);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case "add_pipeline_relations": {
+      const args = types.AddPipelineRelationsSchema.parse(request.params.arguments);
+      const result = await flowVariableGroup.addPipelineRelationsFunc(args);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
     }
 

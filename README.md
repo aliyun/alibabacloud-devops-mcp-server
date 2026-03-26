@@ -406,6 +406,9 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `generate_pipeline_yaml`: [Pipeline Management] Generate pipeline YAML configuration
 - `create_pipeline_from_description`: Create a pipeline from natural language description
 - `update_pipeline`: [Pipeline Management] Update pipeline YAML content
+- `list_flow_variable_groups`: [Pipeline Management] List Flow pipeline variable groups in an organization
+- `create_flow_variable_group`: [Pipeline Management] Create a Flow pipeline variable group for reusable pipeline variables and secrets
+- `add_pipeline_relations`: [Pipeline Management] Add pipeline-object relations, such as attaching a Flow variable group to a pipeline
 - `create_pipeline_run`: Create a pipeline run instance
 - `get_latest_pipeline_run`: Get the latest pipeline run instance
 - `get_pipeline_run`: Get pipeline run details

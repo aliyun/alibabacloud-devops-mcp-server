@@ -396,6 +396,47 @@ export const UpdatePipelineSchema = z.object({
   name: z.string().max(60).describe("Pipeline name, max 60 chars")
 });
 
+// Flow variable group schemas
+export const FlowVariableSchema = z.object({
+  name: z.string().describe("Variable name"),
+  value: z.string().describe("Variable value"),
+  isEncrypted: z.boolean().optional().describe("Whether the variable value should be stored as encrypted"),
+});
+
+export const FlowVariableGroupSchema = z.object({
+  creatorAccountId: z.string().nullable().optional().describe("Creator account ID"),
+  description: z.string().nullable().optional().describe("Variable group description"),
+  updateTime: z.number().int().nullable().optional().describe("Update time in milliseconds"),
+  id: z.number().int().nullable().optional().describe("Variable group ID"),
+  modifierAccountId: z.string().nullable().optional().describe("Last modifier account ID"),
+  name: z.string().nullable().optional().describe("Variable group name"),
+  relatedPipelines: z.array(z.any()).nullable().optional().describe("Pipelines related to the variable group"),
+  variables: z.array(FlowVariableSchema).nullable().optional().describe("Variables in the variable group"),
+  createTime: z.number().int().nullable().optional().describe("Create time in milliseconds"),
+});
+
+export const ListFlowVariableGroupsSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  perPage: z.number().int().min(1).max(100).default(20).optional().describe("Number of items per page"),
+  page: z.number().int().min(1).default(1).optional().describe("Page number"),
+  pageSort: z.string().optional().describe("Sort field, for example ID"),
+  pageOrder: z.enum(["DESC", "ASC"]).optional().describe("Sort order"),
+});
+
+export const CreateFlowVariableGroupSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  name: z.string().describe("Variable group name"),
+  description: z.string().optional().describe("Variable group description"),
+  variables: z.array(FlowVariableSchema).min(1).describe("Variables to create in the variable group"),
+});
+
+export const AddPipelineRelationsSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  relObjectType: z.enum(["VARIABLE_GROUP"]).describe("Related object type"),
+  relObjectIds: z.array(z.string()).min(1).describe("Related object IDs"),
+});
+
 // Service Connection related types
 export const ServiceConnectionSchema = z.object({
   createTime: z.number().int().nullable().optional().describe("创建时间 (毫秒时间戳)"),
@@ -653,3 +694,8 @@ export type ListPipelineRunsOptions = z.infer<typeof ListPipelineRunsSchema>;
 export type PipelineJobItem = z.infer<typeof PipelineJobItemSchema>;
 export type PipelineJobHistoryItem = z.infer<typeof PipelineJobHistoryItemSchema>;
 export type PipelineJobRunLog = z.infer<typeof PipelineJobRunLogSchema>;
+export type FlowVariable = z.infer<typeof FlowVariableSchema>;
+export type FlowVariableGroup = z.infer<typeof FlowVariableGroupSchema>;
+export type ListFlowVariableGroupsParams = z.infer<typeof ListFlowVariableGroupsSchema>;
+export type CreateFlowVariableGroupParams = z.infer<typeof CreateFlowVariableGroupSchema>;
+export type AddPipelineRelationsParams = z.infer<typeof AddPipelineRelationsSchema>;

@@ -190,4 +190,19 @@ export const getPipelineTools = () => [
     description: "[Pipeline Management] Update an existing pipeline in Yunxiao by pipelineId. Use this to update pipeline YAML, stages, jobs, etc.",
     inputSchema: zodToJsonSchema(types.UpdatePipelineSchema),
   },
+  {
+    name: "list_flow_variable_groups",
+    description: "[Pipeline Management] List Flow pipeline variable groups in an organization.",
+    inputSchema: zodToJsonSchema(types.ListFlowVariableGroupsSchema),
+  },
+  {
+    name: "create_flow_variable_group",
+    description: "[Pipeline Management] Create a Flow pipeline variable group for reusable pipeline variables and secrets.",
+    inputSchema: zodToJsonSchema(types.CreateFlowVariableGroupSchema),
+  },
+  {
+    name: "add_pipeline_relations",
+    description: "[Pipeline Management] Add pipeline-object relations. Use this to attach a Flow variable group to a pipeline.",
+    inputSchema: zodToJsonSchema(types.AddPipelineRelationsSchema),
+  },
 ];
