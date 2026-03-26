@@ -163,6 +163,32 @@ export async function executePipelineJobRunFunc(
 }
 
 /**
+ * 停止流水线任务运行
+ * @param organizationId Organization ID（组织ID）
+ * @param pipelineId Pipeline ID（流水线ID）
+ * @param pipelineRunId Pipeline run instance ID（流水线运行ID）
+ * @param jobId Job ID for the pipeline run task（流水线运行任务ID）
+ * @returns Whether the operation was successful
+ */
+export async function stopPipelineJobRunFunc(
+  organizationId: string | undefined,
+  pipelineId: string,
+  pipelineRunId: string,
+  jobId: string
+): Promise<boolean> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = utils.isRegionEdition()
+    ? `/oapi/v1/flow/pipelines/${pipelineId}/pipelineRuns/${pipelineRunId}/jobs/${jobId}/stop`
+    : `/oapi/v1/flow/organizations/${finalOrgId}/pipelines/${pipelineId}/pipelineRuns/${pipelineRunId}/jobs/${jobId}/stop`;
+
+  const response = await utils.yunxiaoRequest(url, {
+    method: "PUT",
+  });
+
+  return Boolean(response);
+}
+
+/**
  * 查询任务运行日志
  * @param organizationId Organization ID（组织ID）
  * @param pipelineId Pipeline ID（流水线ID）
@@ -187,4 +213,3 @@ export async function getPipelineJobRunLogFunc(
 
   return PipelineJobRunLogSchema.parse(response);
 }
-

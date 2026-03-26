@@ -181,6 +181,11 @@ export const getPipelineTools = () => [
     inputSchema: zodToJsonSchema(types.ExecutePipelineJobRunSchema),
   },
   {
+    name: "stop_pipeline_job_run",
+    description: "[Pipeline Management] Stop a specific job in a pipeline run instance. Use this when a job is stuck or when a newer run is blocked behind an older one.",
+    inputSchema: zodToJsonSchema(types.StopPipelineJobRunSchema),
+  },
+  {
     name: "get_pipeline_job_run_log",
     description: "[Pipeline Management] Get the execution logs of a pipeline job. Retrieve the log content for a specific job in a pipeline run.",
     inputSchema: zodToJsonSchema(types.GetPipelineJobRunLogSchema),

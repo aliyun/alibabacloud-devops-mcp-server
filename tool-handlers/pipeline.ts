@@ -334,6 +334,19 @@ export const handlePipelineTools = async (request: any) => {
       };
     }
 
+    case "stop_pipeline_job_run": {
+      const args = types.StopPipelineJobRunSchema.parse(request.params.arguments);
+      const result = await pipelineJob.stopPipelineJobRunFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
     case "get_pipeline_job_run_log": {
       const args = types.GetPipelineJobRunLogSchema.parse(request.params.arguments);
       const log = await pipelineJob.getPipelineJobRunLogFunc(

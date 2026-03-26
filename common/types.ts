@@ -143,6 +143,7 @@ export {
   ListPipelineJobsByCategorySchema,
   ListPipelineJobHistorysSchema,
   ExecutePipelineJobRunSchema,
+  StopPipelineJobRunSchema,
   GetPipelineJobRunLogSchema,
   
   // Service connection schemas

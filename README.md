@@ -413,6 +413,7 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `list_pipeline_jobs_by_category`: Get pipeline execution tasks by category
 - `list_pipeline_job_historys`: Get the execution history of a pipeline task
 - `execute_pipeline_job_run`: Manually run a pipeline task
+- `stop_pipeline_job_run`: Stop a specific job in a pipeline run instance
 - `get_pipeline_job_run_log`: Get the execution logs of a pipeline job
 - `list_service_connections`: List service connections in organization
 - `create_pipeline_from_description`: Automatically generates YAML configuration and creates pipeline

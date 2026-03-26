@@ -343,6 +343,14 @@ export const ExecutePipelineJobRunSchema = z.object({
   jobId: z.string().describe("Job ID for the pipeline run task")
 });
 
+// Flow Stop pipeline job run schema
+export const StopPipelineJobRunSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID"),
+  jobId: z.string().describe("Job ID for the pipeline run task")
+});
+
 // Flow Get pipeline job run log schema
 export const GetPipelineJobRunLogSchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),

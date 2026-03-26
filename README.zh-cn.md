@@ -402,6 +402,7 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `list_pipeline_jobs_by_category` - 获取流水线任务
 - `list_pipeline_job_historys` - 获取任务历史
 - `execute_pipeline_job_run` - 手动运行任务
+- `stop_pipeline_job_run` - 停止指定的流水线任务
 - `get_pipeline_job_run_log` - 获取任务日志
 - `list_service_connections` - 获取服务连接列表
 - `create_pipeline_from_description`: 根据自然语言描述生成流水线 YAML 并创建流水线
