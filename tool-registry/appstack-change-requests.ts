@@ -5,7 +5,9 @@ import {
   ListChangeRequestExecutionsRequestSchema,
   ListChangeRequestWorkItemsRequestSchema,
   CancelChangeRequestRequestSchema,
-  CloseChangeRequestRequestSchema
+  CloseChangeRequestRequestSchema,
+  ListAppChangeRequestsRequestSchema,
+  ListAttachedChangeRequestsRequestSchema
 } from '../operations/appstack/changeRequests.js';
 
 // Export all appstack change requests tools
@@ -39,5 +41,15 @@ export const getAppStackChangeRequestTools = () => [
     name: 'close_appstack_change_request',
     description: '[application delivery] Close a change request',
     inputSchema: zodToJsonSchema(CloseChangeRequestRequestSchema),
+  },
+  {
+    name: 'list_appstack_change_requests',
+    description: '[application delivery] Search change requests in an application with pagination and filtering',
+    inputSchema: zodToJsonSchema(ListAppChangeRequestsRequestSchema),
+  },
+  {
+    name: 'list_attached_change_requests',
+    description: '[application delivery] List change requests attached to a release',
+    inputSchema: zodToJsonSchema(ListAttachedChangeRequestsRequestSchema),
   }
 ];

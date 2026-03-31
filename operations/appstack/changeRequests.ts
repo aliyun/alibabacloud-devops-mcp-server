@@ -18,9 +18,11 @@ const StageMetadataCommitVOSchema = z.object({
 }).describe("变更执行记录版本");
 
 const ChangeRequestExecutionVOSchema = z.object({
-  commit: StageMetadataCommitVOSchema.describe("变更执行记录版本"),
-  runNumber: z.string().describe("运行序号"),
-  state: z.enum(["RUNNING", "SUCCESS", "FAILED", "CANCELED", "UNKNOWN"]).describe("阶段执行状态"),
+  id: z.string().describe("执行记录ID"),
+  changeRequestSn: z.string().describe("变更标识符"),
+  status: z.string().describe("执行状态"),
+  gmtCreate: z.string().describe("创建时间"),
+  gmtModified: z.string().describe("修改时间"),
 }).describe("变更执行记录");
 
 const CodeReviewAuditItemSchema = AuditItemSchema.extend({
@@ -57,11 +59,10 @@ export const CreateChangeRequestRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
   appName: z.string().describe("应用名"),
   appCodeRepoSn: z.string().describe("应用代码仓库标识符"),
-  autoDeleteBranchWhenEnd: z.boolean().describe("变更结束时候是否自动删除分支"),
+  autoDeleteBranchWhenEnd: z.boolean().default(false).describe("变更结束时候是否自动删除分支"),
   branchName: z.string().describe("应用代码分支名称"),
-  createBranch: z.boolean().describe("是否创建分支"),
-  ownerAccountId: z.string().optional().describe("变更负责人账号"),
-  ownerId: z.string().optional().describe("变更负责人"),
+  createBranch: z.boolean().default(false).describe("是否创建分支"),
+  ownerId: z.string().describe("变更负责人,默认值可以为当前用户"),
   title: z.string().describe("变更标题"),
 });
 
@@ -70,15 +71,15 @@ export const CreateChangeRequestResponseSchema = z.object({
   appName: z.string().describe("应用名"),
   autoDeleteBranchWhenEnd: z.boolean().describe("结束后是否自动删除分支"),
   branch: z.string().optional().describe("变更代码分支"),
-  creatorAccountId: z.string().optional().describe("创建者的阿里云账号pk"),
-  creatorId: z.string().optional().describe("创建者者云效id"),
+  creatorAccountId: z.string().nullable().optional().describe("创建者的阿里云账号 pk"),
+  creatorId: z.string().nullable().optional().describe("创建者者云效 id"),
   gmtCreate: z.string().describe("创建时间"),
   gmtModified: z.string().describe("修改时间"),
   name: z.string().optional().describe("变更名称"),
   originBranch: z.string().optional().describe("代码分支源分支"),
   originBranchRevisionSha: z.string().optional().describe("代码分支源分支版本"),
-  ownerAccountId: z.string().optional().describe("拥有者的阿里云账号pk"),
-  ownerId: z.string().optional().describe("拥有者ID"),
+  ownerAccountId: z.string().nullable().optional().describe("拥有者的阿里云账号 pk"),
+  ownerId: z.string().optional().describe("拥有者 ID"),
   sn: z.string().describe("唯一标识符"),
   state: z.string().describe("状态"),
   type: z.string().describe("变更类型"),
@@ -153,6 +154,67 @@ export const CloseChangeRequestRequestSchema = z.object({
 
 export const CloseChangeRequestResponseSchema = z.boolean().describe("调用是否成功");
 
+// Schema for the ListAppChangeRequests API
+export const ListAppChangeRequestsRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  appName: z.string().describe("应用名"),
+  current: z.number().min(1).default(1).optional().describe("当前页数"),
+  pageSize: z.number().max(30).default(10).optional().describe("每页数量"),
+  owner: z.array(z.string()).optional().describe("负责人列表"),
+  name: z.string().optional().describe("变更名称"),
+  state: z.array(z.enum(["DEVELOPING", "INTEGRATING", "RELEASED", "CLOSED"])).optional().describe("变更状态列表"),
+});
+
+const ChangeRequestDetailVOSchema = z.object({
+  sn: z.string().describe("变更标识符"),
+  appName: z.string().describe("应用名"),
+  state: z.enum(["DEVELOPING", "INTEGRATING", "RELEASED", "CLOSED"]).describe("变更状态"),
+  name: z.string().describe("变更名称"),
+  type: z.string().describe("变更类型"),
+  appCodeRepoSn: z.string().optional().describe("应用代码仓库标识符"),
+  branch: z.string().describe("分支名称"),
+  ownerId: z.string().describe("负责人ID"),
+  originBranch: z.string().optional().describe("源分支"),
+  originBranchRevision: z.string().optional().describe("源分支版本"),
+  creatorId: z.string().optional().describe("创建者ID"),
+  gmtCreate: z.string().describe("创建时间"),
+  gmtModified: z.string().optional().describe("修改时间"),
+  extInfo: z.object({}).optional().describe("扩展信息"),
+});
+
+export const ListAppChangeRequestsResponseSchema = z.object({
+  total: z.number().describe("总数"),
+  current: z.number().describe("当前页数"),
+  pageSize: z.number().describe("每页大小"),
+  pages: z.number().describe("总页数"),
+  records: z.array(ChangeRequestDetailVOSchema).describe("数据列表"),
+});
+
+// Schema for the ListAttachedChangeRequests API
+export const ListAttachedChangeRequestsRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  systemName: z.string().describe("系统名称"),
+  releaseSn: z.string().describe("发布标识符"),
+  current: z.number().default(1).optional().describe("当前页数"),
+  pageSize: z.number().default(10).optional().describe("每页大小"),
+});
+
+const ChangeRequestSchema = z.object({
+  sn: z.string().describe("唯一标识符"),
+  name: z.string().describe("变更名称"),
+  state: z.string().describe("状态"),
+  appName: z.string().describe("应用名"),
+  gmtCreate: z.string().describe("创建时间"),
+});
+
+export const ListAttachedChangeRequestsResponseSchema = z.object({
+  current: z.number().describe("当前页数"),
+  pageSize: z.number().describe("每页大小"),
+  pages: z.number().describe("总页数"),
+  records: z.array(ChangeRequestSchema).describe("数据列表"),
+  total: z.number().describe("总数"),
+});
+
 export type CreateChangeRequestRequest = z.infer<typeof CreateChangeRequestRequestSchema>;
 export type CreateChangeRequestResponse = z.infer<typeof CreateChangeRequestResponseSchema>;
 export type GetChangeRequestAuditItemsRequest = z.infer<typeof GetChangeRequestAuditItemsRequestSchema>;
@@ -165,6 +227,10 @@ export type CancelChangeRequestRequest = z.infer<typeof CancelChangeRequestReque
 export type CancelChangeRequestResponse = z.infer<typeof CancelChangeRequestResponseSchema>;
 export type CloseChangeRequestRequest = z.infer<typeof CloseChangeRequestRequestSchema>;
 export type CloseChangeRequestResponse = z.infer<typeof CloseChangeRequestResponseSchema>;
+export type ListAppChangeRequestsRequest = z.infer<typeof ListAppChangeRequestsRequestSchema>;
+export type ListAppChangeRequestsResponse = z.infer<typeof ListAppChangeRequestsResponseSchema>;
+export type ListAttachedChangeRequestsRequest = z.infer<typeof ListAttachedChangeRequestsRequestSchema>;
+export type ListAttachedChangeRequestsResponse = z.infer<typeof ListAttachedChangeRequestsResponseSchema>;
 
 /**
  * Create a change request
@@ -335,6 +401,74 @@ export async function closeChangeRequest(params: CloseChangeRequestRequest): Pro
       }
     );
     return CloseChangeRequestResponseSchema.parse(response);
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * List app change requests
+ * 
+ * @param params - The request parameters
+ * @returns The list of change requests
+ */
+export async function listAppChangeRequests(params: ListAppChangeRequestsRequest): Promise<ListAppChangeRequestsResponse> {
+  const { organizationId, appName, current, pageSize, owner, name, state } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  
+  // Build request body
+  const body: Record<string, any> = {};
+  if (current !== undefined) body.current = current;
+  if (pageSize !== undefined) body.pageSize = pageSize;
+  if (owner) body.owner = owner;
+  if (name) body.name = name;
+  if (state) body.state = state;
+  
+  try {
+    const url = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/changeRequests:search`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/changeRequests:search`;
+    const response = await yunxiaoRequest(
+      url,
+      {
+        method: 'POST',
+        body: body,
+      }
+    );
+    return ListAppChangeRequestsResponseSchema.parse(response);
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * List attached change requests for a release
+ * 
+ * @param params - The request parameters
+ * @returns The list of attached change requests
+ */
+export async function listAttachedChangeRequests(params: ListAttachedChangeRequestsRequest): Promise<ListAttachedChangeRequestsResponse> {
+  const { organizationId, systemName, releaseSn, current, pageSize } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  
+  // Build query string
+  const query: Record<string, string | number> = {};
+  if (current !== undefined) query.current = current;
+  if (pageSize !== undefined) query.pageSize = pageSize;
+  
+  try {
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/systems/${systemName}/releases/${releaseSn}/changeRequests`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/systems/${systemName}/releases/${releaseSn}/changeRequests`;
+    const url = buildUrl(baseUrl, query);
+    
+    const response = await yunxiaoRequest(
+      url,
+      {
+        method: 'GET',
+      }
+    );
+    return ListAttachedChangeRequestsResponseSchema.parse(response);
   } catch (error) {
     throw error;
   }

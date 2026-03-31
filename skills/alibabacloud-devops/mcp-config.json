@@ -1,0 +1,8 @@
+{
+  "name": "alibabacloud-devops-mcp-server",
+  "command": "npx",
+  "args": ["-y", "alibabacloud-devops-mcp-server"],
+  "env": {
+    "YUNXIAO_ACCESS_TOKEN": "your-yunxiao-access-token"
+  }
+}

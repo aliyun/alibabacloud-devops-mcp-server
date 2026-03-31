@@ -5,12 +5,16 @@ import {
   listChangeRequestWorkItems,
   cancelChangeRequest,
   closeChangeRequest,
+  listAppChangeRequests,
+  listAttachedChangeRequests,
   CreateChangeRequestRequestSchema,
   GetChangeRequestAuditItemsRequestSchema,
   ListChangeRequestExecutionsRequestSchema,
   ListChangeRequestWorkItemsRequestSchema,
   CancelChangeRequestRequestSchema,
-  CloseChangeRequestRequestSchema
+  CloseChangeRequestRequestSchema,
+  ListAppChangeRequestsRequestSchema,
+  ListAttachedChangeRequestsRequestSchema
 } from '../operations/appstack/changeRequests.js';
 
 /**
@@ -62,7 +66,21 @@ export async function handleAppStackChangeRequestTools(request: any) {
       return {
         content: [{ type: "text", text: JSON.stringify(closeResult, null, 2) }],
       };
-      
+    
+    case 'list_appstack_change_requests':
+      const listParams = ListAppChangeRequestsRequestSchema.parse(request.params.arguments);
+      const listResult = await listAppChangeRequests(listParams);
+      return {
+        content: [{ type: "text", text: JSON.stringify(listResult, null, 2) }],
+      };
+    
+    case 'list_attached_change_requests':
+      const listAttachedParams = ListAttachedChangeRequestsRequestSchema.parse(request.params.arguments);
+      const listAttachedResult = await listAttachedChangeRequests(listAttachedParams);
+      return {
+        content: [{ type: "text", text: JSON.stringify(listAttachedResult, null, 2) }],
+      };
+
     default:
       return null;
   }

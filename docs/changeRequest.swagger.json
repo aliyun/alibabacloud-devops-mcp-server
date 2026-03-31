@@ -1,0 +1,1481 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "AppStack Change Request API",
+    "description": "AppStack 变更相关 API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devops.aliyun.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/appstack/organizations/{organizationId}/apps/{appName}/changeRequests": {
+      "post": {
+        "operationId": "CreateChangeRequest",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChangeRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeRequestVO"
+                }
+              }
+            },
+            "description": "创建变更成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "变更创建失败 / 服务端内部异常"
+          }
+        },
+        "summary": "创建变更",
+        "tags": [
+          "变更"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/changeRequests:search": {
+      "post": {
+        "operationId": "ListAppChangeRequests",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListAppChangeRequestsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginationChangeRequestDetailVO"
+                }
+              }
+            },
+            "description": "查询变更列表成功"
+          },
+          "400": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "请求参数错误"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "搜索变更列表",
+        "tags": [
+          "变更"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/changeRequests/{sn}/auditItems": {
+      "get": {
+        "operationId": "GetChangeRequestAuditItems",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "变更标识符",
+            "example": "f1e78f22428e4e2496a01691812a17af",
+            "in": "path",
+            "name": "sn",
+            "required": true,
+            "schema": {
+              "description": "变更标识符",
+              "example": "f1e78f22428e4e2496a01691812a17af",
+              "type": "string"
+            }
+          },
+          {
+            "description": "关联类型",
+            "example": "CR",
+            "in": "query",
+            "name": "refType",
+            "required": true,
+            "schema": {
+              "description": "关联类型",
+              "example": "CR",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/CodeReviewAuditItem"
+                      },
+                      {
+                        "$ref": "#/components/schemas/CodeSplcAuditItem"
+                      }
+                    ]
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "查找变更关联的审批项列表"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查找变更关联的审批项列表",
+        "tags": [
+          "变更"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/changeRequests/{sn}/executions": {
+      "get": {
+        "operationId": "ListChangeRequestExecutions",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "变更标识符",
+            "example": "f1e78f22428e4e2496a01691812a17af",
+            "in": "path",
+            "name": "sn",
+            "required": true,
+            "schema": {
+              "description": "变更标识符",
+              "example": "f1e78f22428e4e2496a01691812a17af",
+              "type": "string"
+            }
+          },
+          {
+            "description": "分页尺寸参数，决定一页最多返回多少对象",
+            "example": 20,
+            "in": "query",
+            "name": "perPage",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "分页尺寸参数，决定一页最多返回多少对象",
+              "example": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "页面分页时使用，用于获取下一页内容，默认第1页",
+            "example": 1,
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "description": "页面分页时使用，用于获取下一页内容，默认第1页",
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性",
+            "example": "id",
+            "in": "query",
+            "name": "orderBy",
+            "required": false,
+            "schema": {
+              "description": "分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性",
+              "enum": [
+                "id",
+                "gmtCreate"
+              ],
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序",
+            "example": "asc",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "description": "分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "example": "asc",
+              "type": "string"
+            }
+          },
+          {
+            "description": "流程唯一标识",
+            "example": "1484e1facb5a4febbe1652607b2eb345",
+            "in": "query",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "流程唯一标识",
+              "example": "1484e1facb5a4febbe1652607b2eb345",
+              "type": "string"
+            }
+          },
+          {
+            "description": "阶段唯一标识",
+            "example": "3cfe6717e3dd2379a8ace4ea6a773e7d",
+            "in": "query",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "阶段唯一标识",
+              "example": "3cfe6717e3dd2379a8ace4ea6a773e7d",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginationChangeRequestExecutionVO"
+                }
+              }
+            },
+            "description": "查询变更研发流程运行记录成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查询变更研发流程运行记录",
+        "tags": [
+          "变更"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/changeRequests/{sn}/workItems": {
+      "get": {
+        "operationId": "ListChangeRequestWorkItems",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "变更标识符",
+            "example": "f1e78f22428e4e2496a01691812a17af",
+            "in": "path",
+            "name": "sn",
+            "required": true,
+            "schema": {
+              "description": "变更标识符",
+              "example": "f1e78f22428e4e2496a01691812a17af",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChangeRequestWorkItem"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "操作成功"
+          },
+          "400": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "请求参数错误"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "未找到应用或环境信息"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查询变更关联工作项",
+        "tags": [
+          "变更"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/changeRequests/{sn}:cancel": {
+      "post": {
+        "operationId": "CancelChangeRequest",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "变更标识符",
+            "example": "f1e78f22428e4e2496a01691812a17af",
+            "in": "path",
+            "name": "sn",
+            "required": true,
+            "schema": {
+              "description": "变更标识符",
+              "example": "f1e78f22428e4e2496a01691812a17af",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "description": "调用是否成功",
+                  "example": "true",
+                  "type": "boolean"
+                }
+              }
+            },
+            "description": "关闭变更成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "关闭变更",
+        "tags": [
+          "变更"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/changeRequests/{sn}:finish": {
+      "post": {
+        "operationId": "CloseChangeRequest",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "变更标识符",
+            "example": "f1e78f22428e4e2496a01691812a17af",
+            "in": "path",
+            "name": "sn",
+            "required": true,
+            "schema": {
+              "description": "变更标识符",
+              "example": "f1e78f22428e4e2496a01691812a17af",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "description": "调用是否成功",
+                  "example": "true",
+                  "type": "boolean"
+                }
+              }
+            },
+            "description": "完成变更成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "完成变更",
+        "tags": [
+          "变更"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/systems/{systemName}/releases/{releaseSn}/changeRequests": {
+      "get": {
+        "operationId": "ListAttachedChangeRequests",
+        "parameters": [
+          {
+            "in": "path",
+            "example": "systemName",
+            "name": "systemName",
+            "required": true,
+            "schema": {
+              "example": "systemName",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "example": "anyReleaseWorkflowSn",
+            "name": "releaseSn",
+            "required": true,
+            "schema": {
+              "example": "anyReleaseWorkflowSn",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "example": 1,
+            "name": "current",
+            "required": true,
+            "schema": {
+              "example": 1,
+              "default": 1,
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "example": 10,
+            "name": "pageSize",
+            "required": true,
+            "schema": {
+              "example": 10,
+              "default": 10,
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginationChangeRequest"
+                }
+              }
+            },
+            "description": "查找发布关联的变更列表成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查找发布关联的变更列表",
+        "tags": [
+          "发布"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateChangeRequestRequest": {
+        "description": "创建变更请求",
+        "properties": {
+          "appCodeRepoSn": {
+            "description": "应用代码仓库标识符",
+            "example": "app-code-repo-sn-xxxx",
+            "type": "string"
+          },
+          "autoDeleteBranchWhenEnd": {
+            "description": "变更结束时候是否自动删除分支",
+            "example": false,
+            "type": "boolean"
+          },
+          "branchName": {
+            "description": "应用代码分支名称",
+            "example": "master",
+            "type": "string"
+          },
+          "createBranch": {
+            "description": "是否创建分支",
+            "example": false,
+            "type": "boolean"
+          },
+          "ownerAccountId": {
+            "description": "变更负责人账号",
+            "example": "10df6011-2837-4fdb-ad92-356a679a60ca",
+            "type": "string"
+          },
+          "ownerId": {
+            "description": "变更负责人",
+            "example": "10df6011-2837-4fdb-ad92-356a679a60ca",
+            "type": "string"
+          },
+          "title": {
+            "description": "变更标题",
+            "example": "title-xxxx",
+            "type": "string"
+          }
+        },
+        "required": [
+          "appCodeRepoSn",
+          "autoDeleteBranchWhenEnd",
+          "branchName",
+          "createBranch",
+          "title"
+        ],
+        "type": "object"
+      },
+      "ChangeRequestVO": {
+        "description": "变更信息",
+        "properties": {
+          "appCodeRepoSn": {
+            "description": "代码仓库唯一标识",
+            "example": "my-web-app-repo",
+            "type": "string"
+          },
+          "appName": {
+            "description": "应用名",
+            "example": "my-web-service",
+            "type": "string"
+          },
+          "autoDeleteBranchWhenEnd": {
+            "description": "结束后是否自动删除分支",
+            "example": true,
+            "type": "boolean"
+          },
+          "branch": {
+            "description": "变更代码分支",
+            "example": "master",
+            "type": "string"
+          },
+          "creatorAccountId": {
+            "description": "创建者的阿里云账号pk",
+            "example": "10df6011-2837-4fdb-ad92-356a679a60ca",
+            "type": "string"
+          },
+          "creatorId": {
+            "description": "创建者者云效id",
+            "example": "10df6011-2837-4fdb-ad92-356a679a60ca",
+            "type": "string"
+          },
+          "gmtCreate": {
+            "description": "创建时间",
+            "example": "2024-09-01 00:00:00",
+            "type": "string"
+          },
+          "gmtModified": {
+            "description": "修改时间",
+            "example": "2024-09-01 00:00:00",
+            "type": "string"
+          },
+          "name": {
+            "description": "变更名称",
+            "example": "my-cr",
+            "type": "string"
+          },
+          "originBranch": {
+            "description": "代码分支源分支",
+            "example": "master",
+            "type": "string"
+          },
+          "originBranchRevisionSha": {
+            "description": "代码分支源分支版本",
+            "example": "c229f22024535638af41838daa43af1e6d468116",
+            "type": "string"
+          },
+          "ownerAccountId": {
+            "description": "拥有者的阿里云账号pk",
+            "example": "10df6011-2837-4fdb-ad92-356a679a60ca",
+            "type": "string"
+          },
+          "ownerId": {
+            "description": "拥有者ID",
+            "example": "10df6011-2837-4fdb-ad92-356a679a60ca",
+            "type": "string"
+          },
+          "sn": {
+            "description": "唯一标识符",
+            "example": "cde06968-68e6-4122-a769-abda138d7c62",
+            "type": "string"
+          },
+          "state": {
+            "description": "状态",
+            "example": "INIT",
+            "type": "string"
+          },
+          "type": {
+            "description": "变更类型",
+            "example": "APP",
+            "type": "string"
+          }
+        },
+        "required": [
+          "appName",
+          "autoDeleteBranchWhenEnd",
+          "gmtCreate",
+          "gmtModified",
+          "name",
+          "sn",
+          "state",
+          "type"
+        ],
+        "type": "object"
+      },
+      "ChangeRequestWorkItem": {
+        "properties": {
+          "description": {
+            "description": "变更工作项描述",
+            "example": "项目A下的bug工作项",
+            "type": "string"
+          },
+          "name": {
+            "description": "变更工作项名称",
+            "example": "修复bug",
+            "type": "string"
+          },
+          "sn": {
+            "description": "变更工作项唯一标识",
+            "example": "3344b6fdd94f43628f63b126209ad1d2",
+            "type": "string"
+          },
+          "type": {
+            "description": "变更工作项类型",
+            "example": "PROJEX",
+            "type": "string"
+          },
+          "value": {
+            "description": "变更工作项内容",
+            "example": "修复bug，修改文件A和文件B",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CodeReviewAuditItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditItem"
+          },
+          {
+            "properties": {
+              "auditOrderSn": {
+                "description": "审批单编号",
+                "example": "4d6697f2376940aa889fbe9f3b7b8da7",
+                "type": "string"
+              },
+              "commitId": {
+                "description": "代码提交 ID",
+                "example": "c229f22024535638af41838daa43af1e6d468116",
+                "type": "string"
+              },
+              "crId": {
+                "description": "变更 ID",
+                "example": "cr-123",
+                "type": "string"
+              },
+              "operatorId": {
+                "description": "代码提交人 ID",
+                "example": "10df6011-2837-4fdb-ad92-356a679a60ca",
+                "type": "string"
+              },
+              "refSn": {
+                "description": "审批关联对象标识符",
+                "type": "string"
+              },
+              "refType": {
+                "description": "审批关联类型",
+                "type": "string"
+              },
+              "sourceVersion": {
+                "description": "代码来源分支版本",
+                "example": "sha-123",
+                "type": "string"
+              },
+              "state": {
+                "description": "审批状态",
+                "example": "SUCCESS",
+                "type": "string"
+              },
+              "targetVersion": {
+                "description": "代码目标分支版本",
+                "example": "sha-456",
+                "type": "string"
+              },
+              "type": {
+                "description": "审批类型",
+                "example": "CODE_REVIEW",
+                "type": "string"
+              },
+              "url": {
+                "description": "代码提交 URL",
+                "example": "http://www.aliyun.....",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "required": [
+          "crId",
+          "operatorId",
+          "refSn",
+          "refType",
+          "sourceVersion",
+          "state",
+          "targetVersion",
+          "type"
+        ],
+        "description": "代码审核审批项",
+        "type": "object"
+      },
+      "CodeSplcAuditItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditItem"
+          },
+          {
+            "properties": {
+              "auditOrderSn": {
+                "description": "审批单编号",
+                "example": "10df6011-2837-4fui-ad92-356a679a60ca",
+                "type": "string"
+              },
+              "commitDate": {
+                "description": "提交时间",
+                "example": "2024-09-01 00:00:00",
+                "type": "string"
+              },
+              "commitEmployeeId": {
+                "description": "提交人",
+                "example": "10df6011-2837-4fdb-ad92-356a679a60ca",
+                "type": "string"
+              },
+              "commitMsg": {
+                "description": "提交信息",
+                "example": "fix unit test",
+                "type": "string"
+              },
+              "crId": {
+                "description": "变更 ID",
+                "example": "cr-123",
+                "type": "string"
+              },
+              "refSn": {
+                "description": "审批关联对象标识符",
+                "type": "string"
+              },
+              "refType": {
+                "description": "审批关联类型",
+                "type": "string"
+              },
+              "state": {
+                "description": "审批状态",
+                "example": "SUCCESS",
+                "type": "string"
+              },
+              "type": {
+                "description": "审批类型",
+                "example": "CODE_SPLC",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "required": [
+          "crId",
+          "refSn",
+          "refType",
+          "state",
+          "type"
+        ],
+        "description": "代码安全审批项",
+        "type": "object"
+      },
+      "AuditItem": {
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "type": "object"
+      },
+      "PaginationChangeRequestExecutionVO": {
+        "description": "分页数据",
+        "properties": {
+          "current": {
+            "description": "当前页数",
+            "example": 1,
+            "type": "number"
+          },
+          "pageSize": {
+            "description": "每页大小",
+            "example": 10,
+            "type": "number"
+          },
+          "pages": {
+            "description": "总页数",
+            "example": 10,
+            "type": "number"
+          },
+          "records": {
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/ChangeRequestExecutionVO"
+            },
+            "type": "array"
+          },
+          "total": {
+            "description": "总数",
+            "example": 10,
+            "type": "number"
+          }
+        },
+        "required": [
+          "pageSize",
+          "pages",
+          "records",
+          "total"
+        ],
+        "type": "object"
+      },
+      "ChangeRequestExecutionVO": {
+        "description": "变更执行记录",
+        "properties": {
+          "id": {
+            "description": "执行记录ID",
+            "example": "123456",
+            "type": "string"
+          },
+          "changeRequestSn": {
+            "description": "变更标识符",
+            "example": "f1e78f22428e4e2496a01691812a17af",
+            "type": "string"
+          },
+          "status": {
+            "description": "执行状态",
+            "example": "SUCCESS",
+            "type": "string"
+          },
+          "gmtCreate": {
+            "description": "创建时间",
+            "example": "2024-09-01 00:00:00",
+            "type": "string"
+          },
+          "gmtModified": {
+            "description": "修改时间",
+            "example": "2024-09-01 00:00:00",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "PaginationChangeRequest": {
+        "description": "分页数据",
+        "properties": {
+          "current": {
+            "description": "当前页数",
+            "example": 1,
+            "type": "number"
+          },
+          "pageSize": {
+            "description": "每页大小",
+            "example": 10,
+            "type": "number"
+          },
+          "pages": {
+            "description": "总页数",
+            "example": 10,
+            "type": "number"
+          },
+          "records": {
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/ChangeRequest"
+            },
+            "type": "array"
+          },
+          "total": {
+            "description": "总数",
+            "example": 10,
+            "type": "number"
+          }
+        },
+        "required": [
+          "pageSize",
+          "pages",
+          "records",
+          "total"
+        ],
+        "type": "object"
+      },
+      "ChangeRequest": {
+        "description": "变更信息简化版",
+        "properties": {
+          "sn": {
+            "description": "唯一标识符",
+            "example": "cde06968-68e6-4122-a769-abda138d7c62",
+            "type": "string"
+          },
+          "name": {
+            "description": "变更名称",
+            "example": "my-cr",
+            "type": "string"
+          },
+          "state": {
+            "description": "状态",
+            "example": "INIT",
+            "type": "string"
+          },
+          "appName": {
+            "description": "应用名",
+            "example": "my-web-service",
+            "type": "string"
+          },
+          "gmtCreate": {
+            "description": "创建时间",
+            "example": "2024-09-01 00:00:00",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ListAppChangeRequestsRequest": {
+        "description": "搜索变更请求参数",
+        "properties": {
+          "current": {
+            "description": "当前页数",
+            "example": 1,
+            "minimum": 1,
+            "default": 1,
+            "type": "integer"
+          },
+          "pageSize": {
+            "description": "每页数量",
+            "example": 10,
+            "maximum": 30,
+            "default": 10,
+            "type": "integer"
+          },
+          "owner": {
+            "description": "负责人列表",
+            "example": ["5e9ee108424a50d98c7c8906"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "description": "变更名称",
+            "example": "my-change-request",
+            "type": "string"
+          },
+          "state": {
+            "description": "变更状态列表",
+            "example": ["DEVELOPING", "INTEGRATING", "RELEASED"],
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["DEVELOPING", "INTEGRATING", "RELEASED", "CLOSED"]
+            }
+          }
+        },
+        "type": "object"
+      },
+      "PaginationChangeRequestDetailVO": {
+        "description": "变更详情分页数据",
+        "properties": {
+          "total": {
+            "description": "总数",
+            "example": 6,
+            "type": "number"
+          },
+          "current": {
+            "description": "当前页数",
+            "example": 1,
+            "type": "number"
+          },
+          "pageSize": {
+            "description": "每页大小",
+            "example": 10,
+            "type": "number"
+          },
+          "pages": {
+            "description": "总页数",
+            "example": 1,
+            "type": "number"
+          },
+          "records": {
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/ChangeRequestDetailVO"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "total",
+          "current",
+          "pageSize",
+          "pages",
+          "records"
+        ],
+        "type": "object"
+      },
+      "ChangeRequestDetailVO": {
+        "description": "变更详情信息",
+        "properties": {
+          "sn": {
+            "description": "变更标识符",
+            "example": "972afd8d26fc4877bcc9765e8f6f7e86",
+            "type": "string"
+          },
+          "appName": {
+            "description": "应用名",
+            "example": "aaassa",
+            "type": "string"
+          },
+          "state": {
+            "description": "变更状态",
+            "example": "DEVELOPING",
+            "enum": ["DEVELOPING", "INTEGRATING", "RELEASED", "CLOSED"],
+            "type": "string"
+          },
+          "name": {
+            "description": "变更名称",
+            "example": "aa",
+            "type": "string"
+          },
+          "type": {
+            "description": "变更类型",
+            "example": "APP",
+            "type": "string"
+          },
+          "appCodeRepoSn": {
+            "description": "应用代码仓库标识符",
+            "example": "9b350a4c8dc940d292d7dce547ea0d7d",
+            "type": "string"
+          },
+          "appCodeRepo": {
+            "$ref": "#/components/schemas/AppCodeRepoVO"
+          },
+          "branch": {
+            "description": "分支名称",
+            "example": "feature/20251216_dd",
+            "type": "string"
+          },
+          "ownerId": {
+            "description": "负责人ID",
+            "example": "5e9ee108424a50d98c7c8906",
+            "type": "string"
+          },
+          "originBranch": {
+            "description": "源分支",
+            "example": "master",
+            "type": "string"
+          },
+          "originBranchRevision": {
+            "description": "源分支版本",
+            "example": "5f562f9ca11bd4f8cc204c4425c41ddef37634e4",
+            "type": "string"
+          },
+          "creatorId": {
+            "description": "创建者ID",
+            "example": "5e9ee108424a50d98c7c8906",
+            "type": "string"
+          },
+          "gmtCreate": {
+            "description": "创建时间",
+            "example": "2025-12-16T08:14:56.000+00:00",
+            "type": "string"
+          },
+          "gmtModified": {
+            "description": "修改时间",
+            "example": "2025-12-16T08:14:56.000+00:00",
+            "type": "string"
+          },
+          "extInfo": {
+            "description": "扩展信息",
+            "type": "object"
+          }
+        },
+        "required": [
+          "sn",
+          "appName",
+          "state",
+          "name",
+          "type",
+          "branch",
+          "ownerId"
+        ],
+        "type": "object"
+      },
+      "AppCodeRepoVO": {
+        "description": "应用代码仓库信息",
+        "properties": {
+          "sn": {
+            "description": "仓库标识符",
+            "example": "9b350a4c8dc940d292d7dce547ea0d7d",
+            "type": "string"
+          },
+          "appName": {
+            "description": "应用名",
+            "example": "aaassa",
+            "type": "string"
+          },
+          "name": {
+            "description": "仓库名称",
+            "example": "Codeup-Demo",
+            "type": "string"
+          },
+          "repoUrl": {
+            "description": "代码仓库地址",
+            "example": "https://codeup.aliyun.com/5ebbe3fa0d4ce6105176dcbc/Codeup-Demo.git",
+            "type": "string"
+          },
+          "identifier": {
+            "description": "仓库标识",
+            "example": "Codeup_Demo",
+            "type": "string"
+          },
+          "repoContext": {
+            "$ref": "#/components/schemas/RepoContextVO"
+          },
+          "connectionConfig": {
+            "$ref": "#/components/schemas/ConnectionConfigVO"
+          }
+        },
+        "type": "object"
+      },
+      "RepoContextVO": {
+        "description": "仓库上下文信息",
+        "properties": {
+          "repoUrl": {
+            "description": "仓库地址",
+            "example": "https://codeup.aliyun.com/5ebbe3fa0d4ce6105176dcbc/Codeup-Demo.git",
+            "type": "string"
+          },
+          "projectId": {
+            "description": "项目ID",
+            "example": "26420",
+            "type": "string"
+          },
+          "defaultBranch": {
+            "description": "默认分支",
+            "example": "master",
+            "type": "string"
+          },
+          "repoType": {
+            "description": "仓库类型",
+            "example": "CODEUP",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ConnectionConfigVO": {
+        "description": "连接配置信息",
+        "properties": {
+          "connectionId": {
+            "description": "连接ID",
+            "example": "708274",
+            "type": "string"
+          },
+          "connectionType": {
+            "description": "连接类型",
+            "example": "FLOW",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "YunxiaoErrorResponse": {
+        "description": "统一错误返回结构",
+        "properties": {
+          "errorCode": {
+            "description": "唯一标明错误类型的错误码",
+            "type": "string"
+          },
+          "errorMessage": {
+            "description": "人类可读的错误描述",
+            "type": "string"
+          },
+          "hasDetailSolution": {
+            "description": "是否支持错误中心知识库跳转",
+            "type": "boolean"
+          },
+          "httpStatus": {
+            "description": "HTTP 状态码",
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "title": {
+            "description": "人类可读的错误标题",
+            "type": "string"
+          },
+          "traceId": {
+            "description": "追踪排查具体错误时使用的具体 trace ID",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
+}
