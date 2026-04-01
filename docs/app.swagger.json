@@ -1,0 +1,2108 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Application API",
+    "description": "Application related APIs",
+    "version": "v0"
+  },
+  "tags": [
+    {
+      "name": "应用",
+      "description": "应用领域 OpenAPI"
+    }
+  ],
+  "paths": {
+    "/appstack/organizations/{organizationId}/apps": {
+      "post": {
+        "operationId": "CreateApplication",
+        "parameters": [
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Application"
+                }
+              }
+            },
+            "description": "创建应用成功"
+          },
+          "409": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "应用重名"
+          },
+          "422": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "未指定应用名"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "应用名非法 / 应用创建失败 / 服务端内部异常"
+          }
+        },
+        "summary": "创建应用",
+        "tags": [
+          "应用"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}": {
+      "get": {
+        "operationId": "GetApplication",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Application"
+                }
+              }
+            },
+            "description": "已按名称查找到应用详情"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "未查找到应用详情"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查找应用详情",
+        "tags": [
+          "应用"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateApplication",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAppRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Application"
+                }
+              }
+            },
+            "description": "更新成功"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "未查找到指定的应用"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "更新应用",
+        "tags": [
+          "应用"
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteApplication",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "name":"success",
+                  "type":"boolean",
+                  "description":"是否成功",
+                  "example":true
+                }
+              }
+            },
+            "description": "删除应用成功"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "未查找到应用"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "删除应用",
+        "tags": [
+          "应用"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/members": {
+      "delete": {
+        "operationId": "DeleteAppMember",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-demo-app",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-demo-app",
+              "type": "string"
+            }
+          },
+          {
+            "description": "成员类型",
+            "example": "User",
+            "in": "query",
+            "name": "subjectType",
+            "required": true,
+            "schema": {
+              "description": "成员类型",
+              "example": "User",
+              "type": "string"
+            }
+          },
+          {
+            "description": "成员id",
+            "example": "anySubjectId",
+            "in": "query",
+            "name": "subjectId",
+            "required": true,
+            "schema": {
+              "description": "成员id",
+              "example": "anySubjectId",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "删除应用成员成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "删除应用成员",
+        "tags": [
+          "应用"
+        ]
+      },
+      "get": {
+        "operationId": "ListApplicationMembers",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-demo-app",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-demo-app",
+              "type": "string"
+            }
+          },
+          {
+            "description": "当前页号（从 1 开始，默认取 1）",
+            "example": 1,
+            "in": "query",
+            "name": "current",
+            "required": true,
+            "schema": {
+              "description": "当前页号（从 1 开始，默认取 1）",
+              "example": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "分页记录数（默认 10 条）",
+            "example": 10,
+            "in": "query",
+            "name": "pageSize",
+            "required": true,
+            "schema": {
+              "description": "分页记录数（默认 10 条）",
+              "example": 10,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginationMemberVO"
+                }
+              }
+            },
+            "description": "分页查找完成（包括未查找到对象的情况）"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查找应用成员列表",
+        "tags": [
+          "应用"
+        ]
+      },
+      "post": {
+        "operationId": "CreateAppMembers",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-demo-app",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-demo-app",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddMembersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "添加应用成员成功"
+          },
+          "403": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "没权限设置拥有者"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "角色未找到"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "添加应用成员",
+        "tags": [
+          "应用"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateAppMember",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-demo-app",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-demo-app",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "更新应用成员角色成功"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "应用角色未找到"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "更新应用成员",
+        "tags": [
+          "应用"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/sources": {
+      "get": {
+        "operationId": "ListApplicationSources",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "分页模式参数：keyset表示键集分页，不传表示页码分页",
+            "example": "keyset",
+            "in": "query",
+            "name": "pagination",
+            "required": false,
+            "schema": {
+              "description": "分页模式参数：keyset表示键集分页，不传表示页码分页",
+              "enum": [
+                "keyset",
+                ""
+              ],
+              "example": "keyset",
+              "type": "string"
+            }
+          },
+          {
+            "description": "分页尺寸参数，决定一页最多返回多少对象",
+            "example": 20,
+            "in": "query",
+            "name": "perPage",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "分页尺寸参数，决定一页最多返回多少对象",
+              "example": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性",
+            "example": "id",
+            "in": "query",
+            "name": "orderBy",
+            "required": false,
+            "schema": {
+              "description": "分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性",
+              "enum": [
+                "id",
+                "gmtCreate"
+              ],
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序",
+            "example": "asc",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "description": "分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "example": "asc",
+              "type": "string"
+            }
+          },
+          {
+            "description": "键集分页 token，获取第一页数据时无需传入，否则需要传入前一页查询结果中的 nextToken 字段",
+            "example": "token",
+            "in": "query",
+            "name": "nextToken",
+            "required": false,
+            "schema": {
+              "description": "键集分页 token，获取第一页数据时无需传入，否则需要传入前一页查询结果中的 nextToken 字段",
+              "example": "token",
+              "type": "string"
+            }
+          },
+          {
+            "description": "页码分页时使用，用于获取下一页内容",
+            "example": 1,
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "description": "页码分页时使用，用于获取下一页内容",
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageListAppSource"
+                }
+              }
+            },
+            "description": "分页查找完成（包括未查找到对象的情况）"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "分页查找应用源详情",
+        "tags": [
+          "应用"
+        ]
+      },
+      "post": {
+        "operationId": "CreateApplicationSource",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateAppCodeRepoSourceRequest"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CodeRepoSource"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "成功创建应用源"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "创建应用源",
+        "tags": [
+          "应用"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{name}/template:attach": {
+      "post": {
+        "operationId": "AttachTemplate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppBindTemplateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseBoolean"
+                }
+              }
+            },
+            "description": "绑定模板成功"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseBoolean"
+                }
+              }
+            },
+            "description": "应用不存在 / 应用模板不存在"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseBoolean"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "应用关联应用模板",
+        "tags": [
+          "应用"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{name}/template:detach": {
+      "post": {
+        "operationId": "DetachTemplate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseBoolean"
+                }
+              }
+            },
+            "description": "解除绑定模板成功"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseBoolean"
+                }
+              }
+            },
+            "description": "应用不存在 / 应用模板不存在"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseBoolean"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "应用解绑应用模板",
+        "tags": [
+          "应用"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps:search": {
+      "get": {
+        "operationId": "ListApplications",
+        "parameters": [
+          {
+            "description": "分页模式参数，目前只支持键集分页 keyset 模式",
+            "example": "keyset",
+            "in": "query",
+            "name": "pagination",
+            "required": true,
+            "schema": {
+              "description": "分页模式参数，目前只支持键集分页 keyset 模式",
+              "enum": [
+                "keyset"
+              ],
+              "example": "keyset",
+              "type": "string"
+            }
+          },
+          {
+            "description": "分页尺寸参数，决定一页最多返回多少对象",
+            "example": 20,
+            "in": "query",
+            "name": "perPage",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "分页尺寸参数，决定一页最多返回多少对象",
+              "example": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性",
+            "example": "id",
+            "in": "query",
+            "name": "orderBy",
+            "required": true,
+            "schema": {
+              "description": "分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性",
+              "enum": [
+                "id",
+                "gmtCreate"
+              ],
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序",
+            "example": "asc",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "description": "分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "example": "asc",
+              "type": "string"
+            }
+          },
+          {
+            "description": "键集分页 token，获取第一页数据时无需传入，否则需要传入前一页查询结果中的 nextToken 字段",
+            "example": "token",
+            "in": "query",
+            "name": "nextToken",
+            "required": false,
+            "schema": {
+              "description": "键集分页 token，获取第一页数据时无需传入，否则需要传入前一页查询结果中的 nextToken 字段",
+              "example": "token",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          },
+          {
+            "description": "应用标签，使用逗号隔开，每个标签名需要进行urlencode",
+            "example": "tag1,tag2,%E4%B8%AD%E6%96%87%E5%A3%B9%E5%8F%B7",
+            "in": "query",
+            "name": "tags",
+            "required": false,
+            "schema": {
+              "example": "tag1,tag2,%E4%B8%AD%E6%96%87%E5%A3%B9%E5%8F%B7",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageListApplication"
+                }
+              }
+            },
+            "description": "分页查找完成（包括未查找到对象的情况）"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "分页查找应用详情",
+        "tags": [
+          "应用"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddMembersRequest": {
+        "description": "添加应用成员信息请求",
+        "properties": {
+          "appNames": {
+            "description": "添加应用列表",
+            "items": {
+              "description": "添加应用列表",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "playerList": {
+            "description": "添加的成员列表",
+            "items": {
+              "$ref": "#/components/schemas/ResourcePlayerRequest"
+            },
+            "type": "array"
+          },
+          "roleNames": {
+            "description": "添加成员的角色列表",
+            "items": {
+              "description": "添加成员的角色列表",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "appNames",
+          "playerList",
+          "roleNames"
+        ],
+        "type": "object"
+      },
+      "AppBindTemplateRequest": {
+        "properties": {
+          "appTemplateName": {
+            "description": "应用模板唯一名",
+            "example": "my-app-template",
+            "type": "string"
+          }
+        },
+        "required": [
+          "appTemplateName"
+        ],
+        "type": "object"
+      },
+      "AppSource": {
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "type": "object"
+      },
+      "Application": {
+        "description": "AppStack 应用模型",
+        "properties": {
+          "appTemplateDisplayName": {
+            "description": "应用模版展示名称",
+            "example": "app-template-display-name",
+            "type": "string"
+          },
+          "appTemplateName": {
+            "description": "应用模版名称",
+            "example": "app-template-name",
+            "type": "string"
+          },
+          "creatorId": {
+            "description": "应用创建者 ID",
+            "example": "bd9e3c6d-624f-4580-af7d-c5e26f1ed0f0",
+            "type": "string"
+          },
+          "description": {
+            "description": "描述",
+            "example": "description",
+            "type": "string"
+          },
+          "gmtCreate": {
+            "description": "创建时间",
+            "example": "2024-09-01 00:00:00",
+            "type": "string"
+          },
+          "name": {
+            "description": "应用名",
+            "example": "app-name",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CodeRepoSource": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AppSource"
+          },
+          {
+            "properties": {
+              "appName": {
+                "description": "代码仓库源所隶属的应用唯一名",
+                "example": "my-web-service",
+                "type": "string"
+              },
+              "connectionConfig": {
+                "$ref": "#/components/schemas/FlowConnectionConfig"
+              },
+              "identifier": {
+                "description": "代码服务提供方所使用的代码仓库唯一标识",
+                "example": "my-web-service-repo",
+                "type": "string"
+              },
+              "name": {
+                "description": "代码仓库源名称",
+                "example": "my-web-service-repo-git",
+                "type": "string"
+              },
+              "repoContext": {
+                "$ref": "#/components/schemas/RepoContext"
+              },
+              "repoUrl": {
+                "description": "代码仓库 URL",
+                "example": "https://codeup.aliyun.com/bd9e3c6d-624f-4580-af7d-c5e26f1ed0f0/my-web-service-repo.git",
+                "type": "string"
+              },
+              "sn": {
+                "description": "代码仓库源唯一序列号",
+                "example": "2e4bec5575244987a4f09ea4ca29e89f",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "description": "代码仓库源模型",
+        "required": [
+          "type"
+        ],
+        "type": "object"
+      },
+      "CreateAppCodeRepoSourceRequest": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateAppSourceRequest"
+          },
+          {
+            "properties": {
+              "connectionConfig": {
+                "$ref": "#/components/schemas/FlowConnectionConfig"
+              },
+              "identifier": {
+                "description": "代码仓库唯一标识",
+                "example": "6489a6ad391bxxxxyyy",
+                "type": "string"
+              },
+              "name": {
+                "description": "代码仓库名",
+                "example": "6489a6ad391bxxxxyyy/Codeup-Demo",
+                "type": "string"
+              },
+              "repoContext": {
+                "$ref": "#/components/schemas/RepoContext"
+              },
+              "repoUrl": {
+                "description": "代码仓库 URL",
+                "example": "https://codeup.aliyun.com/6489a6ad391bxxxxyyy/Codeup-Demo.git",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "description": "应用代码源创建请求入参",
+        "required": [
+          "connectionConfig",
+          "identifier",
+          "name",
+          "repoContext",
+          "repoUrl",
+          "type"
+        ],
+        "type": "object"
+      },
+      "CreateAppRequest": {
+        "description": "应用创建请求",
+        "properties": {
+          "appTemplateName": {
+            "description": "应用模板唯一名",
+            "example": "my-app-template",
+            "type": "string"
+          },
+          "description": {
+            "description": "应用描述",
+            "example": "这是一段应用描述",
+            "type": "string"
+          },
+          "name": {
+            "description": "应用名",
+            "example": "my-web-service",
+            "type": "string"
+          },
+          "ownerId": {
+            "description": "应用 owner ID",
+            "example": "bd9e3c6d-624f-4580-af7d-c5e26f1ed0f0",
+            "type": "string"
+          },
+          "tags": {
+            "description": "应用标签（覆盖式更新：如果不需要更新，调用该接口时可以不传该参数；空列表代表清空标签。）",
+            "example": [
+              "后端服务",
+              "Java"
+            ],
+            "items": {
+              "description": "应用标签（覆盖式更新：如果不需要更新，调用该接口时可以不传该参数；空列表代表清空标签。）",
+              "example": "[\"后端服务\",\"Java\"]",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "CreateAppSourceRequest": {
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "properties": {
+          "type": {
+            "description": "代码仓库类型",
+            "example": "CODE_REPO",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "type": "object"
+      },
+      "FlowConnectionConfig": {
+        "description": "Flow服务连接信息",
+        "properties": {
+          "connectionId": {
+            "description": "服务连接ID",
+            "example": "connection-id",
+            "type": "string"
+          },
+          "connectionType": {
+            "description": "服务连接类型",
+            "example": "FLOW",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connectionId",
+          "connectionType"
+        ],
+        "type": "object"
+      },
+      "MemberVO": {
+        "description": "数据列表",
+        "properties": {
+          "avatar": {
+            "description": "成员头像 URL",
+            "type": "string"
+          },
+          "description": {
+            "description": "成员描述",
+            "example": "示例描述",
+            "type": "string"
+          },
+          "displayName": {
+            "description": "成员展示名",
+            "example": "示例成员名",
+            "type": "string"
+          },
+          "id": {
+            "description": "成员 ID（如用户 ID），含义需要根据 type 字段确定",
+            "example": "bd9e3c6d-624f-4580-af7d-c5e26f1ed0f0",
+            "type": "string"
+          },
+          "roleList": {
+            "description": "成员所具有的角色列表",
+            "items": {
+              "$ref": "#/components/schemas/RoleVO"
+            },
+            "type": "array"
+          },
+          "type": {
+            "description": "成员类型，如用户（User）、组织（Org）等，用于辅助判断 id 字段的类型",
+            "enum": [
+              "Member",
+              "User",
+              "Team",
+              "Group",
+              "Org"
+            ],
+            "example": "User",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "PageListAppSource": {
+        "description": "分页接口所返回的列表",
+        "properties": {
+          "current": {
+            "description": "页码分页时存在该字段，表示当前页",
+            "example": 1,
+            "type": "number"
+          },
+          "data": {
+            "description": "分页结果数据",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/CodeRepoSource"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "nextToken": {
+            "description": "采用键值分页时存在该字段，用于传给分页接口，迭代获取下一页数据",
+            "example": "token",
+            "type": "string"
+          },
+          "pages": {
+            "description": "页码分页时存在该字段，表示总页数",
+            "example": 10,
+            "type": "number"
+          },
+          "perPage": {
+            "description": "页码分页时存在该字段，表示每页大小",
+            "example": 10,
+            "type": "number"
+          },
+          "total": {
+            "description": "页码分页时存在该字段，表示结果总数",
+            "example": 100,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "PageListApplication": {
+        "description": "分页接口所返回的列表",
+        "properties": {
+          "current": {
+            "description": "页码分页时存在该字段，表示当前页",
+            "example": 1,
+            "type": "number"
+          },
+          "data": {
+            "description": "分页结果数据",
+            "items": {
+              "$ref": "#/components/schemas/Application"
+            },
+            "type": "array"
+          },
+          "nextToken": {
+            "description": "采用键值分页时存在该字段，用于传给分页接口，迭代获取下一页数据",
+            "example": "token",
+            "type": "string"
+          },
+          "pages": {
+            "description": "页码分页时存在该字段，表示总页数",
+            "example": 10,
+            "type": "number"
+          },
+          "perPage": {
+            "description": "页码分页时存在该字段，表示每页大小",
+            "example": 10,
+            "type": "number"
+          },
+          "total": {
+            "description": "页码分页时存在该字段，表示结果总数",
+            "example": 100,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "PaginationMemberVO": {
+        "description": "分页数据",
+        "properties": {
+          "current": {
+            "description": "当前页数",
+            "example": 1,
+            "type": "number"
+          },
+          "pageSize": {
+            "description": "每页大小",
+            "example": 10,
+            "type": "number"
+          },
+          "pages": {
+            "description": "总页数",
+            "example": 10,
+            "type": "number"
+          },
+          "records": {
+            "description": "数据列表",
+            "items": {
+              "$ref": "#/components/schemas/MemberVO"
+            },
+            "type": "array"
+          },
+          "total": {
+            "description": "总数",
+            "example": 10,
+            "type": "number"
+          }
+        },
+        "required": [
+          "pageSize",
+          "pages",
+          "records",
+          "total"
+        ],
+        "type": "object"
+      },
+      "RepoContext": {
+        "description": "代码仓库上下文",
+        "discriminator": {
+          "mapping": {
+            "CODEUP": "#/components/schemas/CodeupRepoContext",
+            "CUSTOM_GITLAB": "#/components/schemas/CustomGitlabRepoContext",
+            "GIT": "#/components/schemas/CommonGitRepoContext"
+          },
+          "propertyName": "repoType"
+        },
+        "properties": {
+          "defaultBranch": {
+            "description": "默认分支",
+            "example": "branch-xxx",
+            "type": "string"
+          },
+          "repoType": {
+            "description": "代码仓库类型",
+            "example": "CODE_REPO",
+            "type": "string"
+          },
+          "repoUrl": {
+            "description": "代码仓库地址",
+            "example": "http://xxxxxxxxx",
+            "type": "string"
+          }
+        },
+        "required": [
+          "defaultBranch",
+          "repoType",
+          "repoUrl"
+        ],
+        "type": "object"
+      },
+      "ResourcePlayerRequest": {
+        "description": "更新的成员",
+        "properties": {
+          "id": {
+            "description": "成员 ID",
+            "type": "string",
+            "example": "user-xxx"
+          },
+          "type": {
+            "description": "成员类型",
+            "enum": [
+              "Member",
+              "User",
+              "Team",
+              "Group",
+              "Org"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ResponseBoolean": {
+        "properties": {
+          "data": {
+            "type": "boolean"
+          },
+          "errorAdvice": {
+            "type": "string"
+          },
+          "errorCode": {
+            "enum": [
+              "ApiDeprecated",
+              "SystemInternalError",
+              "ApiRateLimited",
+              "BadRequest",
+              "ThirdPartyApiAuthFailed",
+              "BadFormatForPagination",
+              "BadFormatForFloatingPointInput",
+              "BadFormatForDomainObjectName",
+              "GrayConfigNotFound",
+              "GrayAccountKeyDuplicated",
+              "GrayAccountInputMissing",
+              "ApplicationNotFound",
+              "ApplicationNameDuplicated",
+              "ApplicationWithoutName",
+              "ApplicationNameInvalid",
+              "ApplicationMemberManagerPermissionDenied",
+              "ApplicationBasicSetPermissionDenied",
+              "SystemNotFound",
+              "SystemNameDuplicated",
+              "SystemWithoutName",
+              "SystemNameInvalid",
+              "ApplicationCreateFailed",
+              "ApplicationUpdateFailed",
+              "ApplicationDeleteFailed",
+              "ApplicationCreateWithTemplateFailed",
+              "ApplicationDeleteWithSystemFailed",
+              "ApplicationRelationDuplicated",
+              "ApplicationRelationNotFound",
+              "ApplicationRelationInvalid",
+              "ApplicationRelationDeleteInvalid",
+              "ApplicatoinRelationCoderepoDuplicated",
+              "ApplicationGroupNotFound",
+              "ApplicationGroupNameDuplicated",
+              "ApplicationGroupCreateFailed",
+              "ApplicationGroupDeleteFailed",
+              "ApplicationGroupCascadingDeleteFailed",
+              "TagNameInvalid",
+              "TagNameDuplicated",
+              "TagNotFound",
+              "TagBindingNotFound",
+              "EnvironmentNotFound",
+              "EnvironmentNameDuplicated",
+              "EnvironmentPresetNotFound",
+              "EnvironmentCreateFailed",
+              "EnvironmentUpdateFailed",
+              "EnvironmentDeleteFailed",
+              "EnvironmentLocked",
+              "EnvironmentLockFailed",
+              "BlockedByMigrationUpgrade",
+              "EnvironmentMissEnvTypeLabel",
+              "EnvironmentContainsMultipleEnvTypeLabels",
+              "EnvironmentContainsDuplicatedVariableGroups",
+              "EnvDeployGroupCannotChangeDueToRunningChangeOrder",
+              "EnvResourceTypeCannotChange",
+              "EnvStrategyNotExists",
+              "EnvStrategyTargetReplicasNotExists",
+              "EnvStrategyBatchInvalid",
+              "EnvMultipleK8sBinding",
+              "EnvNoK8sBinding",
+              "EnvOamStrategyChangeNotAllowed",
+              "EnvStrategyBatchStepTypeNotSupported",
+              "EnvironmentActionLogNotFound",
+              "LabelNotFound",
+              "LabelDuplicated",
+              "LabelPresetNotFound",
+              "LabelCascadingDeleteFailed",
+              "OrchestrationNotFound",
+              "InvalidOrchestrationFormat",
+              "OrchestrationRelationNotFound",
+              "OrchestrationComponentNotFound",
+              "OrchestrationComponentDuplicated",
+              "MultipleDeploymentsNotAllowed",
+              "OrchestrationComponentNotExists",
+              "ManualConfirmNeededOnNewDeployment",
+              "DeploymentParallelLaunchNotSupported",
+              "NullOrchestrationComponent",
+              "ComponentHasNoKind",
+              "ComponentHasMultipleKinds",
+              "UnsupportedComponentKind",
+              "ComponentHasMultipleApiVersions",
+              "ComponentHasNoApiVersion",
+              "PlaceholderHasNoValue",
+              "OrchestrationTemplateNotFound",
+              "OrchestrationTemplateSaveFailed",
+              "OrchestrationPresetNotFound",
+              "OrchestrationRenderFailed",
+              "ManualConfirmNeededOnOrchestrationUpdate",
+              "OrchestrationJsonValueParseFailed",
+              "OrchestrationTemplateDuplicated",
+              "OrchestrationTemplateCreateFailed",
+              "OrchestrationTemplateUpdateFailed",
+              "OrchestrationTemplateDeleteFailed",
+              "ApplicationOrchestrationNotFound",
+              "ApplicationOrchestrationDuplicated",
+              "ApplicationOrchestrationCreateFailed",
+              "ApplicationOrchestrationCannotBeReinitialized",
+              "ApplicationOrchestrationUpdateFailed",
+              "ApplicationOrchestrationDeleteFailed",
+              "ApplicationOrchestrationCommitOutOfDate",
+              "ApplicationOrchestrationFormatDuplicated",
+              "ApplicationOrchestrationLabelMismatched",
+              "VariableValueInvalid",
+              "VariableNotFound",
+              "VariableDuplicated",
+              "VariableProfileNotFound",
+              "VariablePresetNotFound",
+              "VariableProfileCreateFailed",
+              "VariableDeleteFailed",
+              "VariableCreateFailed",
+              "VariableProfileUpdateFailed",
+              "VariableProfileCopyFailed",
+              "VariableProfileDeleteFailed",
+              "VariableUpdateFailed",
+              "VariableFilterFailed",
+              "VariableKeyInvalid",
+              "VariableProfileAlreadyExists",
+              "VersionControlBranchNotFound",
+              "VersionControlBranchDuplicated",
+              "VersionControlBranchLocked",
+              "VersionControlBranchCreateFailed",
+              "VersionControlBranchUpdateFailed",
+              "VersionControlBranchDeleteFailed",
+              "VersionControlBranchInUse",
+              "VersionControlTagNotFound",
+              "VersionControlTagDuplicated",
+              "VersionControlTagLocked",
+              "VersionControlTagCreateFailed",
+              "VersionControlTagUpdateFailed",
+              "VersionControlTagDeleteFailed",
+              "VersionControlCascadingDeleteFailed",
+              "VersionControlRevisionNotFound",
+              "VersionControlRevisionDuplicated",
+              "VersionControlRevisionLocked",
+              "VersionControlRevisionCreateFailed",
+              "VersionControlRevisionUpdateFailed",
+              "VersionControlRevisionDeleteFailed",
+              "VersionControlRevisionNotLatest",
+              "VersionControlRevisionNotChanged",
+              "VersionControlRepositoryNotFound",
+              "VersionControlRepositoryDuplicated",
+              "VersionControlRepositoryLocked",
+              "VersionControlRepositoryCreateFailed",
+              "VersionControlRepositoryUpdateFailed",
+              "VersionControlRepositoryDeleteFailed",
+              "ApplicationCodeRepositoryNotFound",
+              "ApplicationCodeRepositoryNumberLimitExceeded",
+              "ApplicationCodeRepositoryUrlDuplicated",
+              "ApplicationCodeRepositoryIdentifierInvalid",
+              "ApplicationCodeRepositoryIdentifierDuplicated",
+              "ApplicationCodeRepositoryCommitNotFound",
+              "ApplicationCodeRepositoryTypeUnsupported",
+              "ApplicationArtifactRepoNotFound",
+              "ApplicationArtifactRepoIdentifierDuplicated",
+              "ApplicationArtifactRepoNumberLimit",
+              "ApplicationArtifactRepositoryIdentifierInvalid",
+              "ResourcePoolNotFound",
+              "ResourcePoolDuplicated",
+              "ResourcePoolLocked",
+              "ResourcePoolCreateFailed",
+              "ResourcePoolUpdateFailed",
+              "ResourcePoolDeleteFailed",
+              "ResourceInstanceNotFound",
+              "ResourceInstanceDuplicated",
+              "ResourceInstanceKubeConfigInvalid",
+              "ResourceInstanceMultiOsUnsupported",
+              "ResourceInstanceLocked",
+              "ResourceInstanceRelatedToAppTemplateOrEnv",
+              "ResourceInstanceCreateFailed",
+              "ResourceInstanceUpdateFailed",
+              "ResourceInstanceDeleteFailed",
+              "ResourceInstanceNotSupported",
+              "KubeConfigNotAllowedForResourceInstance",
+              "ClusterCaNotAllowedInKubeConfig",
+              "UserExecNotAllowedInKubeConfig",
+              "UserClientCertificateNotAllowedInKubeConfig",
+              "UserClientKeyNotAllowedInKubeConfig",
+              "UserTokenFileNotAllowedInKubeConfig",
+              "UserAuthProviderNotAllowedInKubeConfig",
+              "KubernetesConnectionTimeout",
+              "KubernetesSslHandshakeFailed",
+              "DeployGroupNotFound",
+              "DeployGroupDuplicated",
+              "DeployGroupLocked",
+              "DeployGroupCreateFailed",
+              "DeployGroupUpdateFailed",
+              "DeployGroupDeleteFailed",
+              "DeployGroupCascadingDeleteFailed",
+              "CallFlowServiceConnectionFailed",
+              "CallFlowHostFailed",
+              "CallFlowHostGroupFailed",
+              "CallFlowPipelineFailed",
+              "ChangeOrderDeleteFailed",
+              "ChangeOrderCascadingDeleteFailed",
+              "ChangeOrderInputNotExists",
+              "ChangeOrderNotExists",
+              "ChangeOrderTaskNotExists",
+              "ChangeOrderStageNotExists",
+              "FailedToAcquireChangeOrderLock",
+              "ChangeOrderJobNotExists",
+              "EnvironmentBaselineNotFound",
+              "ChangeOrderJobFailed",
+              "ChangeOrderJobTypeShouldBeDeploy",
+              "ChangeOrderJobFirstDeploy",
+              "ChangeOrderTaskActionNotExists",
+              "ChangeOrderTaskEventNotFound",
+              "ChangeOrderArgMapNotExists",
+              "ChangeOrderTaskAdaptorNotFound",
+              "UnknownChangeType",
+              "ChangeOperationNotAllowed",
+              "ChangeOrderConflict",
+              "ChangeOrderLogServiceNotFound",
+              "ChangeOrderOperationNotAccepted",
+              "MultipleRevisionsOnWorkload",
+              "ChangeOrderCreateFailed",
+              "ChangeOrderInputCreateFailed",
+              "ChangeOrderImageMissing",
+              "MultipleRevisionOnWorkloadForAde2",
+              "ChangeOrderActionRefusedDueToLockedEnv",
+              "ChangeOrderMissingKubernetesObjectName",
+              "ChangeOrderBatchDeployTimeoutTooLarge",
+              "ChangeOrderBatchDeployNoAgentAvailable",
+              "NullArtifactScmProviderType",
+              "NullArtifactSpecContent",
+              "NullArtifactType",
+              "NullArtifactBuildSpec",
+              "ArtifactSpecParserNotFound",
+              "ArtifactScmSpecParserNotFound",
+              "ResourcePathInvalid",
+              "ResourceKubeProxyFailed",
+              "KubernetesBadRequest",
+              "KubernetesAccessNotAuthenticated",
+              "KubernetesObjectAccessNotAuthorized",
+              "KubernetesNotFound",
+              "KubernetesApiRateLimited",
+              "KubernetesServiceUnavailable",
+              "ResourceKubeConfigFetchFailed",
+              "AckClusterFetchFailed",
+              "AckClusterNotExists",
+              "AliyunAuthFailed",
+              "ResourceAccessNetworkFailure",
+              "DescribeAckAddonFailed",
+              "AliyunPkIdNotFound",
+              "AliyunSdkCreateFailed",
+              "AckAddonFindVersionFailed",
+              "ResourceItemDeleteFailed",
+              "AliyunApiCallFailure",
+              "EdasRuntimeDetected",
+              "AgentNotFound",
+              "AgentInstallTaskRateLimited",
+              "AgentInstallFailed",
+              "OnlineGuideStepHandlerNotFound",
+              "RoleNotFound",
+              "CannotModifyOwnerPermission",
+              "CannotModifyOwnerWithoutTransfer",
+              "AppRoleNameDuplicated",
+              "AppRoleNameInvalid",
+              "PermissionDenied",
+              "PermissionNotInitialized",
+              "MockUrlNotFound",
+              "HttpCallFailed",
+              "ResponseBodyConvertFailed",
+              "SystemVariableNotFound",
+              "DeployEngineTaskNotFound",
+              "NullDeployEngineTaskSpec",
+              "EmptyDeployEngineContext",
+              "MissingKubernetesObjectApiGroup",
+              "MissingKubernetesObjectVersion",
+              "MissingKubernetesObjectKind",
+              "MissingChangeType",
+              "CallbackStatusRequired",
+              "MissingChangeTerminationConfirmResult",
+              "MissingChangeBatchNo",
+              "CallChangeFailed",
+              "DeployEngineTaskSpecInvalid",
+              "DeployEngineTaskSpecReplicasInvalid",
+              "DeployEngineFailed",
+              "EnvTargetReplicasNotEqualsBaseline",
+              "KubeConfigLegacyValidateFailed",
+              "AS-EnterpriseSetting.B002",
+              "OpLogRecordCreateFailed",
+              "NullReleaseWorkflowName",
+              "ReleaseWorkflowNameDuplicated",
+              "TooManyReleaseWorkflows",
+              "ReleaseWorkflowNotFound",
+              "UnsupportedPipelineWebhook",
+              "ReleaseWorkflowUpsertWithTemplateFailed",
+              "FailedToAcquireReleaseWorkflowLock",
+              "NullReleaseStageName",
+              "ReleaseStageNameDuplicated",
+              "TooManyReleaseStages",
+              "ReleaseStageNotFound",
+              "ReleaseStagePipelineNotFound",
+              "ReleaseStagePipelineRunFailed",
+              "ReleaseStagePipelineCircularError",
+              "ReleaseStageConfigAlreadyExists",
+              "ReleaseStageConfigNotFound",
+              "UnsupportedPipelineTypeForReleaseStage",
+              "AS-ReleaseStageConfig-B007",
+              "ReleaseStagePipelineInstanceNotFound",
+              "ChangeRequestNotExists",
+              "BranchCreateOperationNotSupported",
+              "BranchDeleteOperationNotSupported",
+              "ChangeRequestBranchExists",
+              "ChangeRequestsAreNotAllClosed",
+              "ChangeRequestNotFound",
+              "ProjexRecommendFailed",
+              "ProjexSearchFailed",
+              "ProjexSearchByRequestFailed",
+              "ProjexBindFailed",
+              "ProjexUnbindFailed",
+              "UnsupportedProjexAction",
+              "ChangeRequestSetNotFound",
+              "GenerateProjexSignFailed",
+              "ChangeRequestAlreadyAttachedToRelease",
+              "ChangeRequestMustBindWorkItem",
+              "NullReleaseWorkflowTemplateName",
+              "WorkflowTemplateNameDuplicated",
+              "WorkflowTemplateNotFound",
+              "CallCodeUpApiFailed",
+              "CodeUpBranchAlreadyExists",
+              "CodeUpApi403",
+              "CodeUpApi404",
+              "CodeApiAccessTokenNotFound",
+              "SameCommitOperationNotSupported",
+              "ListCommitOperationNotSupported",
+              "ListAllBranchesOperationNotSupported",
+              "FindBranchOpeartionNotSupported",
+              "FindProjectOperationNotSupported",
+              "CustomGitlabApi401",
+              "CustomGitlabApi403",
+              "CustomGitlabApi404",
+              "CustomGitlabApi409",
+              "CustomGitlabApiException",
+              "AS-CodeUpApi-B005",
+              "GithubApi401",
+              "GithubApi403",
+              "GithubApi404",
+              "GithubApi409",
+              "GithubApiException",
+              "IamCheckFailed",
+              "OrganizationOwnerNotFound",
+              "ApplicationTemplateParamInvalid",
+              "ApplicationTemplateDuplicated",
+              "ApplicationTemplateNotFound",
+              "ApplicationAlreadyBindTemplate",
+              "ApplicationTemplateCreateFailed",
+              "ApplicationTemplateDeleteFailed",
+              "ApplicationTemplateDeleteCheckFailed",
+              "ApplicationTemplateCopyFailed",
+              "ApplicationTemplateConfigNotFound",
+              "ApplicationTemplateConfigDuplicated",
+              "ApplicationTemplateWorkflowUpsertFailed",
+              "ReleaseNotFound",
+              "ReleaseDuplicated",
+              "ReleaseRevisionDuplicated",
+              "ReleaseRevisionValidateFailed",
+              "ReleaseRevisionOrgConfigValidateFailed",
+              "ReleaseCodeRepoValidate",
+              "ReleaseUpdateDenied",
+              "ReleaseCanNotBeReleased",
+              "ReleaseNotAllEnd",
+              "ReleaseInstNotFound",
+              "ReleaseItemNotFound",
+              "ReleaseItemOrchestrationNotFound",
+              "ReleaseRelationNameDuplicated",
+              "ReleaseItemGenericIdDuplicated",
+              "UserNotFound",
+              "SubjectTypeNotSupport",
+              "AuditEngineNotFound",
+              "AuditRecordDuplicated",
+              "CallSplcApiFailed",
+              "AoneAppNotFound",
+              "AuditSubmitFailed",
+              "AoneCodeReviewApiAccessFailed",
+              "NoAoneCodeReviewer",
+              "AoneCodeReviewSameAsTrunk",
+              "AsoApiAccessFailed",
+              "AsoClusterNotCreated",
+              "KubernetesResourceNotFound",
+              "NeedPremiumVersion",
+              "AppSourceTypeUnsupported",
+              "GlobalVarNotFound",
+              "GlobalVarExist",
+              "GlobalVarUsageReferencesExist",
+              "OrgConfigNotFound",
+              "MissingValidReplicas",
+              "HookChannelSubscribeNotFound",
+              "HookScopeTypeUnsupported",
+              "HookChannelTypeUnsupported",
+              "FlowMutationTypeUnsupported",
+              "FlowMutationPluginUnsupported",
+              "FlowMutationPluginSendMessageError",
+              "FlowMutationNotificationParseError"
+            ],
+            "type": "string"
+          },
+          "errorMap": {
+            "additionalProperties": {
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "errorMessage": {
+            "type": "string"
+          },
+          "showType": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "traceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "errorMap",
+          "showType",
+          "success"
+        ],
+        "type": "object"
+      },
+      "RoleVO": {
+        "description": "成员所具有的角色列表",
+        "properties": {
+          "displayName": {
+            "description": "角色的展示名",
+            "example": "拥有者",
+            "type": "string"
+          },
+          "name": {
+            "description": "角色的唯一标识名",
+            "example": "owner",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateAppRequest": {
+        "description": "应用信息修改入参",
+        "properties": {
+          "ownerId": {
+            "description": "应用 owner ID",
+            "example": "bd9e3c6d-624f-4580-af7d-c5e26f1ed0f0",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateMemberRequest": {
+        "properties": {
+          "player": {
+            "$ref": "#/components/schemas/ResourcePlayerRequest"
+          },
+          "roleNames": {
+            "description": "更新成员的角色列表",
+            "items": {
+              "description": "更新成员的角色列表",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "player",
+          "roleNames"
+        ],
+        "type": "object"
+      },
+      "YunxiaoErrorResponse": {
+        "description": "统一错误返回结构",
+        "properties": {
+          "errorCode": {
+            "description": "唯一标明错误类型的错误码",
+            "type": "string"
+          },
+          "errorMessage": {
+            "description": "人类可读的错误描述",
+            "type": "string"
+          },
+          "hasDetailSolution": {
+            "description": "是否支持错误中心知识库跳转",
+            "type": "boolean"
+          },
+          "httpStatus": {
+            "description": "HTTP 状态码",
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "title": {
+            "description": "人类可读的错误标题",
+            "type": "string"
+          },
+          "traceId": {
+            "description": "追踪排查具体错误时使用的具体 trace ID",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
+}
