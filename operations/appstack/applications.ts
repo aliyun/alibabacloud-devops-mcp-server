@@ -84,6 +84,50 @@ export type CreateApplicationResponse = z.infer<typeof CreateApplicationResponse
 export type UpdateApplicationRequest = z.infer<typeof UpdateApplicationRequestSchema>;
 export type UpdateApplicationResponse = z.infer<typeof UpdateApplicationResponseSchema>;
 
+// Schema for the ListApplicationSources API
+export const ListApplicationSourcesRequestSchema = z.object({
+  organizationId: z.string().describe("组织id"),
+  appName: z.string().describe("应用名"),
+  pagination: z.enum(['keyset', '']).optional().describe("分页模式参数：keyset表示键集分页，不传表示页码分页"),
+  perPage: z.number().min(1).max(100).optional().describe("分页尺寸参数，决定一页最多返回多少对象"),
+  orderBy: z.enum(['id', 'gmtCreate']).optional().describe("分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性"),
+  sort: z.enum(['asc', 'desc']).optional().describe("分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序"),
+  nextToken: z.string().optional().describe("键集分页 token，获取第一页数据时无需传入，否则需要传入前一页查询结果中的 nextToken 字段"),
+  page: z.number().optional().describe("页码分页时使用，用于获取下一页内容"),
+});
+
+// CodeRepoSource schema for response
+const CodeRepoSourceSchema = z.object({
+  type: z.string().describe("源类型"),
+  appName: z.string().optional().describe("代码仓库源所隶属的应用唯一名"),
+  connectionConfig: z.object({
+    connectionId: z.string().optional().describe("连接ID"),
+    connectionType: z.string().optional().describe("连接类型"),
+  }).optional().describe("连接配置"),
+  identifier: z.string().optional().describe("代码服务提供方所使用的代码仓库唯一标识"),
+  name: z.string().optional().describe("代码仓库源名称"),
+  repoContext: z.object({
+    defaultBranch: z.string().optional().describe("默认分支"),
+    projectId: z.string().optional().describe("项目ID"),
+    repoType: z.string().optional().describe("仓库类型"),
+    repoUrl: z.string().optional().describe("仓库地址"),
+  }).optional().describe("仓库上下文"),
+  repoUrl: z.string().optional().describe("代码仓库 URL"),
+  sn: z.string().optional().describe("代码仓库源唯一序列号"),
+});
+
+export const ListApplicationSourcesResponseSchema = z.object({
+  current: z.number().nullable().optional().describe("页码分页时存在该字段，表示当前页"),
+  data: z.array(CodeRepoSourceSchema).optional().describe("分页结果数据"),
+  nextToken: z.string().nullable().optional().describe("采用键值分页时存在该字段，用于传给分页接口，迭代获取下一页数据"),
+  pages: z.number().nullable().optional().describe("页码分页时存在该字段，表示总页数"),
+  perPage: z.number().nullable().optional().describe("页码分页时存在该字段，表示每页大小"),
+  total: z.number().nullable().optional().describe("页码分页时存在该字段，表示结果总数"),
+});
+
+export type ListApplicationSourcesRequest = z.infer<typeof ListApplicationSourcesRequestSchema>;
+export type ListApplicationSourcesResponse = z.infer<typeof ListApplicationSourcesResponseSchema>;
+
 /**
  * List applications in an organization with pagination
  * 
@@ -196,6 +240,44 @@ export async function updateApplication(params: UpdateApplicationRequest): Promi
       }
     );
     return UpdateApplicationResponseSchema.parse(response);
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * List application sources
+ * 
+ * @param params - The request parameters
+ * @returns The list of application sources
+ */
+export async function listApplicationSources(params: ListApplicationSourcesRequest): Promise<ListApplicationSourcesResponse> {
+  const { organizationId, appName, ...queryParams } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  
+  // Build query string properly
+  const query: Record<string, string | number> = {};
+  if (queryParams.pagination) query.pagination = queryParams.pagination;
+  if (queryParams.perPage !== undefined) query.perPage = queryParams.perPage;
+  if (queryParams.orderBy) query.orderBy = queryParams.orderBy;
+  if (queryParams.sort) query.sort = queryParams.sort;
+  if (queryParams.nextToken) query.nextToken = queryParams.nextToken;
+  if (queryParams.page !== undefined) query.page = queryParams.page;
+  
+  try {
+    // Build the full URL with query parameters
+    const baseUrl = isRegionEdition()
+      ? `/oapi/v1/appstack/apps/${appName}/sources`
+      : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/sources`;
+    const url = buildUrl(baseUrl, query);
+    
+    const response = await yunxiaoRequest(
+      url,
+      {
+        method: 'GET',
+      }
+    );
+    return ListApplicationSourcesResponseSchema.parse(response);
   } catch (error) {
     throw error;
   }

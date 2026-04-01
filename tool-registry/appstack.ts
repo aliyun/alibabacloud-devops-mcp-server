@@ -4,7 +4,8 @@ import {
   ListApplicationsRequestSchema,
   GetApplicationRequestSchema,
   CreateApplicationRequestSchema,
-  UpdateApplicationRequestSchema
+  UpdateApplicationRequestSchema,
+  ListApplicationSourcesRequestSchema
 } from '../operations/appstack/applications.js';
 
 // Export all appstack tools
@@ -28,5 +29,10 @@ export const getAppStackTools = () => [
     name: 'update_application',
     description: '[application delivery] Update an existing application',
     inputSchema: zodToJsonSchema(UpdateApplicationRequestSchema),
+  },
+  {
+    name: 'list_application_sources',
+    description: '[application delivery] List application sources with pagination',
+    inputSchema: zodToJsonSchema(ListApplicationSourcesRequestSchema),
   }
 ];

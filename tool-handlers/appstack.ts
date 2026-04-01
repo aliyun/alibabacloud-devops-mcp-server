@@ -4,10 +4,12 @@ import {
   getApplication, 
   createApplication, 
   updateApplication,
+  listApplicationSources,
   ListApplicationsRequestSchema, 
   GetApplicationRequestSchema,
   CreateApplicationRequestSchema,
-  UpdateApplicationRequestSchema
+  UpdateApplicationRequestSchema,
+  ListApplicationSourcesRequestSchema
 } from '../operations/appstack/applications.js';
 
 /**
@@ -45,7 +47,14 @@ export async function handleAppStackTools(request: any) {
       return {
         content: [{ type: "text", text: JSON.stringify(updateResult, null, 2) }],
       };
-      
+    
+    case 'list_application_sources':
+      const listSourcesParams = ListApplicationSourcesRequestSchema.parse(request.params.arguments);
+      const listSourcesResult = await listApplicationSources(listSourcesParams);
+      return {
+        content: [{ type: "text", text: JSON.stringify(listSourcesResult, null, 2) }],
+      };
+
     default:
       return null;
   }
