@@ -80,7 +80,7 @@ export const SprintInfoSchema = z.object({
   gmtModified: z.number().optional().describe("Last modified time in milliseconds"),
   capacityHours: z.number().nullable().optional().describe("Capacity hours"),
   creator: UserInfoSchema.nullable().optional().describe("Creator"),
-  description: z.string().optional().describe("Description"),
+  description: z.string().nullable().optional().describe("Description"),
   locked: z.boolean().optional().describe("Whether locked"),
   modifier: UserInfoSchema.nullable().optional().describe("Modifier"),
   owners: z.array(UserInfoSchema).nullable().optional().describe("Owners"),
