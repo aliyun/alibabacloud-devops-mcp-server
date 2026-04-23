@@ -11,6 +11,12 @@ export const ListApplicationsRequestSchema = z.object({
   orderBy: z.string().optional().default("id").describe("分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性"),
   sort: z.enum(['asc', 'desc']).optional().default('asc').describe("分页排序为升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序"),
   nextToken: z.string().optional().describe("分页 token，获取第一页数据时无需传入，否则需要传入前一页查询结果中的 nextToken 字段"),
+  tags: z
+    .union([z.array(z.string()), z.string()])
+    .optional()
+    .describe(
+      "按应用标签筛选；可传多个标签用逗号分隔的字符串（与 OpenAPI tags 参数一致，含已 urlencode 的标签名），或传标签名数组（将用逗号连接并由请求层完成编码）"
+    ),
 });
 
 export const ListApplicationsResponseSchema = z.object({
@@ -145,7 +151,12 @@ export async function listApplications(params: ListApplicationsRequest): Promise
   if (queryParams.orderBy) query.orderBy = queryParams.orderBy;
   if (queryParams.sort) query.sort = queryParams.sort;
   if (queryParams.nextToken) query.nextToken = queryParams.nextToken;
-  
+  if (queryParams.tags !== undefined) {
+    query.tags = Array.isArray(queryParams.tags)
+      ? queryParams.tags.join(",")
+      : queryParams.tags;
+  }
+
   try {
     // Build the full URL with query parameters
     const baseUrl = isRegionEdition()

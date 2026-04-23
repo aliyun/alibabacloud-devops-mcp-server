@@ -1,4 +1,6 @@
 {
+  "total": 168,
+  "generatedAt": "2026-04-23T07:22:31.694Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -1595,7 +1597,7 @@
     },
     {
       "name": "list_versions",
-      "description": "[Project Management] List versions for a Yunxiao Project or Yunxiao Program. Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a project\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
+      "description": "[Project Management] List versions for a Yunxiao Project or Program. Versions are used to manage release plans and track delivery progress.\n\nUse Cases:\n\nList all versions in a project\nFilter versions by status (TODO, DOING, ARCHIVED)\nSearch versions by name",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2613,6 +2615,89 @@
           "organizationId",
           "workItemId",
           "content"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_workitem_attachments",
+      "description": "[Project Management] List attachments for a specific work item. Returns attachment information including file name, size, suffix, download URL, and creator/modifier details.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+          },
+          "workItemId": {
+            "type": "string",
+            "description": "工作项唯一标识"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_workitem_file",
+      "description": "[Project Management] Get file information for a specific work item. Returns file details including name, size, suffix, and a temporary download URL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+          },
+          "workitemId": {
+            "type": "string",
+            "description": "工作项唯一标识"
+          },
+          "id": {
+            "type": "string",
+            "description": "文件唯一标识"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workitemId",
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "create_workitem_attachment",
+      "description": "[Project Management] Upload a local file as an attachment to a specific work item. The MCP Server reads the file from the given local absolute path and uploads it. Supports any file type.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+          },
+          "workItemId": {
+            "type": "string",
+            "description": "工作项唯一标识"
+          },
+          "filePath": {
+            "type": "string",
+            "description": "本地文件的绝对路径，MCP Server 将读取该文件并上传为工作项附件"
+          },
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId，个人token时该参数无效"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "filePath"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -4326,6 +4411,20 @@
           "nextToken": {
             "type": "string",
             "description": "分页 token，获取第一页数据时无需传入，否则需要传入前一页查询结果中的 nextToken 字段"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "按应用标签筛选；可传多个标签用逗号分隔的字符串（与 OpenAPI tags 参数一致，含已 urlencode 的标签名），或传标签名数组（将用逗号连接并由请求层完成编码）"
           }
         },
         "required": [
@@ -4417,6 +4516,67 @@
           "ownerId": {
             "type": "string",
             "description": "应用 owner ID"
+          }
+        },
+        "required": [
+          "organizationId",
+          "appName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_application_sources",
+      "description": "[application delivery] List application sources with pagination",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织id"
+          },
+          "appName": {
+            "type": "string",
+            "description": "应用名"
+          },
+          "pagination": {
+            "type": "string",
+            "enum": [
+              "keyset",
+              ""
+            ],
+            "description": "分页模式参数：keyset表示键集分页，不传表示页码分页"
+          },
+          "perPage": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "分页尺寸参数，决定一页最多返回多少对象"
+          },
+          "orderBy": {
+            "type": "string",
+            "enum": [
+              "id",
+              "gmtCreate"
+            ],
+            "description": "分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "description": "分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序"
+          },
+          "nextToken": {
+            "type": "string",
+            "description": "键集分页 token，获取第一页数据时无需传入，否则需要传入前一页查询结果中的 nextToken 字段"
+          },
+          "page": {
+            "type": "number",
+            "description": "页码分页时使用，用于获取下一页内容"
           }
         },
         "required": [
@@ -5290,6 +5450,7 @@
           },
           "autoDeleteBranchWhenEnd": {
             "type": "boolean",
+            "default": false,
             "description": "变更结束时候是否自动删除分支"
           },
           "branchName": {
@@ -5298,15 +5459,12 @@
           },
           "createBranch": {
             "type": "boolean",
+            "default": false,
             "description": "是否创建分支"
-          },
-          "ownerAccountId": {
-            "type": "string",
-            "description": "变更负责人账号"
           },
           "ownerId": {
             "type": "string",
-            "description": "变更负责人"
+            "description": "变更负责人,默认值可以为当前用户"
           },
           "title": {
             "type": "string",
@@ -5317,9 +5475,8 @@
           "organizationId",
           "appName",
           "appCodeRepoSn",
-          "autoDeleteBranchWhenEnd",
           "branchName",
-          "createBranch",
+          "ownerId",
           "title"
         ],
         "additionalProperties": false,
@@ -5503,6 +5660,103 @@
           "organizationId",
           "appName",
           "sn"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_appstack_change_requests",
+      "description": "[application delivery] Search change requests in an application with pagination and filtering",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "appName": {
+            "type": "string",
+            "description": "应用名"
+          },
+          "current": {
+            "type": "number",
+            "minimum": 1,
+            "default": 1,
+            "description": "当前页数"
+          },
+          "pageSize": {
+            "type": "number",
+            "maximum": 30,
+            "default": 10,
+            "description": "每页数量"
+          },
+          "owner": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "负责人列表"
+          },
+          "name": {
+            "type": "string",
+            "description": "变更名称"
+          },
+          "state": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "DEVELOPING",
+                "INTEGRATING",
+                "RELEASED",
+                "CLOSED"
+              ]
+            },
+            "description": "变更状态列表"
+          }
+        },
+        "required": [
+          "organizationId",
+          "appName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_attached_change_requests",
+      "description": "[application delivery] List change requests attached to a release",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "systemName": {
+            "type": "string",
+            "description": "系统名称"
+          },
+          "releaseSn": {
+            "type": "string",
+            "description": "发布标识符"
+          },
+          "current": {
+            "type": "number",
+            "default": 1,
+            "description": "当前页数"
+          },
+          "pageSize": {
+            "type": "number",
+            "default": 10,
+            "description": "每页大小"
+          }
+        },
+        "required": [
+          "organizationId",
+          "systemName",
+          "releaseSn"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -6875,9 +7129,6 @@
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "destructiveHint": true
       }
     },
     {
