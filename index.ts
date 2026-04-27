@@ -37,18 +37,6 @@ import { getAllTools, getEnabledTools } from "./tool-registry/index.js";
 import { handleToolRequest, handleEnabledToolRequest } from "./tool-handlers/index.js";
 import { Toolset } from "./common/toolsets.js";
 
-const server = new Server(
-    {
-        name: "alibabacloud-devops-mcp-server",
-        version: VERSION,
-    },
-    {
-        capabilities: {
-            tools: {},
-        },
-    }
-);
-
 function formatYunxiaoError(error: YunxiaoError): string {
     let message = `Yunxiao API Error: ${error.message}`;
 
@@ -117,50 +105,64 @@ function formatYunxiaoError(error: YunxiaoError): string {
     return message;
 }
 
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-    let tools: any[];
-    
-    if (enabledToolsets.length > 0) {
-        // 获取基础工具（总是加载）
-        const baseTools = getEnabledTools([Toolset.BASE]);
-        
-        // 获取启用的工具集工具
-        const enabledTools = getEnabledTools(enabledToolsets);
-        
-        // 合并基础工具和启用的工具集工具
-        tools = [...baseTools, ...enabledTools];
-    } else {
-        // 如果没有指定启用的工具集，则获取所有工具（已包含基础工具）
-        tools = getAllTools();
-    }
-    
-    return {
-        tools,
-    };
-});
+/**
+ * Create a new MCP Server instance with all request handlers configured.
+ * Each SSE session needs its own Server instance since server.connect()
+ * can only be called once per Server.
+ */
+function createMcpServer(): Server {
+    const mcpServer = new Server(
+        {
+            name: "alibabacloud-devops-mcp-server",
+            version: VERSION,
+        },
+        {
+            capabilities: {
+                tools: {},
+            },
+        }
+    );
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    try {
-        if (!request.params.arguments) {
-            throw new Error("Arguments are required");
+    mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
+        let tools: any[];
+
+        if (enabledToolsets.length > 0) {
+            const baseTools = getEnabledTools([Toolset.BASE]);
+            const enabledTools = getEnabledTools(enabledToolsets);
+            tools = [...baseTools, ...enabledTools];
+        } else {
+            tools = getAllTools();
         }
 
-        // Delegate to our modular tool handler with toolset support
-        const result = enabledToolsets.length > 0 
-            ? await handleEnabledToolRequest(request, enabledToolsets)
-            : await handleToolRequest(request);
-            
-        return result;
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            throw new Error(`Invalid input: ${JSON.stringify(error.errors)}`);
+        return {
+            tools,
+        };
+    });
+
+    mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
+        try {
+            if (!request.params.arguments) {
+                throw new Error("Arguments are required");
+            }
+
+            const result = enabledToolsets.length > 0
+                ? await handleEnabledToolRequest(request, enabledToolsets)
+                : await handleToolRequest(request);
+
+            return result;
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                throw new Error(`Invalid input: ${JSON.stringify(error.errors)}`);
+            }
+            if (isYunxiaoError(error)) {
+                throw new Error(formatYunxiaoError(error));
+            }
+            throw error;
         }
-        if (isYunxiaoError(error)) {
-            throw new Error(formatYunxiaoError(error));
-        }
-        throw error;
-    }
-});
+    });
+
+    return mcpServer;
+}
 
 config({ quiet: true });
 
@@ -194,28 +196,37 @@ async function runServer() {
         const app: any = express();
         const port = process.env.PORT || 3000;
         
-        // Store sessions with their tokens
-        const sessions: Record<string, { transport: SSEServerTransport; server: Server; yunxiao_access_token?: string }> = {};
+        // Store sessions - each session has its own Server instance and transport
+        const sessions: Record<string, {
+            transport: SSEServerTransport;
+            server: Server;
+            yunxiao_access_token?: string;
+            yunxiao_api_base_url?: string;
+        }> = {};
         
         // SSE endpoint - handles initial connection
         app.get('/sse', async (req: any, res: any) => {
-            // In SSE mode, we can use console.log for debugging since it doesn't interfere with the protocol
             console.log(`New SSE connection from ${req.ip}`);
             
             // Get token from query parameters or headers
             const yunxiao_access_token = req.query.yunxiao_access_token || req.headers['x-yunxiao-token'] || process.env.YUNXIAO_ACCESS_TOKEN;
+            
+            // Get API base URL from query parameters or headers
+            const yunxiao_api_base_url = req.query.yunxiao_api_base_url || req.headers['x-yunxiao-api-base-url'] || undefined;
+            
+            // Create a new Server instance for this session (required - server.connect() can only be called once)
+            const sessionServer = createMcpServer();
             
             // Create transport with endpoint for POST messages
             const sseTransport = new SSEServerTransport('/messages', res);
             const sessionId = sseTransport.sessionId;
             
             if (sessionId) {
-                sessions[sessionId] = { transport: sseTransport, server, yunxiao_access_token };
+                sessions[sessionId] = { transport: sseTransport, server: sessionServer, yunxiao_access_token, yunxiao_api_base_url };
             }
             
             try {
-                await server.connect(sseTransport);
-                // In SSE mode, console.error is acceptable for status messages
+                await sessionServer.connect(sseTransport);
                 console.info(`Yunxiao MCP Server connected via SSE with session ${sessionId}`);
                 if (yunxiao_access_token) {
                     console.error(`Session ${sessionId} using custom token`);
@@ -229,7 +240,7 @@ async function runServer() {
         });
         
         // POST endpoint - handles incoming messages
-        app.use(express.json({ limit: '10mb' })); // Add JSON body parser
+        app.use(express.json({ limit: '10mb' }));
         app.post('/messages', async (req: any, res: any) => {
             const sessionId = req.query.sessionId as string;
             const session = sessions[sessionId];
@@ -243,6 +254,7 @@ async function runServer() {
                 // Set the session token before handling the message
                 const utils = await import('./common/utils.js');
                 utils.setCurrentSessionToken(session.yunxiao_access_token);
+                utils.setCurrentSessionApiBaseUrl(session.yunxiao_api_base_url);
                 
                 await session.transport.handlePostMessage(req, res, req.body);
             } catch (error) {
@@ -261,6 +273,15 @@ async function runServer() {
         // Handle graceful shutdown
         process.on('SIGINT', () => {
             console.log('Shutting down SSE server...');
+            // Close all active sessions
+            for (const sid of Object.keys(sessions)) {
+                try {
+                    sessions[sid].server.close();
+                    delete sessions[sid];
+                } catch (e) {
+                    // Ignore close errors during shutdown
+                }
+            }
             serverInstance.close(() => {
                 console.log('Server closed.');
                 process.exit(0);
@@ -268,10 +289,9 @@ async function runServer() {
         });
     } else {
         // Stdio mode (default)
-        // In stdio mode, we must avoid console.log/console.error as they interfere with the JSON-RPC protocol
+        const server = createMcpServer();
         const transport = new StdioServerTransport();
         await server.connect(transport);
-        // Don't output anything to stdout/stderr in stdio mode - only JSON-RPC messages should go through the transport
     }
 }
 

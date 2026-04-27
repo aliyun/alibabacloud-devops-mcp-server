@@ -9,7 +9,7 @@ const DEFAULT_YUNXIAO_API_BASE_URL = "https://openapi-rdc.aliyuncs.com";
  * @returns The Yunxiao API base URL
  */
 export function getYunxiaoApiBaseUrl(): string {
-  return process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
+  return currentSessionApiBaseUrl || process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
 }
 
 /**
@@ -103,6 +103,7 @@ export function buildUrl(baseUrl: string, params: Record<string, string | number
 const USER_AGENT = `modelcontextprotocol/servers/alibabacloud-devops-mcp-server/v${VERSION} ${getUserAgent()}`;
 
 let currentSessionToken: string | undefined = undefined;
+let currentSessionApiBaseUrl: string | undefined = undefined;
 
 /** 
  * Set the token for the current session (used in SSE mode)
@@ -118,6 +119,14 @@ export function setCurrentSessionToken(yunxiao_access_token: string | undefined)
  */
 export function getCurrentSessionToken(): string | undefined {
   return currentSessionToken || process.env.YUNXIAO_ACCESS_TOKEN;
+}
+
+/**
+ * Set the API base URL for the current session (used in SSE mode)
+ * @param apiBaseUrl The API base URL to use for the current session
+ */
+export function setCurrentSessionApiBaseUrl(apiBaseUrl: string | undefined): void {
+  currentSessionApiBaseUrl = apiBaseUrl;
 }
 
 export async function yunxiaoRequest(
