@@ -9,7 +9,7 @@ const DEFAULT_YUNXIAO_API_BASE_URL = "https://openapi-rdc.aliyuncs.com";
  * @returns The Yunxiao API base URL
  */
 export function getYunxiaoApiBaseUrl(): string {
-  return currentSessionApiBaseUrl || process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
+  return getCurrentSessionApiBaseUrl() || process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
 }
 
 /**
@@ -114,19 +114,27 @@ export function setCurrentSessionToken(yunxiao_access_token: string | undefined)
 }
 
 /**
+ * Set the API base URL for the current session (used in SSE mode)
+ * @param yunxiao_api_base_url The base URL to use for the current session
+ */
+export function setCurrentSessionApiBaseUrl(yunxiao_api_base_url: string | undefined): void {
+  currentSessionApiBaseUrl = yunxiao_api_base_url;
+}
+
+/**
+ * Get the API base URL for the current session
+ * @returns The base URL for the current session, or the default from environment/default
+ */
+export function getCurrentSessionApiBaseUrl(): string | undefined {
+  return currentSessionApiBaseUrl;
+}
+
+/**
  * Get the token for the current session
  * @returns The token for the current session, or the default token from environment
  */
 export function getCurrentSessionToken(): string | undefined {
   return currentSessionToken || process.env.YUNXIAO_ACCESS_TOKEN;
-}
-
-/**
- * Set the API base URL for the current session (used in SSE mode)
- * @param apiBaseUrl The API base URL to use for the current session
- */
-export function setCurrentSessionApiBaseUrl(apiBaseUrl: string | undefined): void {
-  currentSessionApiBaseUrl = apiBaseUrl;
 }
 
 export async function yunxiaoRequest(
