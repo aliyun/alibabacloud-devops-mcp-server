@@ -181,6 +181,17 @@ export const handleCodeManagementTools = async (request: any) => {
       };
     }
 
+    case "create_repository": {
+      const args = types.CreateRepositorySchema.parse(request.params.arguments);
+      const repository = await repositories.createRepositoryFunc(
+        args.organizationId,
+        args
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(repository, null, 2) }],
+      };
+    }
+
     // Change Request Operations
     case "get_change_request": {
       const args = types.GetChangeRequestSchema.parse(request.params.arguments);

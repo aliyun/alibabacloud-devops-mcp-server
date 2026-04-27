@@ -49,6 +49,7 @@ export {
   // Repository schemas
   GetRepositorySchema,
   ListRepositoriesSchema,
+  CreateRepositorySchema,
   
   // Compare schemas
   GetCompareSchema,
