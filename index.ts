@@ -201,13 +201,18 @@ async function runServer() {
         
         // SSE endpoint - handles initial connection
         app.get('/sse', async (req: any, res: any) => {
-            // In SSE mode, we can use console.log for debugging since it doesn't interfere with the protocol
             console.log(`New SSE connection from ${req.ip}`);
+            console.log(`SSE query params: ${JSON.stringify(req.query)}`);
+            console.log(`SSE headers x-yunxiao-token: ${req.headers['x-yunxiao-token'] ? 'present' : 'missing'}`);
+            console.log(`SSE headers x-yunxiao-api-base-url: ${req.headers['x-yunxiao-api-base-url'] || 'missing'}`);
             
             // Get token from query parameters or headers
             const yunxiao_access_token = req.query.yunxiao_access_token || req.headers['x-yunxiao-token'] || process.env.YUNXIAO_ACCESS_TOKEN;
             // Optional: per-session API base URL override (useful for region editions)
-            const yunxiao_api_base_url = req.query.yunxiao_api_base_url || process.env.YUNXIAO_API_BASE_URL;
+            const yunxiao_api_base_url = req.query.yunxiao_api_base_url || req.headers['x-yunxiao-api-base-url'] || undefined;
+            
+            console.log(`[SSE] Resolved token: ${yunxiao_access_token ? yunxiao_access_token.substring(0, 10) + '...' : 'none'}`);
+            console.log(`[SSE] Resolved API base URL: ${yunxiao_api_base_url || 'none (will use default)'}`);
             
             // Create a new Server instance for this session (required - server.connect() can only be called once)
             const sessionServer = createMcpServer();
@@ -222,7 +227,6 @@ async function runServer() {
             
             try {
                 await sessionServer.connect(sseTransport);
-                // In SSE mode, console.error is acceptable for status messages
                 console.info(`Yunxiao MCP Server connected via SSE with session ${sessionId}`);
                 if (yunxiao_access_token) {
                     console.error(`Session ${sessionId} using custom token`);
@@ -247,8 +251,10 @@ async function runServer() {
             }
             
             try {
-                // Set the session token before handling the message
+                // Set the session token and API base URL before handling the message
                 const utils = await import('./common/utils.js');
+                console.log(`[POST] Session ${sessionId} - setting token: ${session.yunxiao_access_token ? session.yunxiao_access_token.substring(0, 10) + '...' : 'none'}`);
+                console.log(`[POST] Session ${sessionId} - setting API base URL: ${session.yunxiao_api_base_url || 'none'}`);
                 utils.setCurrentSessionToken(session.yunxiao_access_token);
                 utils.setCurrentSessionApiBaseUrl(session.yunxiao_api_base_url);
                 
