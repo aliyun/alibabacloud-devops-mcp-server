@@ -195,7 +195,7 @@ async function runServer() {
         const port = process.env.PORT || 3000;
         
         // Store sessions with their tokens
-        const sessions: Record<string, { transport: SSEServerTransport; server: Server; yunxiao_access_token?: string; yunxiao_api_base_url?: string }> = {};
+        const sessions: Record<string, { transport: SSEServerTransport; server: Server; yunxiao_access_token?: string }> = {};
         
         // SSE endpoint - handles initial connection
         app.get('/sse', async (req: any, res: any) => {
@@ -205,15 +205,12 @@ async function runServer() {
             // Get token from query parameters or headers
             const yunxiao_access_token = req.query.yunxiao_access_token || req.headers['x-yunxiao-token'] || process.env.YUNXIAO_ACCESS_TOKEN;
             
-            // Get API base URL from query parameters or headers
-            const yunxiao_api_base_url = req.query.yunxiao_api_base_url || req.headers['x-yunxiao-api-base-url'] || undefined;
-            
             // Create transport with endpoint for POST messages
             const sseTransport = new SSEServerTransport('/messages', res);
             const sessionId = sseTransport.sessionId;
             
             if (sessionId) {
-                sessions[sessionId] = { transport: sseTransport, server, yunxiao_access_token, yunxiao_api_base_url };
+                sessions[sessionId] = { transport: sseTransport, server, yunxiao_access_token };
             }
             
             try {
@@ -243,15 +240,11 @@ async function runServer() {
             }
             
             try {
-                // Run the message handler within an isolated session context
-                // This ensures true session isolation using AsyncLocalStorage
+                // Set the session token before handling the message
                 const utils = await import('./common/utils.js');
-                await utils.runInSessionContext({
-                    yunxiao_access_token: session.yunxiao_access_token,
-                    yunxiao_api_base_url: session.yunxiao_api_base_url,
-                }, async () => {
-                    await session.transport.handlePostMessage(req, res, req.body);
-                });
+                utils.setCurrentSessionToken(session.yunxiao_access_token);
+                
+                await session.transport.handlePostMessage(req, res, req.body);
             } catch (error) {
                 console.error("Error handling POST message:", error);
                 res.status(500).send("Server error");

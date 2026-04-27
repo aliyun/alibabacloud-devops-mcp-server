@@ -9,8 +9,7 @@ const DEFAULT_YUNXIAO_API_BASE_URL = "https://openapi-rdc.aliyuncs.com";
  * @returns The Yunxiao API base URL
  */
 export function getYunxiaoApiBaseUrl(): string {
-  const store = sessionContext.getStore();
-  return store?.yunxiao_api_base_url || process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
+  return process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
 }
 
 /**
@@ -103,39 +102,14 @@ export function buildUrl(baseUrl: string, params: Record<string, string | number
 
 const USER_AGENT = `modelcontextprotocol/servers/alibabacloud-devops-mcp-server/v${VERSION} ${getUserAgent()}`;
 
-import { AsyncLocalStorage } from 'async_hooks';
-
-// AsyncLocalStorage provides true session isolation in SSE mode
-// Each concurrent request gets its own isolated context
-const sessionContext = new AsyncLocalStorage<{
-  yunxiao_access_token?: string;
-  yunxiao_api_base_url?: string;
-}>();
-
-/**
- * Run a callback within an isolated session context (used in SSE mode)
- * @param context The session context containing token and API base URL
- * @param callback The callback to run within the context
- */
-export function runInSessionContext(context: {
-  yunxiao_access_token?: string;
-  yunxiao_api_base_url?: string;
-}, callback: () => Promise<void>): Promise<void> {
-  return sessionContext.run(context, callback);
-}
+let currentSessionToken: string | undefined = undefined;
 
 /** 
  * Set the token for the current session (used in SSE mode)
  * @param yunxiao_access_token The token to use for the current session
  */
 export function setCurrentSessionToken(yunxiao_access_token: string | undefined): void {
-  const store = sessionContext.getStore();
-  if (store) {
-    store.yunxiao_access_token = yunxiao_access_token;
-  } else {
-    // Fallback for stdio mode or non-SSE contexts
-    process.env.YUNXIAO_ACCESS_TOKEN = yunxiao_access_token;
-  }
+  currentSessionToken = yunxiao_access_token;
 }
 
 /**
@@ -143,28 +117,7 @@ export function setCurrentSessionToken(yunxiao_access_token: string | undefined)
  * @returns The token for the current session, or the default token from environment
  */
 export function getCurrentSessionToken(): string | undefined {
-  const store = sessionContext.getStore();
-  return store?.yunxiao_access_token || process.env.YUNXIAO_ACCESS_TOKEN;
-}
-
-/**
- * Set the API base URL for the current session (used in SSE mode)
- * @param apiBaseUrl The API base URL to use for the current session
- */
-export function setCurrentSessionApiBaseUrl(apiBaseUrl: string | undefined): void {
-  const store = sessionContext.getStore();
-  if (store) {
-    store.yunxiao_api_base_url = apiBaseUrl;
-  }
-}
-
-/**
- * Get the API base URL for the current session
- * @returns The API base URL for the current session, or the default from environment
- */
-export function getCurrentSessionApiBaseUrl(): string | undefined {
-  const store = sessionContext.getStore();
-  return store?.yunxiao_api_base_url;
+  return currentSessionToken || process.env.YUNXIAO_ACCESS_TOKEN;
 }
 
 export async function yunxiaoRequest(
