@@ -14,7 +14,8 @@
     "alibabacloud-devops-mcp-server": "dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "package.json"
   ],
   "repository": {
     "type": "git",
