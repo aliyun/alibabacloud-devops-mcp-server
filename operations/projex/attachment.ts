@@ -94,7 +94,7 @@ export async function createWorkitemAttachmentFunc(
   workItemId: string,
   filePath: string,
   operatorId?: string
-): Promise<unknown> {
+): Promise<WorkitemFile> {
   // 验证文件存在
   if (!existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`);
@@ -152,5 +152,5 @@ export async function createWorkitemAttachmentFunc(
     );
   }
 
-  return responseBody;
+  return WorkitemFileSchema.parse(responseBody);
 }
