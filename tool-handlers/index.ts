@@ -22,17 +22,60 @@ import { handleBaseTools } from './base.js';
 import { handleTestManagementTools } from './test-management.js';
 import { Toolset } from '../common/toolsets.js';
 
+// 将多个 handler 串联：依次尝试，第一个返回非 null 的结果即返回；
+// 未处理请求的统一哨兵值约定为 null，若某个 handler 意外返回 undefined，则按未处理继续分发，
+// 以保持与本文件其他分发逻辑（如 handleToolRequest 中 `result !== null`）一致的语义。
+const composeHandlers =
+  (...handlers: Array<(request: any) => Promise<any>>) =>
+  async (request: any) => {
+    for (const handler of handlers) {
+      const result = await handler(request);
+      if (result === undefined) {
+        continue;
+      }
+      if (result !== null) {
+        return result;
+      }
+    }
+    return null;
+  };
+
 // 定义处理函数映射
+// 注意：这里的映射必须与 common/toolsetManager.ts 中的工具注册保持一致——
+// 一个 toolset 在 registry 中聚合了多个子模块的工具，分发时也必须串联对应的多个 handler，
+// 否则在仅启用该 toolset 时调用其子模块工具会得到 "Unknown tool"。
 const HANDLER_MAP: Record<Toolset, (request: any) => Promise<any>> = {
   [Toolset.BASE]: handleBaseTools,
-  [Toolset.CODE_MANAGEMENT]: handleCodeManagementTools,
+  [Toolset.CODE_MANAGEMENT]: composeHandlers(
+    handleCodeManagementTools,
+    handleCommitTools
+  ),
   [Toolset.ORGANIZATION_MANAGEMENT]: handleOrganizationTools,
-  [Toolset.PROJECT_MANAGEMENT]: handleProjectManagementTools,
-  [Toolset.PIPELINE_MANAGEMENT]: handlePipelineTools,
+  [Toolset.PROJECT_MANAGEMENT]: composeHandlers(
+    handleProjectManagementTools,
+    handleEffortTools
+  ),
+  [Toolset.PIPELINE_MANAGEMENT]: composeHandlers(
+    handlePipelineTools,
+    handleServiceConnectionTools,
+    handleResourceMemberTools,
+    handleVMDeployOrderTools
+  ),
   [Toolset.PACKAGES_MANAGEMENT]: handlePackageManagementTools,
-  [Toolset.APPLICATION_DELIVERY]: handleAppStackTools, // 注意：这里只使用了主处理函数，其他AppStack处理函数在内部处理
+  [Toolset.APPLICATION_DELIVERY]: composeHandlers(
+    handleAppStackTools,
+    handleAppStackTagTools,
+    handleAppStackTemplateTools,
+    handleAppStackGlobalVarTools,
+    handleAppStackVariableGroupTools,
+    handleAppStackOrchestrationTools,
+    handleAppStackChangeRequestTools,
+    handleAppStackDeploymentResourceTools,
+    handleAppStackChangeOrderTools,
+    handleAppStackAppReleaseWorkflowTools
+  ),
   [Toolset.TEST_MANAGEMENT]: handleTestManagementTools,
-}
+};
 
 // 保持向后兼容的接口
 export const handleToolRequest = async (request: any) => {
@@ -97,17 +140,17 @@ export const handleEnabledToolRequest = async (request: any, enabledToolsets: To
       throw error;
     }
   }
-  
+
   // 如果没有指定启用的工具集，则处理所有工具集（除了基础工具集，因为已经处理过了）
   const toolsets = enabledToolsets.length > 0 ? enabledToolsets : Object.values(Toolset).filter(t => t !== Toolset.BASE);
-  
+
   // 按顺序尝试每个启用的工具集
   for (const toolset of toolsets) {
     // 跳过基础工具集，因为我们已经处理过了
     if (toolset === Toolset.BASE) {
       continue;
     }
-    
+
     try {
       const result = await handleToolRequestByToolset(request, toolset);
       if (result !== null) {
