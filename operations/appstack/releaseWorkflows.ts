@@ -317,18 +317,18 @@ export const ListAppReleaseStageRunsRequestSchema = z.object({
 export const ReleaseStageInstanceVOSchema = z.object({
   number: z.string().optional().describe("流水线执行编号"),
   state: z.string().optional().describe("流水线执行状态"),
-  startTime: z.string().optional().describe("流水线执行开始时间"),
-  endTime: z.string().optional().describe("流水线执行结束时间"),
+  startTime: z.string().nullable().optional().describe("流水线执行开始时间"),
+  endTime: z.string().nullable().optional().describe("流水线执行结束时间"),
   triggerMode: z.string().optional().describe("流水线执行触发方式"),
 });
 
 // Schema for PageListReleaseStageInstanceVO
 export const PageListReleaseStageInstanceVOSchema = z.object({
-  current: z.number().optional().describe("页码分页时存在该字段，表示当前页"),
-  perPage: z.number().optional().describe("页码分页时存在该字段，表示每页大小"),
-  pages: z.number().optional().describe("页码分页时存在该字段，表示总页数"),
+  current: z.number().nullable().optional().describe("页码分页时存在该字段，表示当前页"),
+  perPage: z.number().nullable().optional().describe("页码分页时存在该字段，表示每页大小"),
+  pages: z.number().nullable().optional().describe("页码分页时存在该字段，表示总页数"),
   data: z.array(ReleaseStageInstanceVOSchema).optional().describe("分页结果数据"),
-  total: z.number().optional().describe("页码分页时存在该字段，表示结果总数"),
+  total: z.number().nullable().optional().describe("页码分页时存在该字段，表示结果总数"),
   nextToken: z.string().nullable().optional().describe("采用键值分页时存在该字段，用于传给分页接口，迭代获取下一页数据"),
 });
 
