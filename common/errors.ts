@@ -62,6 +62,11 @@ export function isYunxiaoError(error: unknown): error is YunxiaoError {
   return error instanceof YunxiaoError;
 }
 
+export function extractErrorMessage(response: any): string | undefined {
+  // API returns errorMessage / errorDescription with detailed info, fallback to message
+  return response?.errorMessage || response?.errorDescription || response?.message;
+}
+
 export function createYunxiaoError(
   status: number, 
   response: any, 
@@ -72,27 +77,27 @@ export function createYunxiaoError(
 ): YunxiaoError {
   switch (status) {
     case 401:
-      return new YunxiaoAuthenticationError(response?.message);
+      return new YunxiaoAuthenticationError(extractErrorMessage(response));
     case 403:
-      return new YunxiaoPermissionError(response?.message);
+      return new YunxiaoPermissionError(extractErrorMessage(response));
     case 404:
-      return new YunxiaoResourceNotFoundError(response?.message || "Resource");
+      return new YunxiaoResourceNotFoundError(extractErrorMessage(response) || "Resource");
     case 409:
-      return new YunxiaoConflictError(response?.message || "Conflict occurred");
+      return new YunxiaoConflictError(extractErrorMessage(response) || "Conflict occurred");
     case 422:
       return new YunxiaoValidationError(
-          response?.message || "Validation failed",
+          extractErrorMessage(response) || "Validation failed",
           status,
           response
       );
     case 429:
       return new YunxiaoRateLimitError(
-          response?.message,
+          extractErrorMessage(response),
           new Date(response?.reset_at || Date.now() + 60000)
       );
     default:
       return new YunxiaoError(
-          response?.message || "Yunxiao API error",
+          extractErrorMessage(response) || "Yunxiao API error",
           status,
           response,
           url,

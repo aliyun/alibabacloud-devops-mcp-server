@@ -1,0 +1,1482 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "代码库API文档",
+    "description": "代码库相关API的文档",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "代码库",
+      "description": "Codeup代码库相关接口"
+    }
+  ],
+  "paths": {
+    "/codeup/organizations/{organizationId}/repositories": {
+      "get": {
+        "tags": [
+          "代码库"
+        ],
+        "summary": "查询代码库列表",
+        "description": "查询代码库列表",
+        "operationId": "ListRepositories",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码，默认从1开始，一般不要超过150页",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "每页大小，默认20，取值范围【1，100】",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "20"
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "排序字段，可选值包括 {created_at, name, path, last_activity_at}，默认值为created_at",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "created_at"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序方式，可选值包括{asc, desc}，默认值为desc",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "desc"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "搜索关键，用户模糊匹配代码库路径",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            },
+            "example": "TestRepo"
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "description": "是否归档",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "boolean"
+            },
+            "example": "false"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Repository"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "x-next-page": {
+                "type": "integer",
+                "description": "下一页",
+                "format": "int64",
+                "example": "3"
+              },
+              "x-page": {
+                "type": "integer",
+                "description": "当前页",
+                "format": "int64",
+                "example": "2"
+              },
+              "x-per-page": {
+                "type": "integer",
+                "description": "每页大小",
+                "format": "int64",
+                "example": "20"
+              },
+              "x-prev-page": {
+                "type": "integer",
+                "description": "前一页",
+                "format": "int64",
+                "example": "1"
+              },
+              "x-total": {
+                "type": "integer",
+                "description": "总数",
+                "format": "int64",
+                "example": "50"
+              },
+              "x-total-pages": {
+                "type": "integer",
+                "description": "总分页数",
+                "format": "int64",
+                "example": "3"
+              },
+              "x-request-id": {
+                "type": "string",
+                "description": "请求ID",
+                "example": "37294673-00CA-5B8B-914F-A8B35511E90A"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "代码库"
+        ],
+        "summary": "创建代码库",
+        "description": "创建代码库",
+        "operationId": "CreateRepository",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "createParentPath",
+            "in": "query",
+            "description": "是否自动创建父路径",
+            "required": false,
+            "style": "simple",
+            "schema": {
+              "type": "boolean"
+            },
+            "example": "true"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsRepositoryCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Repository"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/transfer": {
+      "post": {
+        "tags": [
+          "代码库"
+        ],
+        "summary": "转移代码库",
+        "description": "将代码库转移到目标代码组下。repositoryId、groupId 支持纯数字（资源主键）或 path_with_namespace 全路径字符串。",
+        "operationId": "TransferRepository",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsRepositoryTransferDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Repository"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}": {
+      "get": {
+        "tags": [
+          "代码库"
+        ],
+        "summary": "查询代码库",
+        "description": "查询单个代码库详情",
+        "operationId": "GetRepository",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsRepositoryDetailVO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "代码库"
+        ],
+        "summary": "删除代码库",
+        "description": "删除指定代码库",
+        "operationId": "DeleteRepository",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "执行结果",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "代码库"
+        ],
+        "summary": "更新代码库",
+        "description": "更新指定代码库信息",
+        "operationId": "UpdateRepository",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevopsRepositoryUpdateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevopsRepositoryUpdateResponseVO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/{repositoryId}/archive": {
+      "post": {
+        "tags": [
+          "代码库"
+        ],
+        "summary": "归档代码库",
+        "description": "将代码库归档为只读，不再出现在常规列表与搜索等，与 Web 端归档一致。repositoryId 支持代码库数字 id 或 path_with_namespace 全路径。无请求体。",
+        "operationId": "ArchiveRepository",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "repositoryId",
+            "in": "path",
+            "description": "代码库ID或者URL-Encoder编码的全路径",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2813489或者60de7a6852743a5162b5f957%2FDemoRepo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "boolean",
+                      "description": "执行结果",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/codeup/organizations/{organizationId}/repositories/templates": {
+      "get": {
+        "tags": [
+          "代码库"
+        ],
+        "summary": "查询模板代码库列表",
+        "description": "查询模板代码库列表",
+        "operationId": "ListTemplateRepositories",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "组织ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            },
+            "example": "60d54f3daccf2bbd6659f3ad"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码，默认从1开始，一般不要超过150页",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "1"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "每页大小，默认20，取值范围【1，100】",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": "20"
+          },
+          {
+            "name": "templateType",
+            "in": "query",
+            "description": "模板类型，1-自定义模板库，2-系统内置模板库",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": "2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RepositoryTemplateVO"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "x-next-page": {
+                "type": "integer",
+                "description": "下一页",
+                "format": "int64",
+                "example": "3"
+              },
+              "x-page": {
+                "type": "integer",
+                "description": "当前页",
+                "format": "int64",
+                "example": "2"
+              },
+              "x-per-page": {
+                "type": "integer",
+                "description": "每页大小",
+                "format": "int64",
+                "example": "20"
+              },
+              "x-prev-page": {
+                "type": "integer",
+                "description": "前一页",
+                "format": "int64",
+                "example": "1"
+              },
+              "x-total": {
+                "type": "integer",
+                "description": "总数",
+                "format": "int64",
+                "example": "50"
+              },
+              "x-total-pages": {
+                "type": "integer",
+                "description": "总分页数",
+                "format": "int64",
+                "example": "3"
+              },
+              "x-request-id": {
+                "type": "string",
+                "description": "请求ID",
+                "example": "37294673-00CA-5B8B-914F-A8B35511E90A"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Repository": {
+        "title": "代码库",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "代码库ID",
+            "format": "int64",
+            "example": "2813489"
+          },
+          "path": {
+            "type": "string",
+            "description": "代码库路径",
+            "example": "demo-repo"
+          },
+          "name": {
+            "type": "string",
+            "description": "代码库名称",
+            "example": "demo-repo"
+          },
+          "pathWithNamespace": {
+            "type": "string",
+            "description": "代码库完整路径（含完整组路径）",
+            "example": "60de7a6852743a5162b5f957/DemoRepo"
+          },
+          "nameWithNamespace": {
+            "type": "string",
+            "description": "代码库完整名称（含完整组名称）",
+            "example": "60de7a6852743a5162b5f957 / DemoRepo"
+          },
+          "description": {
+            "type": "string",
+            "description": "代码库描述",
+            "example": "demo repo"
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "description": "最后活跃时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "可见性：private（私有）、internal（组织内公开）",
+            "enum": [
+              "private",
+              "internal"
+            ],
+            "example": "private"
+          },
+          "starCount": {
+            "type": "integer",
+            "description": "被收藏的数量",
+            "format": "int64",
+            "example": "1"
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "页面访问时的URL",
+            "example": "http://example.com/org-demo/example-repo"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "starred": {
+            "type": "boolean",
+            "description": "是否被当前用户收藏",
+            "example": "false"
+          },
+          "namespaceId": {
+            "type": "integer",
+            "description": "上级路径的ID",
+            "format": "int64",
+            "example": "2813489"
+          },
+          "accessLevel": {
+            "type": "integer",
+            "description": "当前用户在该代码库上的权限类型",
+            "format": "int32",
+            "enum": [
+              20,
+              30,
+              40
+            ],
+            "example": "40"
+          },
+          "demoProject": {
+            "type": "boolean",
+            "description": "是否是demo库",
+            "example": "false"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "最近更新时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "代码库是否归档",
+            "example": false
+          },
+          "repositorySize": {
+            "type": "string",
+            "description": "代码库大小(MB)",
+            "example": "1"
+          },
+          "creatorId": {
+            "type": "integer",
+            "description": "代码库创建者",
+            "format": "int64",
+            "example": "1"
+          },
+          "encrypted": {
+            "type": "boolean",
+            "description": "是否加密",
+            "example": "false"
+          }
+        }
+      },
+      "DevopsRepositoryCreateDTO": {
+        "title": "DevopsRepositoryCreateDTO",
+        "required": [
+          "name",
+          "path"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "代码库名称",
+            "example": "demo-repo"
+          },
+          "path": {
+            "type": "string",
+            "description": "代码库路径",
+            "example": "demo-repo"
+          },
+          "description": {
+            "type": "string",
+            "description": "代码库描述内容，最长不差过65535个字符",
+            "example": "描述内容"
+          },
+          "namespaceId": {
+            "type": "integer",
+            "description": "代码库父路径ID，若为空，则创建在组织路径下",
+            "format": "int64",
+            "example": "2813489"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "代码库的可见性：private（私有）、internal（组织内公开）",
+            "enum": [
+              "private",
+              "internal"
+            ],
+            "example": "private"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "代码库头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "readMeType": {
+            "type": "string",
+            "description": "自动创建readme类型: EMPTY - 空，USER_GUIDE - 引导readme文件",
+            "example": "USER_GUIDE"
+          },
+          "templateProject": {
+            "description": "从模板库创建代码库",
+            "$ref": "#/components/schemas/DevopsRepositoryTemplateCreateDTO"
+          }
+        }
+      },
+      "DevopsRepositoryUpdateDTO": {
+        "title": "DevopsRepositoryUpdateDTO",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "代码库名称",
+            "example": "demo-repo"
+          },
+          "path": {
+            "type": "string",
+            "description": "代码库路径",
+            "example": "demo-repo"
+          },
+          "description": {
+            "type": "string",
+            "description": "代码库描述，最长65535个字符",
+            "maxLength": 65535,
+            "example": "描述内容"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "可见性：private（私有）、internal（组织内公开）",
+            "enum": [
+              "private",
+              "internal"
+            ],
+            "example": "private"
+          },
+          "default_branch": {
+            "type": "string",
+            "description": "默认分支",
+            "example": "master"
+          }
+        }
+      },
+      "DevopsRepositoryTemplateCreateDTO": {
+        "title": "DevopsRepositoryTemplateCreateDTO",
+        "type": "object",
+        "properties": {
+          "templateType": {
+            "type": "integer",
+            "description": "模板类型，1-自定义模板，2-系统预置模板",
+            "format": "int32",
+            "example": "1"
+          },
+          "templateProjectId": {
+            "type": "integer",
+            "description": "模板库ID",
+            "format": "int64",
+            "example": "1"
+          },
+          "syncAllBranches": {
+            "type": "boolean",
+            "description": "是否导入模板库所有分支",
+            "example": "true"
+          }
+        }
+      },
+      "OperationResult": {
+        "title": "OperationResult",
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "boolean",
+            "description": "请求是否成功",
+            "example": "true"
+          }
+        }
+      },
+      "DevopsGroupPermissionDTO": {
+        "title": "DevopsGroupPermissionDTO",
+        "type": "object",
+        "properties": {
+          "accessLevel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "组权限，可选{20-浏览者，30-开发者，40-管理员}",
+            "example": "30"
+          },
+          "notificationLevel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "保留信息",
+            "example": "xxx"
+          }
+        }
+      },
+      "DevopsProjectPermissionDTO": {
+        "title": "DevopsProjectPermissionDTO",
+        "type": "object",
+        "properties": {
+          "accessLevel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "库权限，可选{20-浏览者，30-开发者，40-管理员}",
+            "example": "30"
+          },
+          "notificationLevel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "保留信息",
+            "example": "xxx"
+          }
+        }
+      },
+      "DevopsPermissionDTO": {
+        "title": "DevopsPermissionDTO",
+        "description": "权限简介",
+        "type": "object",
+        "properties": {
+          "groupAccess": {
+            "description": "组权限",
+            "$ref": "#/components/schemas/DevopsGroupPermissionDTO"
+          },
+          "projectAccess": {
+            "description": "库权限",
+            "$ref": "#/components/schemas/DevopsProjectPermissionDTO"
+          }
+        }
+      },
+      "DevopsProjectSettingsPermissionDTO": {
+        "title": "DevopsProjectSettingsPermissionDTO",
+        "type": "object",
+        "properties": {
+          "allowed": {
+            "type": "boolean"
+          },
+          "permissionCode": {
+            "type": "string"
+          }
+        }
+      },
+      "DevopsRoleDTO": {
+        "title": "DevopsRoleDTO",
+        "type": "object",
+        "properties": {
+          "allowed": {
+            "type": "boolean"
+          },
+          "roleCode": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DevopsUserBasicDTO": {
+        "title": "代码库Owner",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int43",
+            "description": "无业务意义主键ID",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "用户名称",
+            "example": "codeup-name"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户登录名",
+            "example": "codeup-username"
+          },
+          "state": {
+            "type": "string",
+            "description": "用户状态，可为{active, blocked}",
+            "example": "active"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "用户头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "email": {
+            "type": "string",
+            "description": "用户邮箱",
+            "example": "username@example.com"
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "页面访问地址",
+            "example": "xxx"
+          },
+          "userId": {
+            "type": "string",
+            "description": "云效用户ID",
+            "example": "62c795xxxb468af8"
+          }
+        }
+      },
+      "DevopsNamespaceBasicDTO": {
+        "title": "DevopsNamespaceBasicDTO",
+        "type": "object",
+        "properties": {
+          "avatar": {
+            "type": "string",
+            "description": "头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "描述内容"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID",
+            "format": "int64",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称",
+            "example": "demo-namespace"
+          },
+          "ownerId": {
+            "type": "integer",
+            "description": "归属者ID",
+            "format": "int64",
+            "example": "无业务实际意义"
+          },
+          "path": {
+            "type": "string",
+            "description": "路径",
+            "example": "demo-namespace"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "更新时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "可见性：private（私有）、internal（组织内公开）",
+            "enum": [
+              "private",
+              "internal"
+            ],
+            "example": "private"
+          }
+        }
+      },
+      "DevopsRepositoryDetailVO": {
+        "title": "DevopsRepositoryDetailVO",
+        "type": "object",
+        "properties": {
+          "accessLevel": {
+            "type": "string",
+            "description": "当前用户在该代码库上的权限类型",
+            "enum": [
+              "20",
+              "30",
+              "40"
+            ],
+            "example": "40"
+          },
+          "adminSettingLanguage": {
+            "type": "string",
+            "description": "仓库主要编程语言",
+            "example": "Java"
+          },
+          "allowPush": {
+            "type": "boolean",
+            "description": "是否允许推送",
+            "example": "true"
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "是否归档",
+            "example": "false"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "代码库头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "cloneDownloadControlGray": {
+            "type": "boolean",
+            "description": "克隆/下载控制组织维度灰度开关",
+            "example": "false"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "更新时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "creatorId": {
+            "type": "integer",
+            "description": "创建者user id",
+            "format": "int64",
+            "example": "无业务实际意义"
+          },
+          "defaultBranch": {
+            "type": "string",
+            "description": "代码库默认分支",
+            "example": "master"
+          },
+          "demoProject": {
+            "type": "boolean",
+            "description": "是否是demo库",
+            "example": "false"
+          },
+          "description": {
+            "type": "string",
+            "description": "代码库描述",
+            "example": "代码库的描述内容"
+          },
+          "enableCloneDownloadControl": {
+            "type": "boolean",
+            "description": "是否开启代码克隆下载管控",
+            "example": "false"
+          },
+          "forkCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "fork数量",
+            "example": "1"
+          },
+          "httpUrlToRepo": {
+            "type": "string",
+            "description": "HTTP地址",
+            "example": "https://example.com/example_org/example.git"
+          },
+          "id": {
+            "type": "integer",
+            "description": "代码库ID",
+            "format": "int64",
+            "example": "1"
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "description": "最后活跃时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "name": {
+            "type": "string",
+            "description": "代码库名称",
+            "example": "demo-repo"
+          },
+          "nameWithNamespace": {
+            "type": "string",
+            "description": "代码库完整名称（含完整组名称）",
+            "example": "60de7a6852743a5162b5f957 / DemoRepo"
+          },
+          "namespace": {
+            "description": "代码库所属组信息",
+            "$ref": "#/components/schemas/DevopsNamespaceBasicDTO"
+          },
+          "openCloneDownloadControl": {
+            "type": "boolean",
+            "description": "是否开启克隆下载控制",
+            "example": "false"
+          },
+          "path": {
+            "type": "string",
+            "description": "代码库路径",
+            "example": "demo-repo"
+          },
+          "pathWithNamespace": {
+            "type": "string",
+            "description": "代码库完整路径（含完整组路径）",
+            "example": "60de7a6852743a5162b5f957/DemoRepo"
+          },
+          "permissions": {
+            "description": "当前访问者权限类型",
+            "$ref": "#/components/schemas/DevopsPermissionDTO"
+          },
+          "projectType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "代码库类型，默认为空或者0",
+            "example": "0"
+          },
+          "sshUrlToRepo": {
+            "type": "string",
+            "description": "仓库ssh克隆地址",
+            "example": "git@example:example_org/example.git"
+          },
+          "starCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "收藏数量",
+            "example": "1"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "可见性：private（私有）、internal（组织内公开）",
+            "enum": [
+              "private",
+              "internal"
+            ],
+            "example": "private"
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "页面访问时的URL",
+            "example": "https://example.com/example/example_demo"
+          },
+          "owner": {
+            "description": "代码库owner",
+            "$ref": "#/components/schemas/DevopsUserBasicDTO"
+          }
+        }
+      },
+      "DevopsRepositoryTransferDTO": {
+        "title": "DevopsRepositoryTransferDTO",
+        "required": [
+          "repositoryId",
+          "groupId"
+        ],
+        "type": "object",
+        "properties": {
+          "repositoryId": {
+            "type": "string",
+            "description": "代码库 ID（数字字符串）或 path_with_namespace 全路径",
+            "example": "60de7a6852743a5162b5f957/DemoRepo"
+          },
+          "groupId": {
+            "type": "string",
+            "description": "目标代码组 ID（数字字符串）或 path_with_namespace 全路径",
+            "example": "60de7a6852743a5162b5f957/target-group"
+          }
+        }
+      },
+      "RepositoryTemplateVO": {
+        "title": "RepositoryTemplateVO",
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "description": "模板仓库ID",
+            "format": "int64",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "代码库名称",
+            "example": "template-repo"
+          },
+          "path": {
+            "type": "string",
+            "description": "代码库全路径，但若是系统预置模板库，则该属性为null",
+            "example": "null"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "代码库头像链接",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "description": {
+            "type": "string",
+            "description": "代码库描述内容",
+            "example": "模板库的描述内容"
+          }
+        }
+      },
+      "DevopsRepositoryUpdateResponseVO": {
+        "title": "DevopsRepositoryUpdateResponseVO",
+        "type": "object",
+        "properties": {
+          "accessLevel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "当前用户在该代码库上的权限等级，可能的值：[20 30 40]。",
+            "example": 40
+          },
+          "adminSettingLanguage": {
+            "type": "string",
+            "description": "仓库主要编程语言",
+            "example": "Java"
+          },
+          "allowPush": {
+            "type": "boolean",
+            "description": "是否允许推送",
+            "example": "true"
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "是否归档",
+            "example": "false"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "代码库头像地址",
+            "example": "https://example/example/w/100/h/100"
+          },
+          "cloneDownloadControlGray": {
+            "type": "boolean",
+            "description": "克隆/下载控制组织维度灰度开关",
+            "example": "false"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "更新时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "creatorId": {
+            "type": "integer",
+            "description": "创建者user id",
+            "format": "int64",
+            "example": "无业务实际意义"
+          },
+          "defaultBranch": {
+            "type": "string",
+            "description": "代码库默认分支",
+            "example": "master"
+          },
+          "demoProject": {
+            "type": "boolean",
+            "description": "是否是demo库",
+            "example": "false"
+          },
+          "description": {
+            "type": "string",
+            "description": "代码库描述",
+            "example": "代码库的描述内容"
+          },
+          "enableCloneDownloadControl": {
+            "type": "boolean",
+            "description": "是否开启代码克隆下载管控",
+            "example": "false"
+          },
+          "forkCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "fork数量",
+            "example": "1"
+          },
+          "httpUrlToRepo": {
+            "type": "string",
+            "description": "HTTP地址",
+            "example": "https://example.com/example_org/example.git"
+          },
+          "id": {
+            "type": "integer",
+            "description": "代码库ID",
+            "format": "int64",
+            "example": "1"
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "description": "最后活跃时间",
+            "format": "date-time",
+            "example": "2024-10-05T15:30:45Z"
+          },
+          "name": {
+            "type": "string",
+            "description": "代码库名称",
+            "example": "demo-repo"
+          },
+          "nameWithNamespace": {
+            "type": "string",
+            "description": "代码库完整名称（含完整组名称）",
+            "example": "60de7a6852743a5162b5f957 / DemoRepo"
+          },
+          "namespace": {
+            "description": "代码库所属组信息",
+            "$ref": "#/components/schemas/DevopsNamespaceBasicDTO"
+          },
+          "openCloneDownloadControl": {
+            "type": "boolean",
+            "description": "是否开启克隆下载控制",
+            "example": "false"
+          },
+          "path": {
+            "type": "string",
+            "description": "代码库路径",
+            "example": "demo-repo"
+          },
+          "pathWithNamespace": {
+            "type": "string",
+            "description": "代码库完整路径（含完整组路径）",
+            "example": "60de7a6852743a5162b5f957/DemoRepo"
+          },
+          "permissions": {
+            "description": "当前访问者权限类型",
+            "$ref": "#/components/schemas/DevopsPermissionDTO"
+          },
+          "projectType": {
+            "type": "integer",
+            "format": "int32",
+            "description": "代码库类型，默认为空或者0",
+            "example": "0"
+          },
+          "sshUrlToRepo": {
+            "type": "string",
+            "description": "仓库ssh克隆地址",
+            "example": "git@example:example_org/example.git"
+          },
+          "starCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "收藏数量",
+            "example": "1"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "可见性：private（私有）、internal（组织内公开）",
+            "enum": [
+              "private",
+              "internal"
+            ],
+            "example": "private"
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "页面访问时的URL",
+            "example": "https://example.com/example/example_demo"
+          },
+          "owner": {
+            "description": "代码库owner",
+            "$ref": "#/components/schemas/DevopsUserBasicDTO"
+          }
+        },
+        "description": "PUT 更新代码库接口响应；字段与 GET 详情基本一致，但顶层 accessLevel 为权限数值（与 GET 的枚举字符串区分）。"
+      }
+    }
+  }
+}

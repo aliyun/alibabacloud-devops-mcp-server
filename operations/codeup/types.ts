@@ -260,14 +260,22 @@ export const ListRepositoriesSchema = z.object({
   archived: z.boolean().default(false).optional().describe("Whether archived"),
 });
 
+export const DevopsRepositoryTemplateCreateDTOSchema = z.object({
+  templateType: z.number().int().optional().describe("模板类型，1-自定义模板，2-系统预置模板"),
+  templateProjectId: z.number().int().optional().describe("模板库ID"),
+  syncAllBranches: z.boolean().optional().describe("是否导入模板库所有分支"),
+});
+
 export const CreateRepositorySchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
   name: z.string().describe("Repository name, e.g. my-repo"),
-  path: z.string().optional().describe("Repository path, defaults to the same as name"),
+  path: z.string().describe("Repository path, e.g. my-repo"),
   description: z.string().optional().describe("Repository description, max 65535 characters"),
-  visibility: z.enum(["private", "internal", "public"]).optional().default("private").describe("Repository visibility: private, internal, or public"),
   namespaceId: z.number().int().optional().describe("Parent path ID (namespace). If empty, created under the organization root"),
+  visibility: z.enum(["private", "internal"]).optional().describe("Repository visibility: private or internal"),
+  avatarUrl: z.string().optional().describe("Repository avatar URL"),
   readMeType: z.enum(["EMPTY", "USER_GUIDE"]).optional().describe("Type of README to auto-create: EMPTY or USER_GUIDE"),
+  templateProject: DevopsRepositoryTemplateCreateDTOSchema.optional().nullable().describe("Create repository from template"),
 });
 
 // Codeup files related Schema definitions

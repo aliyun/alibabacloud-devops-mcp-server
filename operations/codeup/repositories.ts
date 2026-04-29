@@ -114,17 +114,19 @@ export async function createRepositoryFunc(
 ): Promise<z.infer<typeof RepositorySchema>> {
   const finalOrgId = await resolveOrganizationId(organizationId);
   const baseUrl = isRegionEdition()
-    ? `/oapi/v1/codeup/organizations/repositories`
+    ? `/oapi/v1/codeup/repositories`
     : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories`;
 
   const body: Record<string, unknown> = {
     name: params.name,
+    path: params.path,
   };
-  if (params.path) body.path = params.path;
   if (params.description) body.description = params.description;
-  if (params.visibility) body.visibility = params.visibility;
   if (params.namespaceId) body.namespaceId = params.namespaceId;
+  if (params.visibility) body.visibility = params.visibility;
+  if (params.avatarUrl) body.avatarUrl = params.avatarUrl;
   if (params.readMeType) body.readMeType = params.readMeType;
+  if (params.templateProject) body.templateProject = params.templateProject;
 
   const url = buildUrl(baseUrl, { createParentPath: "true" });
 
