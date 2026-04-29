@@ -74,6 +74,17 @@ export const getCodeManagementTools = () => [
       "View my repositories",
     inputSchema: zodToJsonSchema(types.ListRepositoriesSchema),
   },
+  {
+    name: "create_repository",
+    description: "[Code Management] Create a new Codeup repository.\n" +
+      "\n" +
+      "Creates an empty code repository that can then be pushed to via git.\n" +
+      "\n" +
+      "Use Cases:\n" +
+      "\n" +
+      "Create a new repository for a project",
+    inputSchema: zodToJsonSchema(types.CreateRepositorySchema),
+  },
 
   // Change Request Operations
   {

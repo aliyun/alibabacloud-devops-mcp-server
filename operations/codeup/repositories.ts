@@ -11,8 +11,9 @@
 import { z } from "zod";
 import {yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, isRegionEdition} from "../../common/utils.js";
 import { resolveOrganizationId } from "../organization/organization.js";
-import { 
-  RepositorySchema
+import {
+  RepositorySchema,
+  CreateRepositorySchema
 } from "./types.js";
 
 
@@ -100,4 +101,37 @@ export async function listRepositoriesFunc(
   }
 
   return response.map(repo => RepositorySchema.parse(repo));
+}
+
+/**
+ * 创建代码库
+ * @param organizationId
+ * @param params
+ */
+export async function createRepositoryFunc(
+  organizationId: string | undefined,
+  params: z.infer<typeof CreateRepositorySchema>
+): Promise<z.infer<typeof RepositorySchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const baseUrl = isRegionEdition()
+    ? `/oapi/v1/codeup/organizations/repositories`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories`;
+
+  const body: Record<string, unknown> = {
+    name: params.name,
+  };
+  if (params.path) body.path = params.path;
+  if (params.description) body.description = params.description;
+  if (params.visibility) body.visibility = params.visibility;
+  if (params.namespaceId) body.namespaceId = params.namespaceId;
+  if (params.readMeType) body.readMeType = params.readMeType;
+
+  const url = buildUrl(baseUrl, { createParentPath: "true" });
+
+  const response = await yunxiaoRequest(url, {
+    method: "POST",
+    body,
+  });
+
+  return RepositorySchema.parse(response);
 } 

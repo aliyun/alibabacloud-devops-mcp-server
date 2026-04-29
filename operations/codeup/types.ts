@@ -260,6 +260,16 @@ export const ListRepositoriesSchema = z.object({
   archived: z.boolean().default(false).optional().describe("Whether archived"),
 });
 
+export const CreateRepositorySchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  name: z.string().describe("Repository name, e.g. my-repo"),
+  path: z.string().optional().describe("Repository path, defaults to the same as name"),
+  description: z.string().optional().describe("Repository description, max 65535 characters"),
+  visibility: z.enum(["private", "internal", "public"]).optional().default("private").describe("Repository visibility: private, internal, or public"),
+  namespaceId: z.number().int().optional().describe("Parent path ID (namespace). If empty, created under the organization root"),
+  readMeType: z.enum(["EMPTY", "USER_GUIDE"]).optional().describe("Type of README to auto-create: EMPTY or USER_GUIDE"),
+});
+
 // Codeup files related Schema definitions
 export const GetFileBlobsSchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
