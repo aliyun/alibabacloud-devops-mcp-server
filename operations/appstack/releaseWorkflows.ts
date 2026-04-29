@@ -305,7 +305,7 @@ export const ListAppReleaseStageRunsRequestSchema = z.object({
   appName: z.string().describe("应用名"),
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
-  pagination: z.enum(["keyset"]).optional().describe("分页模式参数：keyset表示键集分页，不传表示页码分页"),
+  pagination: z.enum(["keyset", ""]).optional().describe("分页模式参数：keyset表示键集分页，不传表示页码分页"),
   perPage: z.number().min(1).max(100).default(20).optional().describe("分页尺寸参数，决定一页最多返回多少对象"),
   orderBy: z.enum(["id", "gmtCreate"]).optional().describe("分页排序属性，决定根据何种属性进行记录排序；推荐在实现严格遍历时，使用 id 属性"),
   sort: z.enum(["asc", "desc"]).optional().describe("分页排序升降序，asc 为升序，desc 为降序；推荐在实现严格遍历时，使用升序"),
@@ -313,21 +313,23 @@ export const ListAppReleaseStageRunsRequestSchema = z.object({
   page: z.number().default(1).optional().describe("页码分页时使用，用于获取下一页内容"),
 });
 
-// Schema for ReleaseStageInstanceVO (simplified)
+// Schema for ReleaseStageInstanceVO
 export const ReleaseStageInstanceVOSchema = z.object({
-  executionNumber: z.string().optional().describe("执行序号"),
-  state: z.string().optional().describe("状态"),
-  gmtCreate: z.string().optional().describe("创建时间"),
+  number: z.string().optional().describe("流水线执行编号"),
+  state: z.string().optional().describe("流水线执行状态"),
+  startTime: z.string().optional().describe("流水线执行开始时间"),
+  endTime: z.string().optional().describe("流水线执行结束时间"),
+  triggerMode: z.string().optional().describe("流水线执行触发方式"),
 });
 
 // Schema for PageListReleaseStageInstanceVO
 export const PageListReleaseStageInstanceVOSchema = z.object({
-  current: z.number().optional().describe("当前页数"),
-  pageSize: z.number().optional().describe("每页大小"),
-  pages: z.number().optional().describe("总页数"),
-  records: z.array(ReleaseStageInstanceVOSchema).optional().describe("数据列表"),
-  total: z.number().optional().describe("总数"),
-  nextToken: z.string().nullable().optional().describe("下一页token"),
+  current: z.number().optional().describe("页码分页时存在该字段，表示当前页"),
+  perPage: z.number().optional().describe("页码分页时存在该字段，表示每页大小"),
+  pages: z.number().optional().describe("页码分页时存在该字段，表示总页数"),
+  data: z.array(ReleaseStageInstanceVOSchema).optional().describe("分页结果数据"),
+  total: z.number().optional().describe("页码分页时存在该字段，表示结果总数"),
+  nextToken: z.string().nullable().optional().describe("采用键值分页时存在该字段，用于传给分页接口，迭代获取下一页数据"),
 });
 
 export const ListAppReleaseStageRunsResponseSchema = PageListReleaseStageInstanceVOSchema;
