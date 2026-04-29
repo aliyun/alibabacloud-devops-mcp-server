@@ -22,13 +22,18 @@ import { handleBaseTools } from './base.js';
 import { handleTestManagementTools } from './test-management.js';
 import { Toolset } from '../common/toolsets.js';
 
-// 将多个 handler 串联：依次尝试，第一个返回非 null/undefined 的结果即返回；全部为 null 则返回 null
+// 将多个 handler 串联：依次尝试，第一个返回非 null 的结果即返回；
+// 未处理请求的统一哨兵值约定为 null，若某个 handler 意外返回 undefined，则按未处理继续分发，
+// 以保持与本文件其他分发逻辑（如 handleToolRequest 中 `result !== null`）一致的语义。
 const composeHandlers =
   (...handlers: Array<(request: any) => Promise<any>>) =>
   async (request: any) => {
     for (const handler of handlers) {
       const result = await handler(request);
-      if (result !== null && result !== undefined) {
+      if (result === undefined) {
+        continue;
+      }
+      if (result !== null) {
         return result;
       }
     }
