@@ -17,6 +17,7 @@ import { handleAppStackAppReleaseWorkflowTools } from './appstack-app-release-wo
 import { handleEffortTools } from './effort.js';
 import { handleResourceMemberTools } from './resourceMember.js';
 import { handleVMDeployOrderTools } from './vmDeployOrder.js';
+import { handleFlowVariableGroupTools } from './flow-variable-groups.js';
 import { handleCommitTools } from './commit.js';
 import { handleBaseTools } from './base.js';
 import { handleTestManagementTools } from './test-management.js';
@@ -59,7 +60,8 @@ const HANDLER_MAP: Record<Toolset, (request: any) => Promise<any>> = {
     handlePipelineTools,
     handleServiceConnectionTools,
     handleResourceMemberTools,
-    handleVMDeployOrderTools
+    handleVMDeployOrderTools,
+    handleFlowVariableGroupTools
   ),
   [Toolset.PACKAGES_MANAGEMENT]: handlePackageManagementTools,
   [Toolset.APPLICATION_DELIVERY]: composeHandlers(
@@ -102,7 +104,8 @@ export const handleToolRequest = async (request: any) => {
     handleResourceMemberTools,
     handleVMDeployOrderTools,
     handleCommitTools,
-    handleTestManagementTools
+    handleTestManagementTools,
+    handleFlowVariableGroupTools
   ];
 
   for (const handler of handlers) {

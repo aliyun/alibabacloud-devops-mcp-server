@@ -21,6 +21,7 @@ import { getAppStackAppReleaseWorkflowTools } from '../tool-registry/appstack-ap
 import { getEffortTools } from '../tool-registry/effort.js';
 import { getResourceMemberTools } from '../tool-registry/resourceMember.js';
 import { getVMDeployOrderTools } from '../tool-registry/vmDeployOrder.js';
+import { getFlowVariableGroupTools } from '../tool-registry/flow-variable-groups.js';
 import { getCommitTools } from '../tool-registry/commit.js';
 import { getBaseTools } from '../tool-registry/base.js';
 import { getTestManagementTools } from '../tool-registry/test-management.js';
@@ -69,7 +70,8 @@ const ALL_TOOLSET_CONFIGS: Record<Toolset, ToolsetConfig> = {
       ...getPipelineTools(),
       ...getServiceConnectionTools(),
       ...getResourceMemberTools(),
-      ...getVMDeployOrderTools()
+      ...getVMDeployOrderTools(),
+      ...getFlowVariableGroupTools()
     ]) as () => Tool[]
   },
   [Toolset.PACKAGES_MANAGEMENT]: {
