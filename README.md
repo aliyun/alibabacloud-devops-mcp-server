@@ -223,6 +223,86 @@ Stop service:
 docker stop yunxiao-mcp
 ```
 
+### Docker with Streamable HTTP Mode
+
+Streamable HTTP is the recommended MCP remote transport (single endpoint). This server exposes it at **`/mcp`** by default (override with `MCP_STREAMABLE_PATH`). Legacy **SSE** (`/sse` + `/messages`) is used when `MCP_TRANSPORT=sse` only. To expose **both** transports on the **same port**, set **`MCP_TRANSPORT=both`** or pass **`--sse`** and **`--streamable-http`** together (see **Dual transport** below).
+
+#### 1. Start Streamable HTTP Service
+
+**Using Official Image:**
+
+```shell
+docker run -d --name yunxiao-mcp \
+  -p 3000:3000 \
+  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
+  -e PORT=3000 \
+  -e MCP_TRANSPORT=streamable-http \
+  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest \
+  node dist/index.js --streamable-http
+```
+
+**Using Self-Built Image:**
+
+```shell
+docker run -d --name yunxiao-mcp \
+  -p 3000:3000 \
+  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
+  -e PORT=3000 \
+  -e MCP_TRANSPORT=streamable-http \
+  alibabacloud/alibabacloud-devops-mcp-server \
+  node dist/index.js --streamable-http
+```
+
+Optional:
+
+- **`MCP_STREAMABLE_PATH`**: HTTP path for MCP (default `/mcp`).
+- **`MCP_HTTP_HOST`**: Passed to the MCP Express helper for DNS rebinding defaults (default `0.0.0.0`).
+- **`MCP_ALLOWED_HOSTS`**: Comma-separated allowed `Host` values when binding broadly (see `@modelcontextprotocol/sdk` `createMcpExpressApp`).
+
+#### 2. Configure MCP Client
+
+Use your client’s **Streamable HTTP** URL style pointing at `/mcp`. On the **first** `initialize` request you can pass Yunxiao credentials via query string (same semantics as SSE):
+
+```
+http://localhost:3000/mcp?yunxiao_access_token=YOUR_TOKEN_HERE
+```
+
+Optional region / instance OpenAPI base:
+
+```
+http://localhost:3000/mcp?yunxiao_access_token=YOUR_TOKEN_HERE&yunxiao_api_base_url=https%3A%2F%2Fyour-org.devops.aliyuncs.com
+```
+
+Subsequent requests use the **`mcp-session-id`** header returned by the server; the server routes each session to the correct stored token and base URL.
+
+### Docker with SSE + Streamable HTTP (dual transport)
+
+One process can serve **legacy SSE** and **Streamable HTTP** at the same time on the same `PORT`:
+
+- SSE: `http://localhost:3000/sse` and `http://localhost:3000/messages?sessionId=...`
+- Streamable: `http://localhost:3000/mcp` (or `MCP_STREAMABLE_PATH`)
+
+**Enable via environment:**
+
+```shell
+docker run -d --name yunxiao-mcp \
+  -p 3000:3000 \
+  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
+  -e PORT=3000 \
+  -e MCP_TRANSPORT=both \
+  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest \
+  node dist/index.js
+```
+
+**Enable via CLI flags (e.g. local):**
+
+```shell
+npm run start:both
+# equivalent to: node dist/index.js --sse --streamable-http
+```
+
+Clients choose the transport they support: SSE-only URLs vs Streamable `/mcp`. Session state is separate for each protocol.
+
 ### Run SSE Mode via Docker Compose
 
 1. **Environment Setup**

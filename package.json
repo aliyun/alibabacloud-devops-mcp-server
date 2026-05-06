@@ -33,10 +33,12 @@
     "build": "tsc && shx chmod +x dist/*.js",
     "watch": "tsc --watch",
     "start": "node dist/index.js",
-    "start:sse": "node dist/index.js --sse"
+    "start:sse": "node dist/index.js --sse",
+    "start:streamable": "node dist/index.js --streamable-http",
+    "start:both": "node dist/index.js --sse --streamable-http"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "universal-user-agent": "^7.0.0",

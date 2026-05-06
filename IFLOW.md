@@ -11,11 +11,15 @@ This file provides guidance to iFlow Cli when working with code in this reposito
 ### Running
 - `npm start` - Runs the compiled server from `dist/index.js` in stdio mode
 - `npm run start:sse` - Runs the compiled server from `dist/index.js` in SSE mode
+- `npm run start:streamable` - Runs the compiled server in MCP Streamable HTTP mode (`/mcp` by default)
+- `npm run start:both` - Runs SSE and Streamable HTTP on the same port (`--sse --streamable-http`)
 
 ### Development
 - Use `npm run watch` during development for automatic recompilation
 - The server entry point is `index.ts` which exports all functionality as an MCP server
 - To run in SSE mode during development: `node dist/index.js --sse`
+- To run in Streamable HTTP mode: `node dist/index.js --streamable-http` or `MCP_TRANSPORT=streamable-http`
+- To run **both** transports: `MCP_TRANSPORT=both node dist/index.js`, or `node dist/index.js --sse --streamable-http`, or `npm run start:both`
 - To run with specific toolsets: `node dist/index.js --toolsets=code-management,project-management`
 
 ## Architecture Overview
@@ -28,7 +32,7 @@ The server is structured into several modules:
    - Initializes the MCP server
    - Registers available tools based on enabled toolsets
    - Handles tool requests and maps them to appropriate functions
-   - Supports both stdio and SSE transports
+   - Supports stdio, legacy SSE, Streamable HTTP, and **dual** mode (SSE + Streamable on one port)
 
 2. **Operations Modules** (in `operations/` directory):
    - `codeup/` - Contains functions for code repository operations (branches, files, repositories, change requests)
@@ -96,3 +100,19 @@ To run in SSE mode:
 4. Messages are sent to `http://localhost:3000/messages?sessionId=<session-id>`
 
 In SSE mode, the server maintains sessions for each connected client, allowing for proper request/response correlation.
+
+## Streamable HTTP Mode
+
+1. Use `npm run start:streamable` or `node dist/index.js --streamable-http` (or `MCP_TRANSPORT=streamable-http`).
+2. Default MCP endpoint: `http://localhost:3000/mcp` (override with `MCP_STREAMABLE_PATH`).
+3. First request must be JSON-RPC `initialize` without `Mcp-Session-Id`; optional `yunxiao_access_token` and `yunxiao_api_base_url` query params apply to that session (same idea as SSE query params).
+4. Later requests must send `Mcp-Session-Id` (and protocol headers per MCP); the server routes each session to its stored Yunxiao credentials.
+
+## Dual transport (SSE + Streamable HTTP)
+
+When `MCP_TRANSPORT=both` or both `--sse` and `--streamable-http` are set, one HTTP server exposes:
+
+- Legacy SSE at `/sse` and `/messages?sessionId=...` (same behavior as SSE-only mode)
+- Streamable HTTP at `/mcp` (same behavior as Streamable-only mode)
+
+Session maps are independent per transport.

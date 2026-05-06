@@ -214,6 +214,88 @@ docker logs -f yunxiao-mcp
 docker stop yunxiao-mcp
 ```
 
+### Docker 使用 Streamable HTTP 模式
+
+Streamable HTTP 是 MCP 规范的推荐远程传输方式（单一 HTTP 入口）。本服务默认在 **`/mcp`** 提供该端点（可通过环境变量 `MCP_STREAMABLE_PATH` 修改）。仅使用 **SSE** 时设置 `MCP_TRANSPORT=sse`。若需在**同一端口**同时提供 SSE 与 Streamable HTTP，请设置 **`MCP_TRANSPORT=both`**，或同时传入 **`--sse`** 与 **`--streamable-http`**（见下文「双传输」）。
+
+#### 1. 启动 Streamable HTTP 服务
+
+**使用官方镜像：**
+
+```shell
+docker run -d --name yunxiao-mcp \
+  -p 3000:3000 \
+  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
+  -e PORT=3000 \
+  -e MCP_TRANSPORT=streamable-http \
+  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest \
+  node dist/index.js --streamable-http
+```
+
+**使用自行构建的镜像：**
+
+```shell
+docker run -d --name yunxiao-mcp \
+  -p 3000:3000 \
+  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
+  -e PORT=3000 \
+  -e MCP_TRANSPORT=streamable-http \
+  alibabacloud/alibabacloud-devops-mcp-server \
+  node dist/index.js --streamable-http
+```
+
+可选环境变量：
+
+- **`MCP_STREAMABLE_PATH`**：MCP 路径（默认 `/mcp`）。
+- **`MCP_HTTP_HOST`**：传给 MCP Express 助手的 host 语义（默认 `0.0.0.0`）。
+- **`MCP_ALLOWED_HOSTS`**：逗号分隔的 `Host` 白名单（在宽泛绑定时加强校验，见 SDK `createMcpExpressApp`）。
+
+#### 2. 配置 MCP 客户端
+
+在支持 **Streamable HTTP** 的客户端中使用指向 `/mcp` 的 URL。首次 **`initialize`** 请求可通过查询参数传递云效凭证（与 SSE 语义一致）：
+
+```
+http://localhost:3000/mcp?yunxiao_access_token=YOUR_TOKEN_HERE
+```
+
+可选：指定 OpenAPI 站点：
+
+```
+http://localhost:3000/mcp?yunxiao_access_token=YOUR_TOKEN_HERE&yunxiao_api_base_url=https%3A%2F%2Fyour-org.devops.aliyuncs.com
+```
+
+后续请求需携带服务端返回的 **`mcp-session-id`** 头；服务端按会话路由到对应的令牌与 base URL。
+
+也可使用请求头：`x-yunxiao-token`、`x-yunxiao-api-base-url`。
+
+### Docker 同时使用 SSE 与 Streamable HTTP（双传输）
+
+同一进程、同一端口可同时提供：
+
+- **SSE**：`http://localhost:3000/sse` 与 `http://localhost:3000/messages?sessionId=...`
+- **Streamable HTTP**：`http://localhost:3000/mcp`（或 `MCP_STREAMABLE_PATH` 指定路径）
+
+**通过环境变量启用：**
+
+```shell
+docker run -d --name yunxiao-mcp \
+  -p 3000:3000 \
+  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
+  -e PORT=3000 \
+  -e MCP_TRANSPORT=both \
+  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest \
+  node dist/index.js
+```
+
+**通过命令行（本地开发）：**
+
+```shell
+npm run start:both
+# 等价于: node dist/index.js --sse --streamable-http
+```
+
+客户端按自身能力选择连接方式；两种协议的会话彼此独立。
+
 ### 使用 Docker Compose 运行 SSE 模式
 
 1. **环境设置**
