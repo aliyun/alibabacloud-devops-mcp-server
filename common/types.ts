@@ -118,6 +118,10 @@ export {
   GetWorkitemFileSchema,
   CreateWorkitemAttachmentSchema,
   
+  // Activity schemas
+  ListWorkitemActivitiesSchema,
+  ActivityDTOSchema,
+  
   // Effort schemas
   ListCurrentUserEffortRecordsSchema,
   ListEffortRecordsSchema,

@@ -157,5 +157,10 @@ export const getProjectManagementTools = () => [
     name: "create_workitem_attachment",
     description: "[Project Management] Upload a local file as an attachment to a specific work item. The MCP Server reads the file from the given local absolute path and uploads it. Supports any file type.",
     inputSchema: zodToJsonSchema(types.CreateWorkitemAttachmentSchema),
+  },
+  {
+    name: "list_workitem_activities",
+    description: "[Project Management] List activity history for a specific work item. Returns changes including field updates, status transitions, association changes, and attachment changes, with operator and timestamp details.",
+    inputSchema: zodToJsonSchema(types.ListWorkitemActivitiesSchema),
   }
 ];

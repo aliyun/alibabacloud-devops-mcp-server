@@ -713,6 +713,46 @@ export type ListWorkitemAttachmentsParams = z.infer<typeof ListWorkitemAttachmen
 export type GetWorkitemFileParams = z.infer<typeof GetWorkitemFileSchema>;
 export type CreateWorkitemAttachmentParams = z.infer<typeof CreateWorkitemAttachmentSchema>;
 
+// Activity related types
+export const FieldDisplayValueSchema = z.object({
+  displayValue: z.string().nullable().optional().describe("Display name"),
+  identifier: z.string().nullable().optional().describe("Value identifier"),
+});
+
+export const ActivityPropertySchema = z.object({
+  propertyId: z.string().nullable().optional().describe("Property ID"),
+  propertyName: z.string().nullable().optional().describe("Property name"),
+  propertyType: z.string().nullable().optional().describe("Property type, options: Field, Relation, or null"),
+});
+
+export const RelatedResourceSchema = z.object({
+  resourceId: z.string().nullable().optional().describe("Resource ID, if work item then the corresponding work item ID"),
+  resourceType: z.string().nullable().optional().describe("Resource type, if work item then Workitem"),
+});
+
+export const ActivityDTOSchema = z.object({
+  actionType: z.string().nullable().optional().describe("Action type: created, updated, delete, associate, unassociate"),
+  eventId: z.number().nullable().optional().describe("Event ID"),
+  eventTime: z.number().nullable().optional().describe("Event time (Unix timestamp in milliseconds)"),
+  eventType: z.string().nullable().optional().describe("Event type: workitem.created, workitem.updated, workitem.transitioned, workitem.association.changed, workitem.attachment.changed"),
+  newValue: z.array(FieldDisplayValueSchema).nullable().optional().describe("Updated value, can be empty"),
+  oldValue: z.array(FieldDisplayValueSchema).nullable().optional().describe("Previous value, can be empty"),
+  operator: MiniUserSchema.nullable().optional().describe("Operator"),
+  parentEventId: z.number().nullable().optional().describe("Parent event ID"),
+  property: ActivityPropertySchema.nullable().optional().describe("Modified field information"),
+  relatedResource: RelatedResourceSchema.nullable().optional().describe("Related resource info when eventType is workitem.association.changed"),
+  resourceId: z.string().nullable().optional().describe("Resource ID (work item ID)"),
+});
+
+export const ListWorkitemActivitiesSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  workItemId: z.string().describe("Work item unique identifier"),
+});
+
+// Activity type exports
+export type ActivityDTO = z.infer<typeof ActivityDTOSchema>;
+export type ListWorkitemActivitiesParams = z.infer<typeof ListWorkitemActivitiesSchema>;
+
 // Type exports
 export type WorkItemTypeDetail = z.infer<typeof WorkItemTypeDetailSchema>;
 export type ListAllWorkItemTypesParams = z.infer<typeof ListAllWorkItemTypesSchema>;

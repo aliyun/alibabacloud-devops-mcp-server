@@ -317,7 +317,9 @@ async function registerSseRoutes(
             await session.transport.handlePostMessage(req, res, req.body);
         } catch (error) {
             console.error('Error handling POST message:', error);
-            res.status(500).send('Server error');
+            if (!res.headersSent) {
+                res.status(500).send('Server error');
+            }
         }
     });
 }

@@ -17,7 +17,8 @@ import {
   WorkItemTypeDetail,
   WorkItemTypeFieldConfig,
   WorkItemWorkflow,
-  UpdateWorkItemField
+  UpdateWorkItemField,
+  ActivityDTOSchema
 } from "./types.js";
 import { ProjectInfoSchema } from "./types.js";
 import { ListWorkItemCommentsParams } from "./types.js";
@@ -978,4 +979,34 @@ export async function createWorkItemCommentFunc(
   
   // 否则直接返回响应
   return response;
+}
+
+/**
+ * 获取工作项动态
+ * @param organizationId 组织ID
+ * @param workItemId 工作项唯一标识
+ * @returns 动态列表
+ */
+export async function listWorkitemActivitiesFunc(
+  organizationId: string | undefined,
+  workItemId: string
+): Promise<z.infer<typeof ActivityDTOSchema>[]> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/activities`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/activities`;
+
+  const response = await yunxiaoRequest(url, {
+    method: "GET",
+  });
+
+  if (Array.isArray(response)) {
+    return response.map(item => ActivityDTOSchema.parse(item));
+  }
+
+  if (response && typeof response === 'object' && 'result' in response && Array.isArray(response.result)) {
+    return response.result.map((item: any) => ActivityDTOSchema.parse(item));
+  }
+
+  return [];
 }

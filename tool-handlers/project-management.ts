@@ -420,6 +420,17 @@ export const handleProjectManagementTools = async (request: any) => {
       };
     }
 
+    case "list_workitem_activities": {
+      const args = types.ListWorkitemActivitiesSchema.parse(request.params.arguments);
+      const activities = await workitem.listWorkitemActivitiesFunc(
+        args.organizationId,
+        args.workItemId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(activities, null, 2) }],
+      };
+    }
+
     default:
       return null;
   }
