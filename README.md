@@ -106,273 +106,85 @@ The MCP market built into Lingma (AlibabaCloud Tongyi Lingma) has already provid
 
 ## Using Docker (Optional)
 
-If you need to run the MCP server using Docker, you can choose **stdio mode** or **SSE mode**.
+### Transport Modes
 
-### Docker with Stdio Mode
+| Mode | CLI Flag | Env Variable | Endpoints |
+|------|----------|-------------|----------|
+| Stdio | *(default)* | — | stdin/stdout |
+| SSE | `--sse` | `MCP_TRANSPORT=sse` | `/sse` + `/messages` |
+| Streamable HTTP | `--streamable-http` | `MCP_TRANSPORT=streamable-http` | `/mcp` |
+| Both | `--sse --streamable-http` | `MCP_TRANSPORT=both` | `/sse` + `/mcp` |
 
-This method is similar to using npx directly, but runs through a Docker container.
+> Streamable HTTP is the MCP specification's recommended remote transport. SSE is legacy; use `both` during migration.
 
-#### 1. Get Docker Image
-
-**Option 1: Use Official Image (Recommended)**
+### 1. Pull Image
 
 ```shell
 docker pull build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest
 ```
 
-**Option 2: Build Your Own Image**
+> Self-built: `docker build -t alibabacloud/alibabacloud-devops-mcp-server .`
 
+### 2. Start Server
+
+**Stdio:**
 ```shell
-docker build -t alibabacloud/alibabacloud-devops-mcp-server .
+docker run -i --rm -e YUNXIAO_ACCESS_TOKEN \
+  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest
 ```
 
-#### 2. Configure MCP Client
+**SSE / Streamable HTTP / Both** — set `MCP_TRANSPORT` and expose `PORT`:
+```shell
+docker run -d --name yunxiao-mcp -p 3000:3000 \
+  -e YUNXIAO_ACCESS_TOKEN="your_token" -e PORT=3000 \
+  -e MCP_TRANSPORT=streamable-http \   # sse | streamable-http | both
+  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest
+```
 
-Add the following to your MCP client configuration file:
+Optional Streamable HTTP env vars:
+- **`MCP_STREAMABLE_PATH`**: MCP endpoint path (default `/mcp`)
+- **`MCP_HTTP_HOST`**: Bind host (default `0.0.0.0`)
+- **`MCP_ALLOWED_HOSTS`**: Allowed `Host` header values (comma-separated)
 
+### 3. Configure MCP Client
+
+**Stdio:**
 ```json
 {
   "mcpServers": {
     "yunxiao": {
       "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "YUNXIAO_ACCESS_TOKEN",
-        "build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest"
-      ],
-      "env": {
-        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>"
-      }
+      "args": ["run", "-i", "--rm", "-e", "YUNXIAO_ACCESS_TOKEN", "build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest"],
+      "env": { "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>" }
     }
   }
 }
 ```
 
-> **Note**: 
-> - If using a self-built image, replace the image name with `alibabacloud/alibabacloud-devops-mcp-server`
-> - This method uses **stdio mode**, with the container communicating via standard input/output
+**SSE:** `http://localhost:3000/sse`
 
-### Docker with SSE Mode
+**Streamable HTTP:** `http://localhost:3000/mcp`
 
-SSE mode provides service via HTTP, suitable for scenarios requiring independent service or multi-user support.
-
-#### 1. Start SSE Service
-
-**Using Official Image:**
-
-```shell
-docker run -d --name yunxiao-mcp \
-  -p 3000:3000 \
-  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
-  -e PORT=3000 \
-  -e MCP_TRANSPORT=sse \
-  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest \
-  node dist/index.js --sse
-```
-
-**Using Self-Built Image:**
-
-```shell
-docker run -d --name yunxiao-mcp \
-  -p 3000:3000 \
-  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
-  -e PORT=3000 \
-  -e MCP_TRANSPORT=sse \
-  alibabacloud/alibabacloud-devops-mcp-server \
-  node dist/index.js --sse
-```
-
-#### 2. Configure MCP Client
-
-Add the following to your MCP client configuration file:
-
-```json
-{
-  "mcpServers": {
-    "yunxiao": {
-      "url": "http://localhost:3000/sse"
-    }
-  }
-}
-```
-
-If you need to pass your own token when connecting (instead of using the default token from server startup):
-
-```json
-{
-  "mcpServers": {
-    "yunxiao": {
-      "url": "http://localhost:3000/sse?yunxiao_access_token=YOUR_TOKEN_HERE"
-    }
-  }
-}
-```
-
-#### 3. Manage SSE Service
-
-View logs:
-```shell
-docker logs -f yunxiao-mcp
-```
-
-Stop service:
-```shell
-docker stop yunxiao-mcp
-```
-
-### Docker with Streamable HTTP Mode
-
-Streamable HTTP is the recommended MCP remote transport (single endpoint). This server exposes it at **`/mcp`** by default (override with `MCP_STREAMABLE_PATH`). Legacy **SSE** (`/sse` + `/messages`) is used when `MCP_TRANSPORT=sse` only. To expose **both** transports on the **same port**, set **`MCP_TRANSPORT=both`** or pass **`--sse`** and **`--streamable-http`** together (see **Dual transport** below).
-
-#### 1. Start Streamable HTTP Service
-
-**Using Official Image:**
-
-```shell
-docker run -d --name yunxiao-mcp \
-  -p 3000:3000 \
-  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
-  -e PORT=3000 \
-  -e MCP_TRANSPORT=streamable-http \
-  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest \
-  node dist/index.js --streamable-http
-```
-
-**Using Self-Built Image:**
-
-```shell
-docker run -d --name yunxiao-mcp \
-  -p 3000:3000 \
-  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
-  -e PORT=3000 \
-  -e MCP_TRANSPORT=streamable-http \
-  alibabacloud/alibabacloud-devops-mcp-server \
-  node dist/index.js --streamable-http
-```
-
-Optional:
-
-- **`MCP_STREAMABLE_PATH`**: HTTP path for MCP (default `/mcp`).
-- **`MCP_HTTP_HOST`**: Passed to the MCP Express helper for DNS rebinding defaults (default `0.0.0.0`).
-- **`MCP_ALLOWED_HOSTS`**: Comma-separated allowed `Host` values when binding broadly (see `@modelcontextprotocol/sdk` `createMcpExpressApp`).
-
-#### 2. Configure MCP Client
-
-Use your client’s **Streamable HTTP** URL style pointing at `/mcp`. On the **first** `initialize` request you can pass Yunxiao credentials via query string (same semantics as SSE):
-
+Pass credentials via query parameter or header:
 ```
 http://localhost:3000/mcp?yunxiao_access_token=YOUR_TOKEN_HERE
 ```
+Or request header: `x-yunxiao-token: YOUR_TOKEN_HERE`
 
-Optional region / instance OpenAPI base:
-
+Region / instance OpenAPI base:
 ```
-http://localhost:3000/mcp?yunxiao_access_token=YOUR_TOKEN_HERE&yunxiao_api_base_url=https%3A%2F%2Fyour-org.devops.aliyuncs.com
+http://localhost:3000/mcp?yunxiao_access_token=TOKEN&yunxiao_api_base_url=https%3A%2F%2Fyour-org.devops.aliyuncs.com
 ```
+Or request header: `x-yunxiao-api-base-url: https://your-org.devops.aliyuncs.com`
 
-Subsequent requests use the **`mcp-session-id`** header returned by the server; the server routes each session to the correct stored token and base URL.
-
-### Docker with SSE + Streamable HTTP (dual transport)
-
-One process can serve **legacy SSE** and **Streamable HTTP** at the same time on the same `PORT`:
-
-- SSE: `http://localhost:3000/sse` and `http://localhost:3000/messages?sessionId=...`
-- Streamable: `http://localhost:3000/mcp` (or `MCP_STREAMABLE_PATH`)
-
-**Enable via environment:**
+### Docker Compose
 
 ```shell
-docker run -d --name yunxiao-mcp \
-  -p 3000:3000 \
-  -e YUNXIAO_ACCESS_TOKEN="your_token_here" \
-  -e PORT=3000 \
-  -e MCP_TRANSPORT=both \
-  build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alibabacloud-devops-mcp-server:latest \
-  node dist/index.js
-```
-
-**Enable via CLI flags (e.g. local):**
-
-```shell
-npm run start:both
-# equivalent to: node dist/index.js --sse --streamable-http
-```
-
-Clients choose the transport they support: SSE-only URLs vs Streamable `/mcp`. Session state is separate for each protocol.
-
-### Run SSE Mode via Docker Compose
-
-1. **Environment Setup**
-```shell
-cd alibabacloud-devops-mcp-server
-cp .env.example .env
-# Edit .env file and set YUNXIAO_ACCESS_TOKEN
-```
-
-2. **Start Service**
-```shell
+cp .env.example .env   # set YUNXIAO_ACCESS_TOKEN
 docker compose up -d
 ```
 
-3. **Configure MCP Client**
-```json
-{
-  "mcpServers": {
-    "yunxiao": {
-      "url": "http://localhost:3000/sse"
-    }
-  }
-}
-```
-
----
-
-## Advanced SSE Mode Configuration
-
-### Using Custom Tokens
-
-In SSE mode, each user can pass their own token in the following ways:
-
-1. **Via query parameter** (Recommended):
-```
-http://localhost:3000/sse?yunxiao_access_token=USER_SPECIFIC_TOKEN
-```
-
-2. **Via request header**:
-```
-x-yunxiao-token: USER_SPECIFIC_TOKEN
-```
-
-This allows multiple users to share the same SSE service while using their own individual tokens for authentication.
-
-### Configure SSE Mode in Codex
-
-If your Yunxiao MCP server is already running in SSE mode at `http://localhost:3000`, you can configure it in Codex as follows:
-
-**Use default token (configured at server startup):**
-```json
-{
-  "mcpServers": {
-    "yunxiao": {
-      "url": "http://localhost:3000/sse"
-    }
-  }
-}
-```
-
-**Pass token in URL:**
-```json
-{
-  "mcpServers": {
-    "yunxiao": {
-      "url": "http://localhost:3000/sse?yunxiao_access_token=YOUR_TOKEN_HERE"
-    }
-  }
-}
-```
+Client URL: `http://localhost:3000/sse` (SSE) or `http://localhost:3000/mcp` (Streamable HTTP)
 
 ### Toolsets
 The server now supports toolsets, allowing you to enable only the tools you need. This can reduce the number of tools presented to the AI assistant and improve performance.
