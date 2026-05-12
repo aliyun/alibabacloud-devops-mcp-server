@@ -1,0 +1,1653 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "研发阶段 API",
+    "description": "研发阶段相关的API定义",
+    "version": "v0"
+  },
+  "tags": [
+    {
+      "name": "研发阶段",
+      "description": "研发阶段相关API"
+    }
+  ],
+  "paths": {
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflow/{releaseWorkflowSn}/releaseStage/{releaseStageSn}": {
+      "get": {
+        "operationId": "GetReleaseWorkflowStage",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-app",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-app",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程唯一标识符",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程唯一标识符",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发阶段唯一标识符",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "研发阶段唯一标识符",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseStage"
+                }
+              }
+            },
+            "description": "查找应用下研发阶段成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查找研发阶段详情",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflow/{releaseWorkflowSn}/releaseStageBriefs": {
+      "get": {
+        "operationId": "ListAllReleaseStageBriefs",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-app",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-app",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程唯一标识符",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程唯一标识符",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReleaseStageBriefVO"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "查找研发阶段摘要成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查找研发流程下所有研发阶段摘要",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}": {
+      "put": {
+        "operationId": "UpdateReleaseStage",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReleaseStageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseStage"
+                }
+              }
+            },
+            "description": "更新研发阶段成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "更新研发阶段",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions": {
+      "get": {
+        "operationId": "ListAppReleaseStageRuns",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array"
+                }
+              }
+            },
+            "description": "查询成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查询研发阶段执行记录",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions/{executionNumber}/integratedMetadata": {
+      "get": {
+        "operationId": "ListAppReleaseStageExecutionIntegratedMetadata",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发阶段的执行记录编号",
+            "example": 1,
+            "in": "path",
+            "name": "executionNumber",
+            "required": true,
+            "schema": {
+              "description": "研发阶段的执行记录编号",
+              "example": 1,
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "查询成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查询研发阶段执行集成元数据",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions/{executionNumber}:cancel": {
+      "post": {
+        "operationId": "CancelExecutionReleaseStage",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发阶段的执行记录编号",
+            "example": 1,
+            "in": "path",
+            "name": "executionNumber",
+            "required": true,
+            "schema": {
+              "description": "研发阶段的执行记录编号",
+              "example": 1,
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取消成功"
+          },
+          "404": {
+            "description": "研发流程 / 研发阶段 / 流水线实例不存在"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "取消研发阶段执行",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions/{executionNumber}:getPipelineRun": {
+      "get": {
+        "operationId": "GetReleaseStagePipelineRun",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发阶段的执行记录编号",
+            "example": 1,
+            "in": "path",
+            "name": "executionNumber",
+            "required": true,
+            "schema": {
+              "description": "研发阶段的执行记录编号",
+              "example": 1,
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "查询成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查询研发阶段流水线运行详情",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions/{executionNumber}:passPipelineValidate": {
+      "post": {
+        "operationId": "PassReleaseStagePipelineValidate",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程阶执行序号",
+            "example": 123,
+            "in": "path",
+            "name": "executionNumber",
+            "required": true,
+            "schema": {
+              "description": "发布流程阶执行序号",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "任务ID",
+            "example": 123,
+            "in": "query",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "description": "任务ID",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassPipelineValidateResponse"
+                }
+              }
+            },
+            "description": "通过成功"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassPipelineValidateResponse"
+                }
+              }
+            },
+            "description": "研发流程 / 研发阶段 / 流水线实例不存在"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "通过人工卡点",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions/{executionNumber}:pipelineJobLog": {
+      "get": {
+        "operationId": "GetAppReleaseStageExecutionPipelineJobLog",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发阶段的执行记录编号",
+            "example": 1,
+            "in": "path",
+            "name": "executionNumber",
+            "required": true,
+            "schema": {
+              "description": "研发阶段的执行记录编号",
+              "example": 1,
+              "type": "string"
+            }
+          },
+          {
+            "description": "任务ID，可通过GetReleaseStagePipelineRun接口获取任务ID",
+            "example": 123,
+            "in": "query",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "description": "任务ID，可通过GetReleaseStagePipelineRun接口获取任务ID",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseStageExecutionPipelineJobLogResponse"
+                }
+              }
+            },
+            "description": "查询成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查询研发阶段流水线任务运行日志",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions/{executionNumber}:refusePipelineValidate": {
+      "post": {
+        "operationId": "RefuseReleaseStagePipelineValidate",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程阶执行序号",
+            "example": 123,
+            "in": "path",
+            "name": "executionNumber",
+            "required": true,
+            "schema": {
+              "description": "研发流程阶执行序号",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "任务ID",
+            "example": 123,
+            "in": "query",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "description": "任务ID",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefusePipelineValidateResponse"
+                }
+              }
+            },
+            "description": "拒绝成功"
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefusePipelineValidateResponse"
+                }
+              }
+            },
+            "description": "研发流程 / 研发阶段 / 流水线实例不存在"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "拒绝人工卡点",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions/{executionNumber}:retry": {
+      "post": {
+        "operationId": "RetryChangeRequestStagePipeline",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程阶执行序号",
+            "example": 123,
+            "in": "path",
+            "name": "executionNumber",
+            "required": true,
+            "schema": {
+              "description": "研发流程阶执行序号",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "任务ID",
+            "example": 123,
+            "in": "query",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "description": "任务ID",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "拒绝成功"
+          },
+          "404": {
+            "description": "研发流程 / 研发阶段 / 流水线实例不存在"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "重试研发阶段运行",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}/executions/{executionNumber}:skip": {
+      "post": {
+        "operationId": "SkipChangeRequestStagePipeline",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "研发流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "研发流程阶执行序号",
+            "example": 123,
+            "in": "path",
+            "name": "executionNumber",
+            "required": true,
+            "schema": {
+              "description": "研发流程阶执行序号",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "任务ID",
+            "example": 123,
+            "in": "query",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "description": "任务ID",
+              "example": 123,
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "拒绝成功"
+          },
+          "404": {
+            "description": "研发流程 / 研发阶段 / 流水线实例不存在"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "跳过研发阶段运行",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}:execute": {
+      "post": {
+        "operationId": "ExecuteChangeRequestReleaseStage",
+        "parameters": [
+          {
+            "description": "应用名",
+            "example": "my-web-service",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "schema": {
+              "description": "应用名",
+              "example": "my-web-service",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程唯一序列号",
+            "example": "3f472a12b15d4f418ad6227bb85f787c",
+            "in": "path",
+            "name": "releaseWorkflowSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程唯一序列号",
+              "example": "3f472a12b15d4f418ad6227bb85f787c",
+              "type": "string"
+            }
+          },
+          {
+            "description": "发布流程阶段唯一序列号",
+            "example": "6b4c53eee9a842c6a11235b29d002a81",
+            "in": "path",
+            "name": "releaseStageSn",
+            "required": true,
+            "schema": {
+              "description": "发布流程阶段唯一序列号",
+              "example": "6b4c53eee9a842c6a11235b29d002a81",
+              "type": "string"
+            }
+          },
+          {
+            "description": "组织ID",
+            "example": "ec766e63aee3437d9a51f334d6exe671",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "example": "ec766e63aee3437d9a51f334d6exe671",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteChangeRequestStagePipelineRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutePipelineResult"
+                }
+              }
+            },
+            "description": "执行研发阶段成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "执行研发阶段流水线",
+        "tags": [
+          "研发阶段"
+        ]
+      }
+    },
+    "/appstack/organizations/{organizationId}/apps/{appName}/releaseWorkflows/{releaseWorkflowSn}/releaseStages/{releaseStageSn}:find_release_integrated_metadata": {
+      "get": {
+        "operationId": "ListReleaseStageFlowChangeRequests",
+        "parameters": [{
+          "description": "组织ID",
+          "example": "ec766e63xxxxx334d6exe671",
+          "in": "path",
+          "name": "organizationId",
+          "required": true,
+          "schema": {
+            "example": "ec766e63xxxxx334d6exe671",
+            "type": "string"
+          },
+          "style": "simple"
+        }, {
+          "description": "应用名",
+          "example": "my-app",
+          "in": "path",
+          "name": "appName",
+          "required": true,
+          "schema": {
+            "description": "应用名",
+            "example": "my-app",
+            "type": "string"
+          }
+        }, {
+          "description": "发布流程唯一序列号",
+          "example": "3f472a1xxxxxx6227bb85f787c",
+          "in": "path",
+          "name": "releaseWorkflowSn",
+          "required": true,
+          "schema": {
+            "description": "发布流程唯一序列号",
+            "example": "3f472a1xxxxxxxxxx8ad6227bb85f787c",
+            "type": "string"
+          }
+        }, {
+          "description": "发布流程阶段唯一序列号",
+          "example": "6b4c53eexxxxxxxxxx35b29d002a81",
+          "in": "path",
+          "name": "releaseStageSn",
+          "required": true,
+          "schema": {
+            "description": "发布流程阶段唯一序列号",
+            "example": "6b4c53eeexxxxxxxb29d002a81",
+            "type": "string"
+          }
+        }, {
+          "description": "运行次数，可为空，为空则查询最新的一次",
+          "example": 5,
+          "in": "query",
+          "name": "buildNum",
+          "required": false,
+          "schema": {
+            "description": "运行次数",
+            "example": 5,
+            "type": "integer",
+            "format": "int64"
+          }
+        }],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseStageIntegratedMetadata"
+                }
+              }
+            },
+            "description": "查询发布阶段集成元数据成功"
+          },
+          "500": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/YunxiaoErrorResponse"
+                }
+              }
+            },
+            "description": "服务端内部异常"
+          }
+        },
+        "summary": "查询发布阶段集成元数据",
+        "tags": ["研发阶段"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateReleaseStageRequest": {
+        "description": "创建发布阶段请求",
+        "properties": {
+          "commitMessage": {
+            "description": "版本commit信息",
+            "example": "message-xxxxx",
+            "type": "string"
+          },
+          "labelList": {
+            "description": "标签列表",
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            },
+            "type": "array"
+          },
+          "name": {
+            "description": "名称",
+            "example": "stage-name",
+            "type": "string"
+          },
+          "order": {
+            "description": "排序",
+            "example": "1",
+            "type": "string"
+          },
+          "variableGroups": {
+            "description": "变量组列表",
+            "items": {
+              "$ref": "#/components/schemas/VariableGroup"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "labelList",
+          "name",
+          "variableGroups"
+        ],
+        "type": "object"
+      },
+      "ExecuteChangeRequestStagePipelineRequest": {
+        "description": "执行流水线请求",
+        "properties": {
+          "params": {
+            "additionalProperties": {
+              "description": "运行流水线参数（支持使用代码库指定分支触发运行，格式： \"sourceId\": \"分支\" ）",
+              "type": "string"
+            },
+            "description": "运行流水线参数（支持使用代码库指定分支触发运行，格式： \"sourceId\": \"分支\" ）",
+            "example": {
+              "sourceId": "分支"
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "ExecutePipelineResult": {
+        "description": "执行流水线阶段结果",
+        "properties": {
+          "object": {
+            "description": "流水线对象",
+            "example": 1,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "PassPipelineValidateResponse": {
+        "description": "人工卡点验证通过结果",
+        "properties": {
+          "success": {
+            "description": "是否验证成功",
+            "example": true,
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "RefusePipelineValidateResponse": {
+        "description": "人工卡点验证拒绝结果",
+        "properties": {
+          "success": {
+            "description": "是否拒绝成功",
+            "example": true,
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "ReleaseStageBriefVO": {
+        "properties": {
+          "appName": {
+            "type": "string"
+          },
+          "labels": {
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            },
+            "type": "array"
+          },
+          "name": {
+            "type": "string"
+          },
+          "order": {
+            "type": "string"
+          },
+          "processEngineType": {
+            "type": "string"
+          },
+          "releaseStageSn": {
+            "type": "string"
+          },
+          "releaseWorkflowSn": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "appName",
+          "labels",
+          "name",
+          "order",
+          "processEngineType"
+        ],
+        "type": "object"
+      },
+      "ReleaseStageExecutionPipelineJobLogResponse": {
+        "description": "研发阶段执行流水线任务日志",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "hasMore": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "ReleaseStage": {
+        "description": "研发阶段",
+        "properties": {
+          "appName": {
+            "description": "应用名",
+            "type": "string"
+          },
+          "name": {
+            "description": "阶段名称",
+            "type": "string"
+          },
+          "releaseStageSn": {
+            "description": "研发阶段唯一标识",
+            "type": "string"
+          },
+          "releaseWorkflowSn": {
+            "description": "研发流程唯一标识",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Label": {
+        "description": "标签模型",
+        "properties": {
+          "key": {
+            "description": "标签键",
+            "example": "env",
+            "type": "string"
+          },
+          "value": {
+            "description": "标签值",
+            "example": "prod",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "VariableGroup": {
+        "description": "通用变量组模型",
+        "properties": {
+          "displayName": {
+            "description": "变量组显示名",
+            "example": "开发变量组",
+            "type": "string"
+          },
+          "name": {
+            "description": "变量组标识",
+            "example": "dev",
+            "type": "string"
+          },
+          "type": {
+            "description": "变量组类型",
+            "example": "GLOBAL",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReleaseStageIntegratedMetadata": {
+        "description": "发布阶段集成元数据",
+        "properties": {
+          "releaseStageSn": {
+            "description": "研发流程阶段sn",
+            "example": "f469b665bb084c85aac884cff2d12887",
+            "type": "string"
+          },
+          "releaseBranch": {
+            "description": "发布分支",
+            "example": "release/20251204-094700635356876_release_4566642_5",
+            "type": "string"
+          },
+          "releaseRevision": {
+            "description": "发布的Revision",
+            "example": "a124d55c30f2eecbfbaffcc01ea1646ab142e08d",
+            "type": "string"
+          },
+          "repoUrl": {
+            "description": "代码库url",
+            "example": "https://codeup.aliyun.com/5ebbe3fa0d4ce6105176dcbc/Codeup-Demo.git",
+            "type": "string"
+          },
+          "repoType": {
+            "description": "代码库类型",
+            "example": "CODEUP",
+            "type": "string"
+          },
+          "crDetailList": {
+            "description": "变更详情列表",
+            "items": {
+              "$ref": "#/components/schemas/ChangeRequestDetail"
+            },
+            "type": "array"
+          },
+          "runNumber": {
+            "description": "运行次数",
+            "example": 5,
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": ["releaseStageSn", "releaseBranch", "releaseRevision", "repoUrl", "repoType", "crDetailList", "runNumber"],
+        "type": "object"
+      },
+      "ChangeRequestDetail": {
+        "description": "变更详情",
+        "properties": {
+          "sn": {
+            "description": "变更的sn",
+            "example": "9dfe68c84c04416c97f863c4f16872fe",
+            "type": "string"
+          },
+          "name": {
+            "description": "变更的名称",
+            "example": "aaa",
+            "type": "string"
+          },
+          "ownerId": {
+            "description": "变更负责人",
+            "example": "5e9ee108424a50d98c7c8906",
+            "type": "string"
+          },
+          "branchName": {
+            "description": "分支名称",
+            "example": "feature/20251107_saassa",
+            "type": "string"
+          },
+          "commitId": {
+            "description": "对应的commitId",
+            "example": "64cb648499479b99662c743a6945c54934e148ef",
+            "type": "string"
+          },
+          "state": {
+            "description": "集成状态",
+            "example": "INTEGRATING",
+            "enum": ["INTEGRATING", "RELEASED", "CLOSED", "DEVELOPING"],
+            "type": "string"
+          },
+          "branchState": {
+            "description": "分支状态",
+            "example": "LATEST",
+            "enum": ["DELETED", "NEW_COMMIT", "UNKNOWN", "LATEST"],
+            "type": "string"
+          }
+        },
+        "required": ["sn", "name", "ownerId", "branchName", "commitId", "state", "branchState"],
+        "type": "object"
+      },
+      "YunxiaoErrorResponse": {
+        "description": "统一错误返回结构",
+        "properties": {
+          "errorCode": {
+            "description": "唯一标明错误类型的错误码",
+            "type": "string"
+          },
+          "errorMessage": {
+            "description": "人类可读的错误描述",
+            "type": "string"
+          },
+          "hasDetailSolution": {
+            "description": "是否支持错误中心知识库跳转",
+            "type": "boolean"
+          },
+          "httpStatus": {
+            "description": "HTTP 状态码",
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "title": {
+            "description": "人类可读的错误标题",
+            "type": "string"
+          },
+          "traceId": {
+            "description": "追踪排查具体错误时使用的具体 trace ID",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
+}
