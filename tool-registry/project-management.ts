@@ -150,7 +150,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "get_workitem_file",
-    description: "[Project Management] Get file information for a specific work item. Returns file details including name, size, suffix, and a temporary download URL.",
+    description: "[Project Management] Get file information for a specific work item. Supports both file IDs (long hex for description-embedded images) and attachment IDs (numeric like 62487031). Returns file details including name, size, suffix, and a temporary download URL.",
     inputSchema: zodToJsonSchema(types.GetWorkitemFileSchema),
   },
   {

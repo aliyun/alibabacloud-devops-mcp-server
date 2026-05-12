@@ -671,8 +671,8 @@ export const AttachmentDTOSchema = z.object({
   creator: MiniUserSchema.nullable().optional().describe("创建人"),
   fileId: z.string().nullable().optional().describe("文件id"),
   fileName: z.string().nullable().optional().describe("文件名称"),
-  gmtCreate: z.string().nullable().optional().describe("创建时间"),
-  gmtModified: z.string().nullable().optional().describe("修改时间"),
+  gmtCreate: z.number().nullable().optional().describe("创建时间 (Unix timestamp in milliseconds)"),
+  gmtModified: z.number().nullable().optional().describe("修改时间 (Unix timestamp in milliseconds)"),
   id: z.string().nullable().optional().describe("id"),
   modifier: MiniUserSchema.nullable().optional().describe("修改人"),
   size: z.number().int().nullable().optional().describe("文件大小"),
@@ -696,7 +696,7 @@ export const ListWorkitemAttachmentsSchema = z.object({
 export const GetWorkitemFileSchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
   workitemId: z.string().describe("工作项唯一标识"),
-  id: z.string().describe("文件唯一标识"),
+  id: z.string().describe("文件唯一标识。支持两种格式：文件ID（长hex字符串，用于描述中嵌入的图片）或附件ID（纯数字如 62487031，用于普通附件）"),
 });
 
 export const CreateWorkitemAttachmentSchema = z.object({

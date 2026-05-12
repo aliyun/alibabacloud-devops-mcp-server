@@ -56,7 +56,9 @@ export async function listWorkitemAttachmentsFunc(
  * 获取工作项文件信息
  * @param organizationId 组织ID
  * @param workitemId 工作项唯一标识
- * @param id 文件唯一标识
+ * @param id 文件唯一标识或附件ID。支持两种格式：
+ *   - 文件ID（长hex字符串）：用于描述中嵌入的图片，直接调用文件接口
+ *   - 附件ID（纯数字如 62487031）：先从附件列表中查找匹配项并返回下载信息
  * @returns 文件信息
  */
 export async function getWorkitemFileFunc(
@@ -64,6 +66,23 @@ export async function getWorkitemFileFunc(
   workitemId: string,
   id: string
 ): Promise<WorkitemFile> {
+  // 如果是纯数字ID（附件ID），先从附件列表中查找
+  if (/^\d+$/.test(id)) {
+    const attachments = await listWorkitemAttachmentsFunc(organizationId, workitemId);
+    const attachment = attachments.find(a => a.id === id);
+    if (attachment) {
+      return WorkitemFileSchema.parse({
+        id: attachment.fileId || attachment.id,
+        name: attachment.fileName,
+        size: attachment.size,
+        suffix: attachment.suffix,
+        url: attachment.url,
+      });
+    }
+    throw new Error(`Attachment with id ${id} not found for workitem ${workitemId}`);
+  }
+
+  // 非数字ID视为文件ID（hex），走文件接口
   const finalOrgId = await resolveOrganizationId(organizationId);
   const url = isRegionEdition()
     ? `/oapi/v1/projex/workitems/${workitemId}/files/${id}`
