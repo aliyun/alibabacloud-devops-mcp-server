@@ -1,0 +1,503 @@
+{
+  "openapi":"3.0.3",
+  "info":{
+    "title":"variableGroup",
+    "description":"variableGroup",
+    "version":"1.0"
+  },
+  "tags":[
+    {
+      "name":"变量组",
+      "description":"variableGroup"
+    }
+  ],
+  "paths":{
+    "/flow/organizations/{organizationId}/variableGroups":{
+      "post":{
+        "tags":[
+          "变量组"
+        ],
+        "summary":"创建变量组",
+        "operationId":"CreateVariableGroup",
+        "description": "创建变量组",
+        "parameters":[
+          {
+            "name":"organizationId",
+            "in":"path",
+            "description":"企业Id",
+            "example":"5ebbc0228123212b59xxxxx",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"description",
+            "in":"query",
+            "description":"变量组描述",
+            "example":"变量组描述",
+            "required":false,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"variables",
+            "in":"query",
+            "description":"变量信息 JSON 字符串 isEncrypted 是否加密 name 变量名称 value 变量值",
+            "example":"[{\"isEncrypted\":true,\"name\":\"name1\",\"value\":\"vaue1\"}]",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"name",
+            "in":"query",
+            "description":"变量组名称",
+            "example":"变量组",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          }
+        ],
+        "responses":{
+          "200":{
+            "description":"成功",
+            "content":{
+              "*/*":{
+                "schema":{
+                  "name":"variableGroupId",
+                  "type":"integer",
+                  "description":"新建的变量组 id",
+                  "example":1234,
+                  "format":"int64"
+                }
+              }
+            }
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      },
+      "get":{
+        "tags":[
+          "变量组"
+        ],
+        "summary":"获取变量组列表",
+        "operationId":"ListVariableGroups",
+        "description": "获取变量组列表",
+        "parameters":[
+          {
+            "name":"organizationId",
+            "in":"path",
+            "description":"企业Id",
+            "example":"5ebbc0228123212b59xxxxx",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"perPage",
+            "in":"query",
+            "description":"每页数据条数，默认10，最大支持30",
+            "example":10,
+            "required":false,
+            "style":"simple",
+            "schema":{
+              "type":"integer"
+            }
+          },
+          {
+            "name":"page",
+            "in":"query",
+            "description":"当前页，默认1",
+            "example":1,
+            "required":false,
+            "style":"simple",
+            "schema":{
+              "type":"integer"
+            }
+          },
+          {
+            "name":"pageSort",
+            "in":"query",
+            "description":"排序条件 ID",
+            "example":"ID",
+            "required":false,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"pageOrder",
+            "in":"query",
+            "description":"排序顺序 DESC 降序 ASC 升序",
+            "example":"DESC",
+            "required":false,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          }
+        ],
+        "responses":{
+          "200":{
+            "description":"变量组列表",
+            "content":{
+              "*/*":{
+                "schema":{
+                  "type":"array",
+                  "items":{
+                    "$ref":"#/components/schemas/VariableGroupVo"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "x-next-page": {
+                "description": "下一页",
+                "example": 3,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-page": {
+                "description": "当前页",
+                "example": 2,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-per-page": {
+                "description": "每页数据条数",
+                "example": 10,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-prev-page": {
+                "description": "上一页",
+                "example": 1,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total": {
+                "description": "总数据量",
+                "example": 100,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "x-total-pages": {
+                "description": "总分页数",
+                "example": 10,
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/flow/organizations/{organizationId}/variableGroups/{id}":{
+      "delete":{
+        "tags":[
+          "变量组"
+        ],
+        "summary":"删除变量组",
+        "operationId":"DeleteVariableGroup",
+        "description": "删除变量组",
+        "parameters":[
+          {
+            "name":"organizationId",
+            "in":"path",
+            "description":"企业Id",
+            "example":"5ebbc0228123212b59xxxxx",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"id",
+            "in":"path",
+            "description":"变量组 id",
+            "example":123,
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"integer",
+              "format":"int64"
+            }
+          }
+        ],
+        "responses":{
+          "200":{
+            "description":"成功",
+            "content":{
+              "*/*":{
+                "schema":{
+                  "name":"success",
+                  "type":"boolean",
+                  "example":true,
+                  "description":"是否成功"
+                }
+              }
+            }
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      },
+      "put":{
+        "tags":[
+          "变量组"
+        ],
+        "summary":"更新变量组",
+        "operationId":"UpdateVariableGroup",
+        "description": "更新变量组",
+        "parameters":[
+          {
+            "name":"organizationId",
+            "in":"path",
+            "description":"企业Id",
+            "example":"5ebbc0228123212b59xxxxx",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"id",
+            "in":"path",
+            "description":"变量组 id",
+            "example":123,
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"integer",
+              "format":"int64"
+            }
+          },
+          {
+            "name":"name",
+            "in":"query",
+            "description":"变量组名称",
+            "example":"变量组",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"description",
+            "in":"query",
+            "description":"变量组描述",
+            "example":"变量组描述",
+            "required":false,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"variables",
+            "in":"query",
+            "description":"变量信息 JSON 字符串 isEncrypted 是否加密 name 变量名称 value 变量值",
+            "example":"[{\"isEncrypted\":true,\"name\":\"name1\",\"value\":\"vaue1\"}]",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          }
+        ],
+        "responses":{
+          "200":{
+            "description":"成功",
+            "content":{
+              "*/*":{
+                "schema":{
+                  "name":"success",
+                  "type":"boolean",
+                  "example":true,
+                  "description":"是否成功"
+                }
+              }
+            }
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      },
+      "get":{
+        "tags":[
+          "变量组"
+        ],
+        "summary":"获取变量组",
+        "operationId":"GetVariableGroup",
+        "description": "获取变量组",
+        "parameters":[
+          {
+            "name":"organizationId",
+            "in":"path",
+            "description":"企业Id",
+            "example":"5ebbc0228123212b59xxxxx",
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"string"
+            }
+          },
+          {
+            "name":"id",
+            "in":"path",
+            "description":"变量组 id",
+            "example":123,
+            "required":true,
+            "style":"simple",
+            "schema":{
+              "type":"integer",
+              "format":"int64"
+            }
+          }
+        ],
+        "responses":{
+          "200":{
+            "description":"变量组",
+            "content":{
+              "*/*":{
+                "schema":{
+                  "type":"object",
+                  "$ref":"#/components/schemas/VariableGroupVo"
+                }
+              }
+            }
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components":{
+    "schemas":{
+      "VariableGroupVo":{
+        "title":"VariableGroupVo",
+        "type":"object",
+        "properties":{
+          "id": {
+            "type":"integer",
+            "description":"变量组 id",
+            "example":"1234",
+            "format":"int64"
+          },
+          "name": {
+            "type":"string",
+            "description":"变量组名称",
+            "example":"主机组"
+          },
+          "creatorAccountId": {
+            "type":"string",
+            "description":"创建人阿里云账号 id",
+            "example":"1111111111111"
+          },
+          "modifierAccountId": {
+            "type":"string",
+            "description":"更新人阿里云账号 id",
+            "example":"1111111111111"
+          },
+          "updateTime": {
+            "type":"integer",
+            "description":"更新时间",
+            "example":"1586863220000",
+            "format":"int64"
+          },
+          "description": {
+            "type":"string",
+            "description":"变量组描述",
+            "example":"变量组描述"
+          },
+          "createTime": {
+            "type":"integer",
+            "description":"创建时间",
+            "example":"1586863220000",
+            "format":"int64"
+          },
+          "relatedPipelines": {
+            "type": "array",
+            "items":{
+              "type":"object",
+              "properties": {
+                "id": {
+                  "type":"integer",
+                  "description":"关联的流水线 Id",
+                  "example":"1586863220000",
+                  "format":"int64"
+                },
+                "name": {
+                  "type":"string",
+                  "description":"关联的流水线名称",
+                  "example":"流水线"
+                }
+              }
+            }
+          },
+          "variables": {
+            "type": "array",
+            "items":{
+              "type":"object",
+              "properties": {
+                "value": {
+                  "type":"string",
+                  "description":"变量值",
+                  "example":"value1"
+                },
+                "name": {
+                  "type":"string",
+                  "description":"变量名",
+                  "example":"name1"
+                },
+                "isEncrypted": {
+                  "type":"boolean",
+                  "description":"是否加密",
+                  "example":true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security":[
+    {
+      "ApiKeyAuth":[
+        "PERSONAL",
+        "ORGANIZATION",
+        "APPLICATION"
+      ]
+    }
+  ]
+}
