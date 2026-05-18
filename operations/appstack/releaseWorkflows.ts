@@ -638,13 +638,28 @@ export async function skipChangeRequestStagePipeline(params: SkipChangeRequestSt
 
 // ========== Additional Application Level Release Workflow APIs ==========
 
-// Schema for ReleaseStageInstanceIntegratedMetadataVO (simplified)
+// Schema for ChangeRequestDetail
+export const ReleaseStageChangeRequestDetailSchema = z.object({
+  sn: z.string().nullable().optional().describe("变更的sn"),
+  name: z.string().nullable().optional().describe("变更的名称"),
+  ownerId: z.string().nullable().optional().describe("变更负责人"),
+  branchName: z.string().nullable().optional().describe("分支名称"),
+  commitId: z.string().nullable().optional().describe("对应的commitId"),
+  state: z.string().nullable().optional().describe("集成状态"),
+  branchState: z.string().nullable().optional().describe("分支状态"),
+}).passthrough();
+
+// Schema for ReleaseStageInstanceIntegratedMetadataVO
 export const ReleaseStageInstanceIntegratedMetadataVOSchema = z.object({
-  changeRequestSn: z.string().optional().describe("变更请求标识"),
-  commitId: z.string().optional().describe("提交ID"),
-  commitMessage: z.string().optional().describe("提交信息"),
-  gmtCreate: z.string().optional().describe("创建时间"),
-});
+  releaseStageSn: z.string().nullable().optional().describe("研发流程阶段sn"),
+  releaseBranch: z.string().nullable().optional().describe("发布分支"),
+  releaseRevision: z.string().nullable().optional().describe("发布的Revision"),
+  repoUrl: z.string().nullable().optional().describe("代码库url"),
+  repoType: z.string().nullable().optional().describe("代码库类型"),
+  runNumber: z.number().nullable().optional().describe("运行次数"),
+  crDetailList: z.array(ReleaseStageChangeRequestDetailSchema).nullable().optional().describe("变更详情列表"),
+  changeRequests: z.array(ReleaseStageChangeRequestDetailSchema).nullable().optional().describe("变更详情列表(实际返回字段名)"),
+}).passthrough();
 
 // Schema for ListAppReleaseStageExecutionIntegratedMetadata API
 export const ListAppReleaseStageExecutionIntegratedMetadataRequestSchema = z.object({
