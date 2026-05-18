@@ -86,6 +86,74 @@ export type GetTestResultListResponse = z.infer<typeof GetTestResultListResponse
 export type UpdateTestResultRequest = z.infer<typeof UpdateTestResultRequestSchema>;
 export type UpdateTestResultResponse = z.infer<typeof UpdateTestResultResponseSchema>;
 
+// ========== GetTestPlanProgressRate ==========
+// Schema for TestPlanProgress (response)
+export const TestPlanProgressSchema = z.object({
+  paasCount: z.number().int().nullable().optional().describe("通过数量"),
+  failureCount: z.number().int().nullable().optional().describe("失败数量"),
+  postponeCount: z.number().int().nullable().optional().describe("延后数量"),
+  todoCount: z.number().int().nullable().optional().describe("待执行/其他数量"),
+}).passthrough();
+
+export const GetTestPlanProgressRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  testPlanIdentifier: z.string().describe("测试计划唯一标识"),
+});
+
+export type GetTestPlanProgressRequest = z.infer<typeof GetTestPlanProgressRequestSchema>;
+export type TestPlanProgress = z.infer<typeof TestPlanProgressSchema>;
+
+// ========== GetTestPlanResultDirectoryList ==========
+// Recursive schema for DirectoryWithCount (self-reference via z.lazy)
+type DirectoryWithCount = {
+  identifier?: string | null;
+  name?: string | null;
+  displayName?: string | null;
+  spaceIdentifier?: string | null;
+  parentIdentifier?: string | null;
+  workitemCount?: number | null;
+  children?: DirectoryWithCount[] | null;
+};
+export const DirectoryWithCountSchema: z.ZodType<DirectoryWithCount> = z.lazy(() => z.object({
+  identifier: z.string().nullable().optional().describe("目录唯一标识"),
+  name: z.string().nullable().optional().describe("目录名称"),
+  displayName: z.string().nullable().optional().describe("目录显示名称"),
+  spaceIdentifier: z.string().nullable().optional().describe("关联空间标识符"),
+  parentIdentifier: z.string().nullable().optional().describe("父目录唯一标识"),
+  workitemCount: z.number().int().nullable().optional().describe("目录下的工作项数量（包含子目录）"),
+  children: z.array(DirectoryWithCountSchema).nullable().optional().describe("子目录列表"),
+}).passthrough());
+
+export const GetTestPlanResultDirectoryListRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  testPlanIdentifier: z.string().describe("测试计划唯一标识"),
+});
+
+export const GetTestPlanResultDirectoryListResponseSchema = z.record(z.array(DirectoryWithCountSchema));
+
+export type GetTestPlanResultDirectoryListRequest = z.infer<typeof GetTestPlanResultDirectoryListRequestSchema>;
+export type GetTestPlanResultDirectoryListResponse = z.infer<typeof GetTestPlanResultDirectoryListResponseSchema>;
+
+// ========== ListTestRepoTags ==========
+export const TestRepoLabelSchema = z.object({
+  id: z.string().nullable().optional().describe("标签唯一标识（业务 identifier）"),
+  name: z.string().nullable().optional().describe("标签名称"),
+  color: z.string().nullable().optional().describe("颜色，如 #49AEAC"),
+}).passthrough();
+
+export const ListTestRepoTagsRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  id: z.string().describe("测试用例库唯一标识"),
+  page: z.number().int().min(1).optional().describe("页码，默认 1"),
+  perPage: z.number().int().min(1).max(100).optional().describe("每页条数，默认 20，最大 100"),
+  q: z.string().optional().describe("按名称关键词过滤"),
+});
+
+export const ListTestRepoTagsResponseSchema = z.array(TestRepoLabelSchema);
+
+export type ListTestRepoTagsRequest = z.infer<typeof ListTestRepoTagsRequestSchema>;
+export type ListTestRepoTagsResponse = z.infer<typeof ListTestRepoTagsResponseSchema>;
+
 /**
  * 获取测试计划列表
  */
@@ -146,4 +214,51 @@ export async function updateTestResult(params: UpdateTestResultRequest): Promise
   }
   const response = await yunxiaoRequest(url, { method: 'PUT', body });
   return UpdateTestResultResponseSchema.parse(response);
+}
+
+/**
+ * 获取测试计划用例执行进度统计
+ */
+export async function getTestPlanProgress(params: GetTestPlanProgressRequest): Promise<TestPlanProgress> {
+  const { organizationId, testPlanIdentifier } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/${testPlanIdentifier}/progressRate`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/${testPlanIdentifier}/progressRate`;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
+  return TestPlanProgressSchema.parse(response);
+}
+
+/**
+ * 获取测试计划结果目录列表
+ * 返回用例库名称 -> 目录列表的映射
+ */
+export async function getTestPlanResultDirectoryList(
+  params: GetTestPlanResultDirectoryListRequest
+): Promise<GetTestPlanResultDirectoryListResponse> {
+  const { organizationId, testPlanIdentifier } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/${testPlanIdentifier}/result/directory/list`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/${testPlanIdentifier}/result/directory/list`;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
+  return GetTestPlanResultDirectoryListResponseSchema.parse(response);
+}
+
+/**
+ * 获取测试用例库标签列表
+ */
+export async function listTestRepoTags(params: ListTestRepoTagsRequest): Promise<ListTestRepoTagsResponse> {
+  const { organizationId, id, page, perPage, q } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const basePath = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepo/${id}/tags`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepo/${id}/tags`;
+  const queryParts: string[] = [];
+  if (page !== undefined) queryParts.push(`page=${encodeURIComponent(String(page))}`);
+  if (perPage !== undefined) queryParts.push(`perPage=${encodeURIComponent(String(perPage))}`);
+  if (q !== undefined && q !== '') queryParts.push(`q=${encodeURIComponent(q)}`);
+  const url = queryParts.length > 0 ? `${basePath}?${queryParts.join('&')}` : basePath;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
+  return ListTestRepoTagsResponseSchema.parse(response);
 }

@@ -1,0 +1,134 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "测试用例库 API",
+    "description": "测试用例库 API",
+    "version": "1.0"
+  },
+  "servers": [],
+  "tags": [
+    {
+      "name": "测试用例库",
+      "description": "测试用例库相关接口"
+    }
+  ],
+  "paths": {
+    "/testhub/organizations/{organizationId}/testRepo/{id}/tags": {
+      "get": {
+        "tags": ["测试用例库"],
+        "summary": "获取测试用例库标签列表",
+        "operationId": "ListTestRepoTags",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "测试用例库唯一标识",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "页码，默认 1",
+            "schema": { "type": "integer", "format": "int32", "default": 1, "minimum": 1 }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "description": "每页条数，默认 20，最大 100",
+            "schema": { "type": "integer", "format": "int32", "default": 20, "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "按名称关键词过滤",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功返回测试用例库的标签列表",
+            "headers": {
+              "x-page": {
+                "description": "当前页",
+                "required": true,
+                "schema": { "type": "integer", "format": "int32" }
+              },
+              "x-next-page": {
+                "description": "下一页（已在最后一页时等于当前页）",
+                "required": true,
+                "schema": { "type": "integer", "format": "int32" }
+              },
+              "x-prev-page": {
+                "description": "上一页",
+                "required": true,
+                "schema": { "type": "integer", "format": "int32" }
+              },
+              "x-per-page": {
+                "description": "每页数据条数",
+                "required": true,
+                "schema": { "type": "integer", "format": "int32" }
+              },
+              "x-total": {
+                "description": "总数据量",
+                "required": true,
+                "schema": { "type": "integer", "format": "int32" }
+              },
+              "x-total-pages": {
+                "description": "总分页数",
+                "required": true,
+                "schema": { "type": "integer", "format": "int32" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TestRepoLabel" }
+                }
+              }
+            }
+          },
+          "401": { "description": "未授权" },
+          "403": { "description": "禁止访问" },
+          "404": { "description": "未找到" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TestRepoLabel": {
+        "type": "object",
+        "description": "测试用例库标签",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "标签唯一标识（业务 identifier）"
+          },
+          "name": {
+            "type": "string",
+            "description": "标签名称"
+          },
+          "color": {
+            "type": "string",
+            "description": "颜色，如 #49AEAC"
+          }
+        },
+        "required": ["id", "name", "color"]
+      }
+    }
+  }
+}

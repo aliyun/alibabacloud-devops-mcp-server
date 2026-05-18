@@ -29,13 +29,100 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "分页参数，第几页，默认为1",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "description": "分页参数，每页大小，最大1000，默认为1000",
+            "schema": {
+              "type": "integer",
+              "default": 1000,
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "sprintIdentifier",
+            "in": "query",
+            "required": false,
+            "description": "迭代 identifier，传入则只返回该迭代下的测试计划",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "projectIdentifier",
+            "in": "query",
+            "required": false,
+            "description": "项目 identifier；与 sprintIdentifier 同时传入时用于校验迭代是否属于该项目；仅传此项则按项目筛选测试计划",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "测试计划状态，可选值TODO,DOING,DONE。可多选，以逗号分割",
+            "schema": {
+              "type": "string"
+            },
+            "example": "DOING,DONE"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "description": "测试计划名称（模糊条件）",
+            "schema": {
+              "type": "string"
+            },
+            "example": "xxx"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功返回测试计划列表",
+            "headers": {
+              "x-page": {
+                "description": "当前页",
+                "schema": { "type": "integer" }
+              },
+              "x-next-page": {
+                "description": "下一页",
+                "schema": { "type": "integer" }
+              },
+              "x-prev-page": {
+                "description": "上一页",
+                "schema": { "type": "integer" }
+              },
+              "x-per-page": {
+                "description": "每页数据条数",
+                "schema": { "type": "integer" }
+              },
+              "x-total": {
+                "description": "总数据量",
+                "schema": { "type": "integer" }
+              },
+              "x-total-pages": {
+                "description": "总分页数",
+                "schema": { "type": "integer" }
+              }
+            },
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -48,7 +135,7 @@
         }
       }
     },
-    "/projex/organizations/{organizationId}/{testPlanIdentifier}/result/list/{directoryIdentifier}": {
+    "/testhub/organizations/{organizationId}/{testPlanIdentifier}/result/list/{directoryIdentifier}": {
       "post": {
         "tags": [
           "测试计划"
@@ -84,7 +171,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功返回测试用例和测试结果列表",
             "content": {
               "*/*": {
                 "schema": {
@@ -99,7 +186,7 @@
         }
       }
     },
-    "/projex/organizations/{organizationId}/testPlans/{testplanId}/testcases/{id}": {
+    "/testhub/organizations/{organizationId}/testPlans/{testplanId}/testcases/{id}": {
       "put": {
         "tags": [
           "测试计划"
@@ -151,7 +238,102 @@
           }
         }
       }
+    },
+    "/testhub/organizations/{organizationId}/{testPlanIdentifier}/progressRate": {
+      "get": {
+        "tags": ["测试计划"],
+        "operationId": "GetTestPlanProgressRate",
+        "summary": "获取测试计划用例执行进度统计",
+        "description": "返回测试计划关联用例中：通过(paasCount)、失败(failureCount)、延后(postponeCount)、待执行/其他(todoCount) 的数量统计",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "testPlanIdentifier",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "测试计划唯一标识"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TestPlanProgress" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/testhub/organizations/{organizationId}/{testPlanIdentifier}/result/directory/list": {
+      "get": {
+        "tags": ["测试计划"],
+        "summary": "获取测试计划结果目录列表",
+        "description": "获取测试计划下的测试用例涉及的用例库的用例目录树，返回每个用例库下的目录列表及每个目录下的测试用例数量",
+        "operationId": "GetTestPlanResultDirectoryList",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testPlanIdentifier",
+            "in": "path",
+            "required": true,
+            "description": "测试计划唯一标识",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功返回用例库名称到目录列表的映射",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DirectoryWithCount"
+                    }
+                  },
+                  "description": "用例库名称到目录列表的映射，key 是用例库名称，value 是该用例库下的目录列表（包含每个目录下的测试用例数量）",
+                  "example": {
+                    "用例库A": [
+                      {
+                        "identifier": "dir1",
+                        "name": "目录1",
+                        "displayName": "目录1",
+                        "spaceIdentifier": "space1",
+                        "parentIdentifier": null,
+                        "workitemCount": 10,
+                        "children": []
+                      }
+                    ],
+                    "用例库B": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
+
   },
   "components": {
     "schemas": {
@@ -191,6 +373,43 @@
           "spaceIdentifier": {
             "type": "string",
             "description": "关联项目id"
+          }
+        }
+      },
+      "DirectoryWithCount": {
+        "type": "object",
+        "description": "带计数的目录信息",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "description": "目录唯一标识"
+          },
+          "name": {
+            "type": "string",
+            "description": "目录名称"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "目录显示名称"
+          },
+          "spaceIdentifier": {
+            "type": "string",
+            "description": "关联空间标识符"
+          },
+          "parentIdentifier": {
+            "type": "string",
+            "description": "父目录唯一标识"
+          },
+          "children": {
+            "type": "array",
+            "description": "子目录列表",
+            "items": {
+              "$ref": "#/components/schemas/DirectoryWithCount"
+            }
+          },
+          "workitemCount": {
+            "type": "integer",
+            "description": "目录下的工作项数量（包含子目录）"
           }
         }
       },
@@ -240,7 +459,11 @@
           },
           "testResultGmtCreate": {
             "type": "string",
-            "description": "测试结果生成时间"
+            "description": "测试结果创建时间"
+          },
+          "testResultGmtModified": {
+            "type": "string",
+            "description": "测试结果最后更新时间"
           },
           "bugCount": {
             "type": "integer",
@@ -287,6 +510,16 @@
             "description": "名称",
             "example": "name-xxx"
           }
+        }
+      },
+      "TestPlanProgress": {
+        "type": "object",
+        "description": "测试计划进度说明",
+        "properties": {
+          "paasCount": { "type": "integer", "description": "通过数量", "default": 0 },
+          "failureCount": { "type": "integer", "description": "失败数量", "default": 0 },
+          "postponeCount": { "type": "integer", "description": "延后数量", "default": 0 },
+          "todoCount": { "type": "integer", "description": "待执行/其他", "default": 0 }
         }
       }
     }
