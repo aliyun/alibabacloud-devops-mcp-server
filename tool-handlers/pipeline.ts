@@ -347,6 +347,143 @@ export const handlePipelineTools = async (request: any) => {
       };
     }
 
+    case "stop_pipeline_job_run": {
+      const args = types.StopPipelineJobRunSchema.parse(request.params.arguments);
+      const result = await pipelineJob.stopPipelineJobRunFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: result }) }],
+      };
+    }
+
+    case "retry_pipeline_job_run": {
+      const args = types.RetryPipelineJobRunSchema.parse(request.params.arguments);
+      const result = await pipelineJob.retryPipelineJobRunFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: result }) }],
+      };
+    }
+
+    case "rerun_pipeline_job_run": {
+      const args = types.RerunPipelineJobRunSchema.parse(request.params.arguments);
+      const result = await pipelineJob.rerunPipelineJobRunFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: result }) }],
+      };
+    }
+
+    case "skip_pipeline_job_run": {
+      const args = types.SkipPipelineJobRunSchema.parse(request.params.arguments);
+      const result = await pipelineJob.skipPipelineJobRunFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: result }) }],
+      };
+    }
+
+    case "pass_pipeline_validate": {
+      const args = types.PassPipelineValidateSchema.parse(request.params.arguments);
+      const result = await pipelineJob.passPipelineValidateFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: result }) }],
+      };
+    }
+
+    case "refuse_pipeline_validate": {
+      const args = types.RefusePipelineValidateSchema.parse(request.params.arguments);
+      const result = await pipelineJob.refusePipelineValidateFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: result }) }],
+      };
+    }
+
+    case "execute_pipeline_job_action": {
+      const args = types.ExecutePipelineJobActionSchema.parse(request.params.arguments);
+      const result = await pipelineJob.executePipelineJobActionFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId,
+        args.actionId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: result }) }],
+      };
+    }
+
+    case "get_pipeline_job_steps": {
+      const args = types.GetPipelineJobStepsSchema.parse(request.params.arguments);
+      const result = await pipelineJob.getPipelineJobStepsFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case "get_pipeline_job_step_log": {
+      const args = types.GetPipelineJobStepLogSchema.parse(request.params.arguments);
+      const result = await pipelineJob.getPipelineJobStepLogFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId,
+        args.stepIndex,
+        args.offset,
+        args.limit,
+        args.buildId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case "get_pipeline_job_step_log_url": {
+      const args = types.GetPipelineJobStepLogUrlSchema.parse(request.params.arguments);
+      const result = await pipelineJob.getPipelineJobStepLogUrlFunc(
+        args.organizationId,
+        args.pipelineId,
+        args.pipelineRunId,
+        args.jobId,
+        args.stepIndex,
+        args.buildId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify({ url: result }) }],
+      };
+    }
+
     case "update_pipeline": {
       const args = types.UpdatePipelineSchema.parse(request.params.arguments);
       const result = await pipeline.updatePipelineFunc(

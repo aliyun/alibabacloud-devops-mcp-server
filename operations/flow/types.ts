@@ -357,6 +357,121 @@ export const PipelineJobRunLogSchema = z.object({
   more: z.boolean().nullable().optional().describe("Whether there are more logs available")
 });
 
+// Pipeline job run action schemas (stop/retry/rerun/skip share the same base schema)
+export const StopPipelineJobRunSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID, obtainable via GetPipelineRun")
+});
+
+export const RetryPipelineJobRunSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID, obtainable via GetPipelineRun")
+});
+
+export const RerunPipelineJobRunSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID, obtainable via ListPipelines"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID, obtainable via GetPipelineRun. Only deploy-type jobs are supported.")
+});
+
+export const SkipPipelineJobRunSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID, obtainable via GetPipelineRun")
+});
+
+export const PassPipelineValidateSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID (manual checkpoint), obtainable via GetPipelineRun")
+});
+
+export const RefusePipelineValidateSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID (manual checkpoint), obtainable via GetPipelineRun")
+});
+
+export const ExecutePipelineJobActionSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID, obtainable via GetPipelineRun"),
+  actionId: z.string().describe("Action ID for the subsequent action of the pipeline job")
+});
+
+export const GetPipelineJobStepsSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID, obtainable via GetPipelineRun")
+});
+
+export const PipelineJobStepSchema = z.object({
+  nodeName: z.string().nullable().optional().describe("Step node name"),
+  stepName: z.string().nullable().optional().describe("Step name"),
+  status: z.string().nullable().optional().describe("Step status"),
+  stepApiVersion: z.string().nullable().optional().describe("Step API version"),
+  finish: z.boolean().nullable().optional().describe("Whether finished"),
+  nodeIndex: z.number().int().nullable().optional().describe("Node index"),
+  stepIndex: z.number().int().nullable().optional().describe("Step index"),
+  supportDebug: z.boolean().nullable().optional().describe("Whether debug is supported"),
+  parentIndex: z.number().int().nullable().optional().describe("Parent node index"),
+  running: z.boolean().nullable().optional().describe("Whether running")
+});
+
+export const PipelineJobStepsItemSchema = z.object({
+  jobId: z.number().int().nullable().optional().describe("Job ID"),
+  buildId: z.number().int().nullable().optional().describe("Build ID"),
+  actionCode: z.string().nullable().optional().describe("Action code"),
+  actionName: z.string().nullable().optional().describe("Action name"),
+  startTime: z.string().nullable().optional().describe("Start time"),
+  endTime: z.string().nullable().optional().describe("End time"),
+  buildProcessNodes: z.array(PipelineJobStepSchema).nullable().optional().describe("Build process node list"),
+  steps: z.array(PipelineJobStepSchema).nullable().optional().describe("Step list (legacy)")
+});
+
+export const PipelineJobStepsResponseSchema = z.array(PipelineJobStepsItemSchema);
+
+export const GetPipelineJobStepLogSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID, obtainable via GetPipelineRun"),
+  stepIndex: z.number().int().describe("Step index, obtainable via GetPipelineJobSteps"),
+  offset: z.number().int().describe("Log start offset position"),
+  limit: z.number().int().describe("Log length to retrieve"),
+  buildId: z.number().int().describe("Build ID, obtainable via GetPipelineJobSteps")
+});
+
+export const PipelineJobStepLogSchema = z.object({
+  last: z.number().int().nullable().optional().describe("Last position"),
+  logs: z.string().nullable().optional().describe("Log content"),
+  more: z.boolean().nullable().optional().describe("Whether there are more logs")
+});
+
+export const GetPipelineJobStepLogUrlSchema = z.object({
+  organizationId: z.string().describe("Organization ID"),
+  pipelineId: z.string().describe("Pipeline ID"),
+  pipelineRunId: z.string().describe("Pipeline run instance ID, obtainable via ListPipelineRuns"),
+  jobId: z.string().describe("Pipeline job ID, obtainable via GetPipelineRun"),
+  stepIndex: z.number().int().describe("Step index, obtainable via GetPipelineJobSteps"),
+  buildId: z.number().int().describe("Build ID, obtainable via GetPipelineJobSteps")
+});
+
+export type PipelineJobStep = z.infer<typeof PipelineJobStepSchema>;
+export type PipelineJobStepsItem = z.infer<typeof PipelineJobStepsItemSchema>;
+export type PipelineJobStepsResponse = z.infer<typeof PipelineJobStepsResponseSchema>;
+export type PipelineJobStepLog = z.infer<typeof PipelineJobStepLogSchema>;
+
 // Resource member schemas
 export const ResourceMemberSchema = z.object({
   username: z.string().nullable().optional().describe("用户名"),

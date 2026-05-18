@@ -186,6 +186,56 @@ export const getPipelineTools = () => [
     inputSchema: zodToJsonSchema(types.GetPipelineJobRunLogSchema),
   },
   {
+    name: "stop_pipeline_job_run",
+    description: "[Pipeline Management] Stop/terminate a running pipeline job.",
+    inputSchema: zodToJsonSchema(types.StopPipelineJobRunSchema),
+  },
+  {
+    name: "retry_pipeline_job_run",
+    description: "[Pipeline Management] Retry a failed pipeline job run.",
+    inputSchema: zodToJsonSchema(types.RetryPipelineJobRunSchema),
+  },
+  {
+    name: "rerun_pipeline_job_run",
+    description: "[Pipeline Management] Rerun a pipeline job. Only deploy-type jobs are supported. You can set a job as deploy type in its configuration.",
+    inputSchema: zodToJsonSchema(types.RerunPipelineJobRunSchema),
+  },
+  {
+    name: "skip_pipeline_job_run",
+    description: "[Pipeline Management] Skip a pipeline job run.",
+    inputSchema: zodToJsonSchema(types.SkipPipelineJobRunSchema),
+  },
+  {
+    name: "pass_pipeline_validate",
+    description: "[Pipeline Management] Approve/pass a manual checkpoint (human validation gate) in a pipeline run.",
+    inputSchema: zodToJsonSchema(types.PassPipelineValidateSchema),
+  },
+  {
+    name: "refuse_pipeline_validate",
+    description: "[Pipeline Management] Refuse/reject a manual checkpoint (human validation gate) in a pipeline run.",
+    inputSchema: zodToJsonSchema(types.RefusePipelineValidateSchema),
+  },
+  {
+    name: "execute_pipeline_job_action",
+    description: "[Pipeline Management] Execute a subsequent action of a pipeline job.",
+    inputSchema: zodToJsonSchema(types.ExecutePipelineJobActionSchema),
+  },
+  {
+    name: "get_pipeline_job_steps",
+    description: "[Pipeline Management] Get the list of steps for a pipeline job. Returns step details including stepIndex and buildId needed for log retrieval.",
+    inputSchema: zodToJsonSchema(types.GetPipelineJobStepsSchema),
+  },
+  {
+    name: "get_pipeline_job_step_log",
+    description: "[Pipeline Management] Get the log content for a specific step of a pipeline job. Use GetPipelineJobSteps first to get stepIndex and buildId.",
+    inputSchema: zodToJsonSchema(types.GetPipelineJobStepLogSchema),
+  },
+  {
+    name: "get_pipeline_job_step_log_url",
+    description: "[Pipeline Management] Get the download URL for a pipeline job step log. Use GetPipelineJobSteps first to get stepIndex and buildId.",
+    inputSchema: zodToJsonSchema(types.GetPipelineJobStepLogUrlSchema),
+  },
+  {
     name: "update_pipeline",
     description: "[Pipeline Management] Update an existing pipeline in Yunxiao by pipelineId. Use this to update pipeline YAML, stages, jobs, etc.",
     inputSchema: zodToJsonSchema(types.UpdatePipelineSchema),

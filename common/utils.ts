@@ -38,19 +38,36 @@ type RequestOptions = {
 }
 
 export function debug(message: string, data?: unknown): void {
-  if (data !== undefined) {
-    console.error(`[DEBUG] ${message}`, typeof data === 'object' ? JSON.stringify(data, null, 2) : data);
+  if (data === undefined) {
+    console.error(`[DEBUG] ${message} <undefined>`);
+  } else if (data === null) {
+    console.error(`[DEBUG] ${message} <null>`);
+  } else if (typeof data === 'string') {
+    console.error(`[DEBUG] ${message} ${data.length === 0 ? '<empty string>' : data}`);
+  } else if (typeof data === 'object') {
+    console.error(`[DEBUG] ${message}`, JSON.stringify(data, null, 2));
   } else {
-    console.error(`[DEBUG] ${message}`);
+    console.error(`[DEBUG] ${message}`, data);
   }
 }
 
 async function parseResponseBody(response: Response): Promise<unknown> {
+  const text = await response.text();
+  // Always log the raw body to ease debugging when Content-Type and actual payload mismatch
+  debug(`Raw Response Body:`, text);
+  if (!text) {
+    return undefined;
+  }
   const contentType = response.headers.get("content-type");
   if (contentType?.includes("application/json")) {
-    return response.json();
+    try {
+      return JSON.parse(text);
+    } catch {
+      // Fallback: some endpoints declare JSON but return plain strings (e.g. log URL)
+      return text;
+    }
   }
-  return response.text();
+  return text;
 }
 
 export function buildUrl(baseUrl: string, params: Record<string, string | number | undefined>): string {

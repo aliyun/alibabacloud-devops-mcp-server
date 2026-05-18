@@ -149,6 +149,16 @@ export {
   ListPipelineJobHistorysSchema,
   ExecutePipelineJobRunSchema,
   GetPipelineJobRunLogSchema,
+  StopPipelineJobRunSchema,
+  RetryPipelineJobRunSchema,
+  RerunPipelineJobRunSchema,
+  SkipPipelineJobRunSchema,
+  PassPipelineValidateSchema,
+  RefusePipelineValidateSchema,
+  ExecutePipelineJobActionSchema,
+  GetPipelineJobStepsSchema,
+  GetPipelineJobStepLogSchema,
+  GetPipelineJobStepLogUrlSchema,
   
   // Service connection schemas
   ListServiceConnectionsSchema,
