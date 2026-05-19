@@ -96,7 +96,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "update_work_item",
-    description: "[Project Management] Update a work item",
+    description: "[Project Management] Update a work item. 注意：实际工时（fieldId 101587）与预计工时（fieldId 101586）为云效受控系统字段，不能通过本工具的 customFieldValues 修改；请改用 `create_effort_record`/`update_effort_record` 登记实际工时，`create_estimated_effort`/`update_estimated_effort` 登记预计工时。",
     inputSchema: zodToJsonSchema(types.UpdateWorkItemSchema),
   },
 

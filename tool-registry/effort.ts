@@ -22,7 +22,7 @@ export const getEffortTools = () => [
   },
   {
     name: "create_effort_record",
-    description: "[Project Management] 登记实际工时",
+    description: "[Project Management] 登记实际工时。云效中实际工时（fieldId 101587）为受控字段，不能通过 update_work_item 的 customFieldValues 修改，必须调用本工具。",
     inputSchema: zodToJsonSchema(CreateEffortRecordSchema),
   },
   {
@@ -32,17 +32,17 @@ export const getEffortTools = () => [
   },
   {
     name: "create_estimated_effort",
-    description: "[Project Management] 登记预计工时",
+    description: "[Project Management] 登记预计工时。云效中预计工时（fieldId 101586）为受控字段，不能通过 update_work_item 的 customFieldValues 修改，必须调用本工具。",
     inputSchema: zodToJsonSchema(CreateEstimatedEffortSchema),
   },
   {
     name: "update_effort_record",
-    description: "[Project Management] 更新登记实际工时",
+    description: "[Project Management] 更新已登记的实际工时（云效实际工时受控字段，不能走 update_work_item.customFieldValues）。",
     inputSchema: zodToJsonSchema(UpdateEffortRecordSchema),
   },
   {
     name: "update_estimated_effort",
-    description: "[Project Management] 更新登记预计工时",
+    description: "[Project Management] 更新已登记的预计工时（云效预计工时受控字段，不能走 update_work_item.customFieldValues）。",
     inputSchema: zodToJsonSchema(UpdateEstimatedEffortSchema),
   }
 ];
