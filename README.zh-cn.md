@@ -33,22 +33,7 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
 
 #### 配置 Region 站点
 
-使用 Region 站点时，需要设置环境变量 `YUNXIAO_API_BASE_URL`：
-
-```json
-{
-  "mcpServers": {
-    "yunxiao": {
-      "command": "npx",
-      "args": ["-y", "alibabacloud-devops-mcp-server"],
-      "env": {
-        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>",
-        "YUNXIAO_API_BASE_URL": "https://your-org.devops.aliyuncs.com"
-      }
-    }
-  }
-}
-```
+使用 Region 站点时，需要设置环境变量 `YUNXIAO_API_BASE_URL`。
 
 ### 先决条件
 * node 版本  >= 20.0.0
@@ -74,8 +59,7 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
         "alibabacloud-devops-mcp-server"
       ],
       "env": {
-        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>",
-        "YUNXIAO_API_BASE_URL": "https://openapi-rdc.aliyuncs.com"  //中心站可以不用配置，region站点则配置你的云效实例地址，比如https://your-org.devops.aliyuncs.com
+        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>"
       }
     }
   }
@@ -85,7 +69,8 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
 > **说明**: 
 > - 将 `<YOUR_TOKEN>` 替换为您的云效访问令牌
 > - `-y` 参数会自动确认安装，无需手动确认
-> - YUNXIAO_API_BASE_URL为云效mcp tool背后调用的云效open api的站点地址，如果你使用的是云效中心站，则无需配置，如果你使用的是region站点，请配置你的云效实例地址，如https://your-org.devops.aliyuncs.com
+> - 默认调用云效中心站 OpenAPI（`https://openapi-rdc.aliyuncs.com`），无需额外配置
+> - 如果您使用的是 **Region 站点**（专属域名），需要额外设置环境变量 `YUNXIAO_API_BASE_URL` 为您的云效实例地址，如 `https://your-org.devops.aliyuncs.com`。节
 > - 这种方式使用 **stdio 模式**，通过标准输入输出与 MCP 客户端通信
 
 ### 方式二：通过 MCP 市场安装

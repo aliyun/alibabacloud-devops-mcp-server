@@ -85,8 +85,7 @@ Add the following configuration to your MCP client configuration file:
         "alibabacloud-devops-mcp-server"
       ],
       "env": {
-        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>",
-        "YUNXIAO_API_BASE_URL": "https://openapi-rdc.aliyuncs.com" // if you use region version, please replace to your instanc domain, https://your-org.devops.aliyuncs.com etc.
+        "YUNXIAO_ACCESS_TOKEN": "<YOUR_TOKEN>"
       }
     }
   }
@@ -96,6 +95,8 @@ Add the following configuration to your MCP client configuration file:
 > **Note**: 
 > - Replace `<YOUR_TOKEN>` with your Yunxiao access token
 > - The `-y` flag automatically confirms installation without manual confirmation
+> - By default the tool calls the Yunxiao Central Station OpenAPI (`https://openapi-rdc.aliyuncs.com`); no extra configuration is required
+> - If you are on a **Region edition** (organization-specific domain), set an additional environment variable `YUNXIAO_API_BASE_URL` to your Yunxiao instance URL, e.g. `https://your-org.devops.aliyuncs.com`. See the [Configuring Region Edition](#configuring-region-edition) section above for details
 > - This method uses **stdio mode**, communicating with the MCP client via standard input/output
 
 ### Option 2: Install via MCP Marketplace
