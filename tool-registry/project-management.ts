@@ -77,7 +77,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "create_work_item",
-    description: "[Project Management] Create a work item",
+    description: "[Project Management] Create a work item. \n描述字段使用提示：\n- description 支持 Markdown / 富文本，需配合 formatType（\"MARKDOWN\" 或 \"RICHTEXT\"）。\n- 描述中插入图片三步法：① 先建工作项（本工具， description 可先为空或占位）；② 调 create_workitem_attachment 上传图片拿到返回值中的 embedMarkdown 或 embedHtml；③ 调 update_work_item 把拼好的 description 写回。✅ 报错点：不要使用 create_workitem_attachment 返回的 url 字段，那是 30 秒过期的 OSS 临时签名。\n- 实际工时（fieldId 101587）与预计工时（fieldId 101586）为云效受控系统字段，不能通过本工具的 customFieldValues 修改；请改用 `create_effort_record` / `create_estimated_effort` 。",
     inputSchema: zodToJsonSchema(types.CreateWorkItemSchema),
   },
   {
@@ -96,7 +96,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "update_work_item",
-    description: "[Project Management] Update a work item. 注意：实际工时（fieldId 101587）与预计工时（fieldId 101586）为云效受控系统字段，不能通过本工具的 customFieldValues 修改；请改用 `create_effort_record`/`update_effort_record` 登记实际工时，`create_estimated_effort`/`update_estimated_effort` 登记预计工时。",
+    description: "[Project Management] Update a work item. \n调用参数结构：除 organizationId / workItemId 外，所有要更新的字段必须放在 updateWorkItemFields 对象中（包括 subject / description / formatType / status / assignedTo / priority / labels / sprint / trackers / verifier / participants / versions / customFieldValues）。\n描述中插入图片：先调 create_workitem_attachment 拿到返回值的 embedMarkdown（formatType=\"MARKDOWN\"）或 embedHtml（formatType=\"RICHTEXT\"），拼进 updateWorkItemFields.description，同时 updateWorkItemFields.formatType 设为对应值。⚠️ 不要把 create_workitem_attachment 返回的 url 嵌入 description，那是 30 秒过期的 OSS 临时签名。\n受控字段提醒：实际工时（fieldId 101587）与预计工时（fieldId 101586）为云效受控系统字段，不能通过 updateWorkItemFields.customFieldValues 修改；请改用 `create_effort_record`/`update_effort_record` 与 `create_estimated_effort`/`update_estimated_effort`。",
     inputSchema: zodToJsonSchema(types.UpdateWorkItemSchema),
   },
 
@@ -155,7 +155,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "create_workitem_attachment",
-    description: "[Project Management] Upload a local file as an attachment to a specific work item. The MCP Server reads the file from the given local absolute path and uploads it. Supports any file type.",
+    description: "[Project Management] Upload a local file as an attachment to a work item via multipart/form-data. MCP Server reads the file at the given absolute path and uploads it. Supports any file type (单文件 ≤ 10MB，云效不支持 svg/tiff)。\n返回 WorkitemFile 含以下关键字段：\n- `id`/`name`/`size`/`suffix`：文件基础信息\n- `url`：OSS 临时下载地址，约 30 秒过期。⚠️ 仅用于下载，不要嵌入工作项描述/评论\n- `embedUrl`：永久代理 URL，适用于在工作项描述/评论中嵌入图片\n- `embedMarkdown`：预拼好的 Markdown 图片标签，formatType=MARKDOWN 时拼接进 description 即可\n- `embedHtml`：预拼好的 HTML <img> 标签，formatType=RICHTEXT 时拼接进 description 即可\n在工作项描述中插入图片的标准三步法：① 创建工作项（如已有则跳过）；② 调本工具上传图片、读出 embedMarkdown / embedHtml；③ 调 update_work_item，在 updateWorkItemFields.description 中拼入该 embed* 字段，同时设置 updateWorkItemFields.formatType 为 \"MARKDOWN\" 或 \"RICHTEXT\"。\n应用 token 场景必传 operatorId，个人 token 必传可省略。",
     inputSchema: zodToJsonSchema(types.CreateWorkitemAttachmentSchema),
   },
   {

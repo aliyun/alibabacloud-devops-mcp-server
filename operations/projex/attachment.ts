@@ -20,6 +20,22 @@ import {
 import { resolveOrganizationId } from "../organization/organization.js";
 
 /**
+ * 优先透传云效服务端返回的 embedUrl / embedMarkdown / embedHtml。
+ * 仅当 API 未返回 markdown / html 但有 embedUrl 时,本地派生作为兜底
+ * (例如附件列表接口暂未提供这两个字段的场景)。
+ */
+function withEmbedFields(parsed: WorkitemFile, fallbackName?: string | null): WorkitemFile {
+  if (!parsed.embedUrl) return parsed;
+  if (parsed.embedMarkdown && parsed.embedHtml) return parsed;
+  const altText = (parsed.name || fallbackName || "image").replace(/[\[\]]/g, "");
+  return {
+    ...parsed,
+    embedMarkdown: parsed.embedMarkdown ?? `![${altText}](${parsed.embedUrl})`,
+    embedHtml: parsed.embedHtml ?? `<img src="${parsed.embedUrl}" alt="${altText}" />`,
+  };
+}
+
+/**
  * 获取工作项附件列表
  * @param organizationId 组织ID
  * @param workItemId 工作项唯一标识
@@ -71,13 +87,16 @@ export async function getWorkitemFileFunc(
     const attachments = await listWorkitemAttachmentsFunc(organizationId, workitemId);
     const attachment = attachments.find(a => a.id === id);
     if (attachment) {
-      return WorkitemFileSchema.parse({
-        id: attachment.fileId || attachment.id,
+      const fileId = attachment.fileId || attachment.id;
+      const parsed = WorkitemFileSchema.parse({
+        id: fileId,
         name: attachment.fileName,
         size: attachment.size,
         suffix: attachment.suffix,
         url: attachment.url,
+        embedUrl: attachment.embedUrl,
       });
+      return withEmbedFields(parsed);
     }
     throw new Error(`Attachment with id ${id} not found for workitem ${workitemId}`);
   }
@@ -93,11 +112,9 @@ export async function getWorkitemFileFunc(
   });
 
   // 如果响应中包含result字段，则返回result中的数据
-  if (response && typeof response === 'object' && 'result' in response) {
-    return WorkitemFileSchema.parse(response.result);
-  }
-
-  return WorkitemFileSchema.parse(response);
+  const raw = (response && typeof response === 'object' && 'result' in response) ? (response as any).result : response;
+  const parsed = WorkitemFileSchema.parse(raw);
+  return withEmbedFields(parsed);
 }
 
 /**
@@ -171,5 +188,6 @@ export async function createWorkitemAttachmentFunc(
     );
   }
 
-  return WorkitemFileSchema.parse(responseBody);
+  const parsed = WorkitemFileSchema.parse(responseBody);
+  return withEmbedFields(parsed, fileName);
 }

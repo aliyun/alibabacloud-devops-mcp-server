@@ -677,15 +677,19 @@ export const AttachmentDTOSchema = z.object({
   modifier: MiniUserSchema.nullable().optional().describe("修改人"),
   size: z.number().int().nullable().optional().describe("文件大小"),
   suffix: z.string().nullable().optional().describe("文件后缀"),
-  url: z.string().nullable().optional().describe("文件下载地址，是个临时的下载地址，有时效性"),
+  url: z.string().nullable().optional().describe("文件下载地址,是个临时的下载地址,有时效性"),
+  embedUrl: z.string().nullable().optional().describe("永久代理 URL,适用于在工作项描述/评论中嵌入图片(若 API 返回则透传)"),
 });
 
 export const WorkitemFileSchema = z.object({
-  id: z.string().nullable().optional().describe("id"),
+  id: z.string().nullable().optional().describe("文件 id（fileId），用于拼接永久代理 URL"),
   name: z.string().nullable().optional().describe("名称"),
   size: z.number().int().nullable().optional().describe("大小"),
   suffix: z.string().nullable().optional().describe("后缀"),
-  url: z.string().nullable().optional().describe("文件下载地址，是个临时的下载地址，有时效性"),
+  url: z.string().nullable().optional().describe("OSS 临时下载地址（约 30 秒过期）。⚠️ 仅用于下载，不要嵌入工作项描述/评论，请改用 embedUrl。"),
+  embedUrl: z.string().nullable().optional().describe("永久代理 URL（路径 /api/workitem/file/url?fileIdentifier=<fileId>），适用于在工作项描述/评论中嵌入图片。"),
+  embedMarkdown: z.string().nullable().optional().describe("预拼好的 Markdown 图片标签，formatType=MARKDOWN 时可直接拼接进 description。"),
+  embedHtml: z.string().nullable().optional().describe("预拼好的 HTML <img> 标签，formatType=RICHTEXT 时可直接拼接进 description。"),
 });
 
 export const ListWorkitemAttachmentsSchema = z.object({
