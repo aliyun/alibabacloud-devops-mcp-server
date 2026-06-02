@@ -1,6 +1,6 @@
 {
-  "total": 168,
-  "generatedAt": "2026-04-23T07:22:31.694Z",
+  "total": 188,
+  "generatedAt": "2026-06-02T02:14:48.320Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -501,6 +501,95 @@
         },
         "required": [
           "organizationId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "create_repository",
+      "description": "[Code Management] Create a new Codeup repository.\n\nCreates an empty code repository that can then be pushed to via git.\n\nUse Cases:\n\nCreate a new repository for a project",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+          },
+          "name": {
+            "type": "string",
+            "description": "Repository name, e.g. my-repo"
+          },
+          "path": {
+            "type": "string",
+            "description": "Repository path, e.g. my-repo"
+          },
+          "description": {
+            "type": "string",
+            "description": "Repository description, max 65535 characters"
+          },
+          "namespaceId": {
+            "type": "integer",
+            "description": "Parent path ID (namespace). If empty, created under the organization root"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "private",
+              "internal"
+            ],
+            "description": "Repository visibility: private or internal"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "Repository avatar URL"
+          },
+          "readMeType": {
+            "type": "string",
+            "enum": [
+              "EMPTY",
+              "USER_GUIDE"
+            ],
+            "description": "Type of README to auto-create: EMPTY or USER_GUIDE"
+          },
+          "templateProject": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "not": {}
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "templateType": {
+                        "type": "integer",
+                        "description": "模板类型，1-自定义模板，2-系统预置模板"
+                      },
+                      "templateProjectId": {
+                        "type": "integer",
+                        "description": "模板库ID"
+                      },
+                      "syncAllBranches": {
+                        "type": "boolean",
+                        "description": "是否导入模板库所有分支"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Create repository from template"
+          }
+        },
+        "required": [
+          "organizationId",
+          "name",
+          "path"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -1984,7 +2073,7 @@
     },
     {
       "name": "create_work_item",
-      "description": "[Project Management] Create a work item",
+      "description": "[Project Management] Create a work item. \n描述字段使用提示：\n- description 支持 Markdown / 富文本，需配合 formatType（\"MARKDOWN\" 或 \"RICHTEXT\"）。\n- 描述中插入图片三步法：① 先建工作项（本工具， description 可先为空或占位）；② 调 create_workitem_attachment 上传图片拿到返回值中的 embedMarkdown 或 embedHtml；③ 调 update_work_item 把拼好的 description 写回。✅ 报错点：不要使用 create_workitem_attachment 返回的 url 字段，那是 30 秒过期的 OSS 临时签名。\n- 实际工时（fieldId 101587）与预计工时（fieldId 101586）为云效受控系统字段，不能通过本工具的 customFieldValues 修改；请改用 `create_effort_record` / `create_estimated_effort` 。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2304,7 +2393,7 @@
     },
     {
       "name": "update_work_item",
-      "description": "[Project Management] Update a work item",
+      "description": "[Project Management] Update a work item. \n调用参数结构：除 organizationId / workItemId 外，所有要更新的字段必须放在 updateWorkItemFields 对象中（包括 subject / description / formatType / status / assignedTo / priority / labels / sprint / trackers / verifier / participants / versions / customFieldValues）。\n描述中插入图片：先调 create_workitem_attachment 拿到返回值的 embedMarkdown（formatType=\"MARKDOWN\"）或 embedHtml（formatType=\"RICHTEXT\"），拼进 updateWorkItemFields.description，同时 updateWorkItemFields.formatType 设为对应值。⚠️ 不要把 create_workitem_attachment 返回的 url 嵌入 description，那是 30 秒过期的 OSS 临时签名。\n受控字段提醒：实际工时（fieldId 101587）与预计工时（fieldId 101586）为云效受控系统字段，不能通过 updateWorkItemFields.customFieldValues 修改；请改用 `create_effort_record`/`update_effort_record` 与 `create_estimated_effort`/`update_estimated_effort`。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2645,7 +2734,7 @@
     },
     {
       "name": "get_workitem_file",
-      "description": "[Project Management] Get file information for a specific work item. Returns file details including name, size, suffix, and a temporary download URL.",
+      "description": "[Project Management] Get file information for a specific work item. Supports both file IDs (long hex for description-embedded images) and attachment IDs (numeric like 62487031). Returns file details including name, size, suffix, and a temporary download URL.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2659,7 +2748,7 @@
           },
           "id": {
             "type": "string",
-            "description": "文件唯一标识"
+            "description": "文件唯一标识。支持两种格式：文件ID（长hex字符串，用于描述中嵌入的图片）或附件ID（纯数字如 62487031，用于普通附件）"
           }
         },
         "required": [
@@ -2673,7 +2762,7 @@
     },
     {
       "name": "create_workitem_attachment",
-      "description": "[Project Management] Upload a local file as an attachment to a specific work item. The MCP Server reads the file from the given local absolute path and uploads it. Supports any file type.",
+      "description": "[Project Management] Upload a local file as an attachment to a work item via multipart/form-data. MCP Server reads the file at the given absolute path and uploads it. Supports any file type (单文件 ≤ 10MB，云效不支持 svg/tiff)。\n返回 WorkitemFile 含以下关键字段：\n- `id`/`name`/`size`/`suffix`：文件基础信息\n- `url`：OSS 临时下载地址，约 30 秒过期。⚠️ 仅用于下载，不要嵌入工作项描述/评论\n- `embedUrl`：永久代理 URL，适用于在工作项描述/评论中嵌入图片\n- `embedMarkdown`：预拼好的 Markdown 图片标签，formatType=MARKDOWN 时拼接进 description 即可\n- `embedHtml`：预拼好的 HTML <img> 标签，formatType=RICHTEXT 时拼接进 description 即可\n在工作项描述中插入图片的标准三步法：① 创建工作项（如已有则跳过）；② 调本工具上传图片、读出 embedMarkdown / embedHtml；③ 调 update_work_item，在 updateWorkItemFields.description 中拼入该 embed* 字段，同时设置 updateWorkItemFields.formatType 为 \"MARKDOWN\" 或 \"RICHTEXT\"。\n应用 token 场景必传 operatorId，个人 token 必传可省略。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2698,6 +2787,29 @@
           "organizationId",
           "workItemId",
           "filePath"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_workitem_activities",
+      "description": "[Project Management] List activity history for a specific work item. Returns changes including field updates, status transitions, association changes, and attachment changes, with operator and timestamp details.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+          },
+          "workItemId": {
+            "type": "string",
+            "description": "Work item unique identifier"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2756,7 +2868,7 @@
     },
     {
       "name": "create_effort_record",
-      "description": "[Project Management] 登记实际工时",
+      "description": "[Project Management] 登记实际工时。云效中实际工时（fieldId 101587）为受控字段，不能通过 update_work_item 的 customFieldValues 修改，必须调用本工具。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2831,7 +2943,7 @@
     },
     {
       "name": "create_estimated_effort",
-      "description": "[Project Management] 登记预计工时",
+      "description": "[Project Management] 登记预计工时。云效中预计工时（fieldId 101586）为受控字段，不能通过 update_work_item 的 customFieldValues 修改，必须调用本工具。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2878,7 +2990,7 @@
     },
     {
       "name": "update_effort_record",
-      "description": "[Project Management] 更新登记实际工时",
+      "description": "[Project Management] 更新已登记的实际工时（云效实际工时受控字段，不能走 update_work_item.customFieldValues）。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2935,7 +3047,7 @@
     },
     {
       "name": "update_estimated_effort",
-      "description": "[Project Management] 更新登记预计工时",
+      "description": "[Project Management] 更新已登记的预计工时（云效预计工时受控字段，不能走 update_work_item.customFieldValues）。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3825,6 +3937,371 @@
       }
     },
     {
+      "name": "stop_pipeline_job_run",
+      "description": "[Pipeline Management] Stop/terminate a running pipeline job.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID, obtainable via GetPipelineRun"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "retry_pipeline_job_run",
+      "description": "[Pipeline Management] Retry a failed pipeline job run.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID, obtainable via GetPipelineRun"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "rerun_pipeline_job_run",
+      "description": "[Pipeline Management] Rerun a pipeline job. Only deploy-type jobs are supported. You can set a job as deploy type in its configuration.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID, obtainable via ListPipelines"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID, obtainable via GetPipelineRun. Only deploy-type jobs are supported."
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "skip_pipeline_job_run",
+      "description": "[Pipeline Management] Skip a pipeline job run.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID, obtainable via GetPipelineRun"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "pass_pipeline_validate",
+      "description": "[Pipeline Management] Approve/pass a manual checkpoint (human validation gate) in a pipeline run.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID (manual checkpoint), obtainable via GetPipelineRun"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "refuse_pipeline_validate",
+      "description": "[Pipeline Management] Refuse/reject a manual checkpoint (human validation gate) in a pipeline run.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID (manual checkpoint), obtainable via GetPipelineRun"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "execute_pipeline_job_action",
+      "description": "[Pipeline Management] Execute a subsequent action of a pipeline job.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID, obtainable via GetPipelineRun"
+          },
+          "actionId": {
+            "type": "string",
+            "description": "Action ID for the subsequent action of the pipeline job"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId",
+          "actionId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_pipeline_job_steps",
+      "description": "[Pipeline Management] Get the list of steps for a pipeline job. Returns step details including stepIndex and buildId needed for log retrieval.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID, obtainable via GetPipelineRun"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_pipeline_job_step_log",
+      "description": "[Pipeline Management] Get the log content for a specific step of a pipeline job. Use GetPipelineJobSteps first to get stepIndex and buildId.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID, obtainable via GetPipelineRun"
+          },
+          "stepIndex": {
+            "type": "integer",
+            "description": "Step index, obtainable via GetPipelineJobSteps"
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Log start offset position"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Log length to retrieve"
+          },
+          "buildId": {
+            "type": "integer",
+            "description": "Build ID, obtainable via GetPipelineJobSteps"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId",
+          "stepIndex",
+          "offset",
+          "limit",
+          "buildId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_pipeline_job_step_log_url",
+      "description": "[Pipeline Management] Get the download URL for a pipeline job step log. Use GetPipelineJobSteps first to get stepIndex and buildId.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "pipelineId": {
+            "type": "string",
+            "description": "Pipeline ID"
+          },
+          "pipelineRunId": {
+            "type": "string",
+            "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Pipeline job ID, obtainable via GetPipelineRun"
+          },
+          "stepIndex": {
+            "type": "integer",
+            "description": "Step index, obtainable via GetPipelineJobSteps"
+          },
+          "buildId": {
+            "type": "integer",
+            "description": "Build ID, obtainable via GetPipelineJobSteps"
+          }
+        },
+        "required": [
+          "organizationId",
+          "pipelineId",
+          "pipelineRunId",
+          "jobId",
+          "stepIndex",
+          "buildId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
       "name": "update_pipeline",
       "description": "[Pipeline Management] Update an existing pipeline in Yunxiao by pipelineId. Use this to update pipeline YAML, stages, jobs, etc.",
       "inputSchema": {
@@ -4246,6 +4723,201 @@
           "pipelineId",
           "deployOrderId",
           "machineSn"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "create_flow_variable_group",
+      "description": "[Pipeline Management] Create an organization-level variable group for Flow (pipeline).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID/企业Id"
+          },
+          "name": {
+            "type": "string",
+            "description": "变量组名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "变量组描述"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "变量名"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "变量值"
+                },
+                "isEncrypted": {
+                  "type": "boolean",
+                  "description": "是否加密"
+                }
+              },
+              "required": [
+                "name",
+                "value",
+                "isEncrypted"
+              ],
+              "additionalProperties": false
+            },
+            "description": "变量列表。将被序列化为 JSON 字符串传递给 variables 查询参数"
+          }
+        },
+        "required": [
+          "organizationId",
+          "name",
+          "variables"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_flow_variable_groups",
+      "description": "[Pipeline Management] List organization-level Flow (pipeline) variable groups with pagination.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID/企业Id"
+          },
+          "perPage": {
+            "type": "integer",
+            "description": "每页数据条数，默认10，最大支持30"
+          },
+          "page": {
+            "type": "integer",
+            "description": "当前页，默认1"
+          },
+          "pageSort": {
+            "type": "string",
+            "description": "排序条件，如 ID"
+          },
+          "pageOrder": {
+            "type": "string",
+            "description": "排序顺序 DESC 降序 ASC 升序"
+          }
+        },
+        "required": [
+          "organizationId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_flow_variable_group",
+      "description": "[Pipeline Management] Get a Flow (pipeline) variable group by numeric id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID/企业Id"
+          },
+          "id": {
+            "type": "integer",
+            "description": "变量组 id"
+          }
+        },
+        "required": [
+          "organizationId",
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "update_flow_variable_group",
+      "description": "[Pipeline Management] Update a Flow (pipeline) variable group by numeric id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID/企业Id"
+          },
+          "id": {
+            "type": "integer",
+            "description": "变量组 id"
+          },
+          "name": {
+            "type": "string",
+            "description": "变量组名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "变量组描述"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "变量名"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "变量值"
+                },
+                "isEncrypted": {
+                  "type": "boolean",
+                  "description": "是否加密"
+                }
+              },
+              "required": [
+                "name",
+                "value",
+                "isEncrypted"
+              ],
+              "additionalProperties": false
+            },
+            "description": "变量列表。将被序列化为 JSON 字符串传递给 variables 查询参数"
+          }
+        },
+        "required": [
+          "organizationId",
+          "id",
+          "name",
+          "variables"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "delete_flow_variable_group",
+      "description": "[Pipeline Management] Delete a Flow (pipeline) variable group by numeric id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID/企业Id"
+          },
+          "id": {
+            "type": "integer",
+            "description": "变量组 id"
+          }
+        },
+        "required": [
+          "organizationId",
+          "id"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -5469,6 +6141,13 @@
           "title": {
             "type": "string",
             "description": "变更标题"
+          },
+          "workItems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "关联工作项标识列表"
           }
         },
         "required": [
@@ -6407,7 +7086,8 @@
           "pagination": {
             "type": "string",
             "enum": [
-              "keyset"
+              "keyset",
+              ""
             ],
             "description": "分页模式参数：keyset表示键集分页，不传表示页码分页"
           },
@@ -7214,6 +7894,90 @@
           "organizationId",
           "testplanId",
           "testcaseId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_test_plan_progress",
+      "description": "[test management] 获取测试计划用例执行进度统计（通过/失败/延后/待执行）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "testPlanIdentifier": {
+            "type": "string",
+            "description": "测试计划唯一标识"
+          }
+        },
+        "required": [
+          "organizationId",
+          "testPlanIdentifier"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_test_plan_result_directories",
+      "description": "[test management] 获取测试计划结果目录列表，按用例库分组返回目录树及每个目录下的用例数量",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "testPlanIdentifier": {
+            "type": "string",
+            "description": "测试计划唯一标识"
+          }
+        },
+        "required": [
+          "organizationId",
+          "testPlanIdentifier"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_test_repo_tags",
+      "description": "[test management] 获取测试用例库标签列表，支持分页与按名称关键词过滤",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "id": {
+            "type": "string",
+            "description": "测试用例库唯一标识"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "页码，默认 1"
+          },
+          "perPage": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "每页条数，默认 20，最大 100"
+          },
+          "q": {
+            "type": "string",
+            "description": "按名称关键词过滤"
+          }
+        },
+        "required": [
+          "organizationId",
+          "id"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"

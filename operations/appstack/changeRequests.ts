@@ -64,6 +64,7 @@ export const CreateChangeRequestRequestSchema = z.object({
   createBranch: z.boolean().default(false).describe("是否创建分支"),
   ownerId: z.string().describe("变更负责人,默认值可以为当前用户"),
   title: z.string().describe("变更标题"),
+  workItems: z.array(z.string()).optional().describe("关联工作项标识列表"),
 });
 
 export const CreateChangeRequestResponseSchema = z.object({
