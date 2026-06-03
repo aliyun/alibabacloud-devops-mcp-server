@@ -5,7 +5,6 @@ import {
   ChangeRequestSchema,
   PatchSetSchema
 } from "./types.js";
-import { getBranchFunc } from "./branches.js";
 
 // 通过API获取仓库的数字ID
 async function getRepositoryNumericId(organizationId: string | undefined, repositoryId: string): Promise<string> {
@@ -201,7 +200,7 @@ export async function listChangeRequestPatchSetsFunc(
  * @param targetProjectId 目标库ID（可选，未提供时将尝试自动获取），示例：2813489
  * @param reviewerUserIds 评审人用户ID列表（可选），示例：['62c795xxxb468af8']
  * @param workItemIds 关联工作项ID列表（可选），以字符串形式逗号分隔。示例值：722200214032b6b31e6f1434ab,xxx
- * @param createFrom 创建来源，默认 'WEB'。可选值：'WEB' - 页面创建；'COMMAND_LINE' - 命令行创建
+ * @param createFrom 创建来源，默认 'WEB'
  * @param triggerAIReviewRun 是否触发AI评审，默认 false
  */
 export async function createChangeRequestFunc(
@@ -215,7 +214,7 @@ export async function createChangeRequestFunc(
   targetProjectId?: number,
   reviewerUserIds?: string[],
   workItemIds?: string,
-  createFrom: string = "WEB", // Possible values: WEB, COMMAND_LINE
+  createFrom: string = "WEB",
   triggerAIReviewRun: boolean = false // Whether to trigger AI review
 ): Promise<z.infer<typeof ChangeRequestSchema>> {
   const finalOrgId = await resolveOrganizationId(organizationId);
@@ -272,17 +271,6 @@ export async function createChangeRequestFunc(
     ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests`
     : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests`;
   
-  // When createFrom=COMMAND_LINE, the API requires sourceCommit (source branch HEAD SHA).
-  // Auto-fetch it via getBranch so callers don't have to provide it manually.
-  let sourceCommit: string | undefined;
-  if (createFrom === "COMMAND_LINE") {
-    const branchInfo = await getBranchFunc(organizationId, repositoryId, sourceBranch);
-    sourceCommit = branchInfo.commit?.id;
-    if (!sourceCommit) {
-      throw new Error(`Could not resolve HEAD commit for source branch '${sourceBranch}'. Ensure the branch exists and has at least one commit.`);
-    }
-  }
-
   const payload: Record<string, any> = {
     title: title,
     sourceBranch: sourceBranch,
@@ -291,10 +279,6 @@ export async function createChangeRequestFunc(
     targetProjectId: targetIdString,
     createFrom: createFrom,
   };
-
-  if (sourceCommit !== undefined) {
-    payload.sourceCommit = sourceCommit;
-  }
   
   // 添加可选参数
   if (description !== undefined) {

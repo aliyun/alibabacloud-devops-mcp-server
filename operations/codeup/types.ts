@@ -169,7 +169,7 @@ export const ChangeRequestSchema = z.object({
   behind: z.number().int().nullable().optional().describe("目标分支领先源分支的commit数量"),
   canRevertOrCherryPick: z.boolean().nullable().optional().describe("是否能Revert或者CherryPick"),
   conflictCheckStatus: z.string().nullable().optional().describe("冲突检测状态：CHECKING - 检测中；HAS_CONFLICT - 有冲突；NO_CONFLICT - 无冲突；FAILED - 检测失败"),
-  createFrom: z.string().nullable().optional().describe("创建来源：WEB - 页面创建；COMMAND_LINE - 命令行创建"),
+  createFrom: z.string().nullable().optional().describe("创建来源：WEB - 页面创建"),
   createTime: z.string().nullable().optional().describe("创建时间 (ISO 8601格式)"),
   description: z.string().nullable().optional().describe("描述"),
   detailUrl: z.string().nullable().optional().describe("合并请求详情地址"),
@@ -191,9 +191,9 @@ export const ChangeRequestSchema = z.object({
     username: z.string().nullable().optional().describe("用户登录名")
   })).nullable().optional().describe("评审人列表"),
   sourceBranch: z.string().nullable().optional().describe("源分支"),
-  sourceCommitId: z.string().nullable().optional().describe("源提交ID，当createFrom=COMMAND_LINE时有值"),
+  sourceCommitId: z.string().nullable().optional().describe("源提交ID"),
   sourceProjectId: z.union([z.string(), z.number().int()]).nullable().optional().describe("源库ID"),
-  sourceRef: z.string().nullable().optional().describe("源提交引用，当createFrom=COMMAND_LINE时有值"),
+  sourceRef: z.string().nullable().optional().describe("源提交引用"),
   status: z.string().nullable().optional().describe("合并请求状态：UNDER_DEV - 开发中；UNDER_REVIEW - 评审中；TO_BE_MERGED - 待合并；CLOSED - 已关闭；MERGED - 已合并"),
   subscribers: z.array(z.object({
     avatar: z.string().nullable().optional().describe("用户头像地址"),
@@ -366,7 +366,7 @@ export const CreateChangeRequestSchema = z.object({
   targetProjectId: z.number().int().optional().describe("目标库ID，如果未提供，将尝试自动获取。示例：2813489"),
   reviewerUserIds: z.array(z.string()).nullable().optional().describe("评审人用户ID列表。示例：['62c795xxxb468af8'] 或 ['62c795xxxb468af8', '62c795xxxb468af9']"),
   workItemIds: z.string().optional().describe("关联工作项ID列表，以字符串形式逗号分隔。示例值：722200214032b6b31e6f1434ab,xxx"),
-  createFrom: z.enum(["WEB", "COMMAND_LINE"]).optional().default("WEB").describe("创建来源。WEB - 页面创建；COMMAND_LINE - 命令行创建。默认为WEB"),
+  createFrom: z.enum(["WEB"]).optional().default("WEB").describe("创建来源。WEB - 页面创建（默认）"),
   triggerAIReviewRun: z.boolean().optional().default(false).describe("是否触发AI评审。true - 触发AI评审；false - 不触发（默认）"),
 });
 
