@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, floatToIntString, isRegionEdition } from "../../common/utils.js";
 import { resolveOrganizationId } from "../organization/organization.js";
-import { 
-  ChangeRequestSchema, 
+import {
+  ChangeRequestSchema,
   PatchSetSchema
 } from "./types.js";
+import { getBranchFunc } from "./branches.js";
 
 // 通过API获取仓库的数字ID
 async function getRepositoryNumericId(organizationId: string | undefined, repositoryId: string): Promise<string> {
@@ -271,7 +272,17 @@ export async function createChangeRequestFunc(
     ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests`
     : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests`;
   
-  // 准备payload
+  // When createFrom=COMMAND_LINE, the API requires sourceCommit (source branch HEAD SHA).
+  // Auto-fetch it via getBranch so callers don't have to provide it manually.
+  let sourceCommit: string | undefined;
+  if (createFrom === "COMMAND_LINE") {
+    const branchInfo = await getBranchFunc(organizationId, repositoryId, sourceBranch);
+    sourceCommit = branchInfo.commit?.id;
+    if (!sourceCommit) {
+      throw new Error(`Could not resolve HEAD commit for source branch '${sourceBranch}'. Ensure the branch exists and has at least one commit.`);
+    }
+  }
+
   const payload: Record<string, any> = {
     title: title,
     sourceBranch: sourceBranch,
@@ -280,6 +291,10 @@ export async function createChangeRequestFunc(
     targetProjectId: targetIdString,
     createFrom: createFrom,
   };
+
+  if (sourceCommit !== undefined) {
+    payload.sourceCommit = sourceCommit;
+  }
   
   // 添加可选参数
   if (description !== undefined) {
