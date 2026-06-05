@@ -52,15 +52,6 @@ When using a Region edition, set the `YUNXIAO_API_BASE_URL` environment variable
 }
 ```
 
-#### organizationId Parameter in Region Mode
-
-In Region mode, the `organizationId` parameter becomes optional:
-
-- **Central Station Mode**: `organizationId` is required and must be explicitly provided by the user
-- **Region Mode**: `organizationId` can be omitted, and the system will automatically use the default value `"default"`
-
-This means in Region mode, users don't need to worry about organization IDs - the tool handles it automatically.
-
 ### Prerequisites
 * node version >= 18.0.0
 * [AlibabaCloud Devops](https://www.aliyun.com/product/yunxiao) Personal Access Token, [click here to obtain](https://help.aliyun.com/zh/yunxiao/developer-reference/obtain-personal-access-token). Grant read and write permissions to all APIs under organization management, project collaboration, code management, pipeline management, artifact repository management, application delivery and testing management.
