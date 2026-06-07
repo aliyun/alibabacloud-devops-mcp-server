@@ -128,6 +128,11 @@ export const UpdateAppOrchestrationRequestSchema = z.object({
   fromRevisionSha: z.string().optional().describe("本次提交的基线版本 SHA 值"),
   name: z.string().describe("编排名"),
   spec: z.object({}).passthrough().optional().describe("编排规范"),
+  componentList: z.array(z.object({}).passthrough()).optional().describe("组件列表"),
+  groupNameMap: z.record(z.string()).optional().describe("组名映射"),
+  labelList: z.array(z.object({}).passthrough()).optional().describe("标签列表"),
+  labelPolicy: z.string().optional().describe("标签策略"),
+  placeholderList: z.array(z.object({}).passthrough()).optional().describe("占位符列表"),
 });
 
 export const UpdateAppOrchestrationResponseSchema = z.union([
