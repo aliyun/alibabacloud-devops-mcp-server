@@ -56,8 +56,8 @@ export const GetTestcaseFieldConfigResponseSchema = z.array(WorkitemSimpleFiledS
 
 // Schema for TestStep
 export const TestStepSchema = z.object({
-  step: z.string().describe("测试步骤"),
-  expected: z.string().describe("期望结果"),
+  step: z.string().nullable().describe("测试步骤"),
+  expected: z.string().nullable().describe("期望结果"),
 });
 
 // Schema for TestStepsDTO
