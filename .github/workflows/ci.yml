@@ -14,7 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm ci || npm ci || npm ci
+          cache: 'npm'
+      - run: npm ci
       - run: npm run build
 
   integration-test:
@@ -26,7 +27,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm ci || npm ci || npm ci
+          cache: 'npm'
+      - run: npm ci
       - run: npm test
         env:
           YUNXIAO_ACCESS_TOKEN: ${{ secrets.YUNXIAO_ACCESS_TOKEN }}
