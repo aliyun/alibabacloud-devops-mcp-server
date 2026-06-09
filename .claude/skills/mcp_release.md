@@ -104,11 +104,24 @@ gh release create v<新版本号> --title "v<新版本号>" --latest --generate-
 
 ### Step 9: 验证 npm 发布
 
+npm 发布由 GitHub Actions 自动触发（创建 Release 后），需要等待 Action 完成后再验证。
+
+1. 等待 GitHub Actions 的 publish workflow 完成：
+```bash
+gh run list --workflow=publish --limit=1
+```
+
+2. 如果 workflow 仍在运行，等待其完成：
+```bash
+gh run watch $(gh run list --workflow=publish --limit=1 --json databaseId --jq '.[0].databaseId')
+```
+
+3. 验证 npm 上的版本：
 ```bash
 npm view alibabacloud-devops-mcp-server version
 ```
 
-确认输出的版本号与本次发布的版本号一致。如果不一致，说明 npm 发布未成功，需要排查原因并手动执行 `npm publish`。
+确认输出的版本号与本次发布的版本号一致。如果不一致，检查 GitHub Actions 日志排查原因。
 
 ## 完成确认
 
