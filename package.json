@@ -30,7 +30,7 @@
     "devops-mcp"
   ],
   "scripts": {
-    "build": "tsc && shx chmod +x dist/*.js",
+    "build": "tsc && chmod +x dist/*.js",
     "watch": "tsc --watch",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -50,7 +50,6 @@
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^22.13.10",
-    "shx": "^0.3.4",
     "typescript": "^5.9.3",
     "vitest": "^4.1.8"
   }
