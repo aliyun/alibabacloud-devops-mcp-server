@@ -55,7 +55,15 @@ node -e "console.log(require('./common/version.ts'.replace('.ts','')))|| console
 ```
 或直接读取 `common/version.ts` 确认版本号已更新。
 
-### Step 3: 构建项目
+### Step 3: 运行测试
+
+```bash
+npm test
+```
+
+确认所有测试通过（退出码为 0）。如果测试失败，停止发布流程，先修复问题。
+
+### Step 4: 构建项目
 
 ```bash
 npm run build
@@ -63,7 +71,7 @@ npm run build
 
 确认构建成功（退出码为 0）。
 
-### Step 4: 提交代码并推送
+### Step 5: 提交代码并推送
 
 ```bash
 git add -A
@@ -71,14 +79,14 @@ git commit -m "chore: release v<新版本号>"
 git push
 ```
 
-### Step 5: 创建 Git Tag 并推送
+### Step 6: 创建 Git Tag 并推送
 
 ```bash
 git tag v<新版本号>
 git push origin v<新版本号>
 ```
 
-### Step 6: 构建 Docker 镜像
+### Step 7: 构建 Docker 镜像
 
 ```bash
 bash build_docker.sh
@@ -86,13 +94,21 @@ bash build_docker.sh
 
 确认脚本执行成功。
 
-### Step 7: 创建 GitHub Release
+### Step 8: 创建 GitHub Release
 
 ```bash
 gh release create v<新版本号> --title "v<新版本号>" --latest --generate-notes
 ```
 
 使用 `--generate-notes` 自动生成 release notes，`--latest` 标记为最新 release。
+
+### Step 9: 验证 npm 发布
+
+```bash
+npm view alibabacloud-devops-mcp-server version
+```
+
+确认输出的版本号与本次发布的版本号一致。如果不一致，说明 npm 发布未成功，需要排查原因并手动执行 `npm publish`。
 
 ## 完成确认
 
