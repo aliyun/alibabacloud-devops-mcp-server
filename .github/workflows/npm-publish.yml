@@ -9,29 +9,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
-      - run: npm config set fetch-timeout 120000
-      - run: npm ci
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
       - run: npm run build
 
   publish-npm:
     needs: build
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org/
-          cache: 'npm'
-      - run: npm config set fetch-timeout 120000
-      - run: npm ci
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
       - run: npm run build
       - run: npm publish
         env:
