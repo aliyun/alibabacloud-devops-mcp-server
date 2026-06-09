@@ -13,9 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'yarn'
-      - run: yarn install --frozen-lockfile
+          node-version: 20
+      - run: npm install
       - run: npm run build
 
   integration-test:
@@ -26,9 +25,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'yarn'
-      - run: yarn install --frozen-lockfile
+          node-version: 20
+      - run: npm install
       - run: npm test
         env:
           YUNXIAO_ACCESS_TOKEN: ${{ secrets.YUNXIAO_ACCESS_TOKEN }}
