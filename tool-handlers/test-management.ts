@@ -21,12 +21,14 @@ import {
   getTestPlanProgress,
   getTestPlanResultDirectoryList,
   listTestRepoTags,
+  listTestRepos,
   ListTestPlanRequestSchema,
   GetTestResultListRequestSchema,
   UpdateTestResultRequestSchema,
   GetTestPlanProgressRequestSchema,
   GetTestPlanResultDirectoryListRequestSchema,
   ListTestRepoTagsRequestSchema,
+  ListTestReposRequestSchema,
 } from '../operations/testhub/testplans.js';
 
 /**
@@ -126,6 +128,14 @@ export async function handleTestManagementTools(request: any) {
     case 'list_test_repo_tags': {
       const params = ListTestRepoTagsRequestSchema.parse(request.params.arguments);
       const result = await listTestRepoTags(params);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case 'list_test_repos': {
+      const params = ListTestReposRequestSchema.parse(request.params.arguments);
+      const result = await listTestRepos(params);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };

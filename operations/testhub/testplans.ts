@@ -262,3 +262,45 @@ export async function listTestRepoTags(params: ListTestRepoTagsRequest): Promise
   const response = await yunxiaoRequest(url, { method: 'GET' });
   return ListTestRepoTagsResponseSchema.parse(response);
 }
+
+// ========== ListTestRepos ==========
+export const TestRepoDTOSchema = z.object({
+  testRepoIdentifier: z.string().nullable().optional().describe("用例库唯一标识"),
+  name: z.string().nullable().optional().describe("用例库名称"),
+  description: z.string().nullable().optional().describe("描述"),
+  icon: z.string().nullable().optional().describe("图标"),
+  scope: z.string().nullable().optional().describe("可见范围（public / private）"),
+  creatorIdentifier: z.string().nullable().optional().describe("创建者 identifier"),
+  adminIdentifiers: z.array(z.string()).nullable().optional().describe("管理员 identifier 列表"),
+  gmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("创建时间"),
+}).passthrough();
+
+export const ListTestReposRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  page: z.number().int().min(1).optional().describe("分页参数，第几页，默认为 1"),
+  perPage: z.number().int().min(1).max(100).optional().describe("分页参数，每页大小，最大 100，默认为 20"),
+  name: z.string().optional().describe("用例库名称模糊匹配，不传则不限制"),
+});
+
+export const ListTestReposResponseSchema = z.array(TestRepoDTOSchema);
+
+export type ListTestReposRequest = z.infer<typeof ListTestReposRequestSchema>;
+export type ListTestReposResponse = z.infer<typeof ListTestReposResponseSchema>;
+
+/**
+ * 获取用例库列表
+ */
+export async function listTestRepos(params: ListTestReposRequest): Promise<ListTestReposResponse> {
+  const { organizationId, page, perPage, name } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const basePath = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepo/list`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepo/list`;
+  const queryParts: string[] = [];
+  if (page !== undefined) queryParts.push(`page=${encodeURIComponent(String(page))}`);
+  if (perPage !== undefined) queryParts.push(`perPage=${encodeURIComponent(String(perPage))}`);
+  if (name !== undefined && name !== '') queryParts.push(`name=${encodeURIComponent(name)}`);
+  const url = queryParts.length > 0 ? `${basePath}?${queryParts.join('&')}` : basePath;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
+  return ListTestReposResponseSchema.parse(response);
+}

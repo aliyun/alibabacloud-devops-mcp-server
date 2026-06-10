@@ -15,6 +15,7 @@ import {
   GetTestPlanProgressRequestSchema,
   GetTestPlanResultDirectoryListRequestSchema,
   ListTestRepoTagsRequestSchema,
+  ListTestReposRequestSchema,
 } from '../operations/testhub/testplans.js';
 
 // Export all test management tools
@@ -86,6 +87,11 @@ export const getTestManagementTools = () => [
     name: 'list_test_repo_tags',
     description: '[test management] 获取测试用例库标签列表，支持分页与按名称关键词过滤',
     inputSchema: zodToJsonSchema(ListTestRepoTagsRequestSchema),
+  },
+  {
+    name: 'list_test_repos',
+    description: '[test management] 获取用例库列表，支持分页与按名称模糊筛选',
+    inputSchema: zodToJsonSchema(ListTestReposRequestSchema),
   },
 ];
 
