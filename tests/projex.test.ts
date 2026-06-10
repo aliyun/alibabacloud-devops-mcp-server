@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { searchProjectsFunc } from '../operations/projex/project.js';
 import { searchWorkitemsFunc } from '../operations/projex/workitem.js';
 import { TEST_ORG_ID } from './setup.js';
@@ -6,9 +7,9 @@ import { TEST_ORG_ID } from './setup.js';
 describe('Projex - Projects', () => {
   it('searchProjects returns at least one project', async () => {
     const projects = await searchProjectsFunc(TEST_ORG_ID);
-    expect(projects.length).toBeGreaterThan(0);
-    expect(projects[0].id).toBeDefined();
-    expect(projects[0].name).toBeDefined();
+    assert.ok(projects.length > 0);
+    assert.ok(projects[0].id);
+    assert.ok(projects[0].name);
   });
 });
 
@@ -18,7 +19,7 @@ describe('Projex - Work Items', () => {
     const projectId = projects[0].id!;
 
     const result = await searchWorkitemsFunc(TEST_ORG_ID, 'Req', projectId);
-    expect(result.items).toBeDefined();
-    expect(Array.isArray(result.items)).toBe(true);
+    assert.ok(result.items);
+    assert.ok(Array.isArray(result.items));
   });
 });

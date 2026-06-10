@@ -1,13 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { listPipelinesFunc, getPipelineFunc } from '../operations/flow/pipeline.js';
 import { TEST_ORG_ID } from './setup.js';
 
 describe('Flow - Pipelines', () => {
   it('listPipelines returns results', async () => {
     const result = await listPipelinesFunc(TEST_ORG_ID, { page: 1, perPage: 5 });
-    expect(result.items).toBeDefined();
-    expect(result.pagination).toBeDefined();
-    expect(result.pagination.total).toBeGreaterThanOrEqual(0);
+    assert.ok(result.items);
+    assert.ok(result.pagination);
+    assert.ok(result.pagination.total >= 0);
   });
 
   it('getPipeline returns pipeline details when pipelines exist', async () => {
@@ -16,7 +17,7 @@ describe('Flow - Pipelines', () => {
 
     const pipelineId = String(result.items[0].pipelineId);
     const pipeline = await getPipelineFunc(TEST_ORG_ID, pipelineId);
-    expect(pipeline).toBeDefined();
-    expect(pipeline.name).toBeDefined();
+    assert.ok(pipeline);
+    assert.ok(pipeline.name);
   });
 });
