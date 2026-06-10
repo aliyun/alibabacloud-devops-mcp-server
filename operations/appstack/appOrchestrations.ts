@@ -117,6 +117,37 @@ export const GetAppOrchestrationResponseSchema = z.union([
   AppExternalGitlabOrchestrationSchema
 ]);
 
+// Sub-schemas for UpdateAppOrchestration spec
+const ComponentSchema = z.object({
+  content: z.string().describe("组件内容，以 go 标准库 text/template 的形式呈现"),
+  description: z.string().describe("组件描述"),
+  kind: z.string().describe("组件类型（在 kubernetes 场景下，沿用 kubernetes 对象的 kind）"),
+  name: z.string().describe("组件名"),
+  priority: z.number().describe("组件优先级，从 1 开始；部署时按优先级从低到高下发"),
+  type: z.enum(["KUBERNETES", "HOST"]).describe("适用的部署架构类型"),
+});
+
+const OrchestrationLabelSchema = z.object({
+  displayName: z.string().optional().describe("标签展示名"),
+  displayValue: z.string().optional().describe("标签展示值"),
+  extraMap: z.record(z.any()).optional().describe("标签扩展属性"),
+  name: z.string().optional().describe("标签名，仅允许小写字母、中划线和数字"),
+  namespace: z.string().optional().describe("标签命名空间"),
+  value: z.string().optional().describe("标签值，仅允许小写字母、中划线和数字"),
+});
+
+const PlaceholderSchema = z.object({
+  description: z.string().optional().describe("占位符描述"),
+  name: z.string().describe("占位符名"),
+  overridable: z.boolean().describe("部署时是否可修改"),
+  predefined: z.boolean().optional().describe("是否预置占位符"),
+  rsType: z.enum(["KUBERNETES", "HOST"]).describe("适用的部署架构类型"),
+  rule: z.string().optional().describe("取值校验规则"),
+  type: z.enum(["string", "number", "boolean", "float", "object"]).describe("占位符类型"),
+  value: z.string().describe("占位符取值"),
+  valueSource: z.enum(["CONSTANT", "VARIABLE", "NULL"]).optional().describe("取值数据源类型"),
+});
+
 // Schema for the UpdateAppOrchestration API
 export const UpdateAppOrchestrationRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
@@ -127,7 +158,13 @@ export const UpdateAppOrchestrationRequestSchema = z.object({
   description: z.string().optional().describe("编排描述"),
   fromRevisionSha: z.string().optional().describe("本次提交的基线版本 SHA 值"),
   name: z.string().describe("编排名"),
-  spec: z.object({}).passthrough().optional().describe("编排规范"),
+  spec: z.object({
+    type: z.string().describe("编排类型"),
+    componentList: z.array(ComponentSchema).optional().describe("组件列表"),
+    groupNameMap: z.record(z.string()).optional().describe("发布阶段名，key 为阶段下标（从 0 开始），value 为阶段名"),
+    labels: z.array(OrchestrationLabelSchema).optional().describe("编排适用的标签列表"),
+    placeholderList: z.array(PlaceholderSchema).optional().describe("占位符列表"),
+  }).passthrough().optional().describe("编排规范（内置编排详情）"),
 });
 
 export const UpdateAppOrchestrationResponseSchema = z.union([

@@ -37,7 +37,7 @@ export const getAppStackOrchestrationTools = () => [
   },
   {
     name: 'update_app_orchestration',
-    description: '[application delivery] Update an application orchestration',
+    description: '[application delivery] Update an application orchestration. This is a full replacement — include all existing spec fields (componentList, labels, placeholderList, groupNameMap) to avoid data loss. Call get_app_orchestration first to retrieve the current state.',
     inputSchema: zodToJsonSchema(UpdateAppOrchestrationRequestSchema),
   }
 ];

@@ -1,6 +1,6 @@
 {
-  "total": 188,
-  "generatedAt": "2026-06-02T02:14:48.320Z",
+  "total": 189,
+  "generatedAt": "2026-06-10T10:05:08.951Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -795,11 +795,10 @@
           "createFrom": {
             "type": "string",
             "enum": [
-              "WEB",
-              "COMMAND_LINE"
+              "WEB"
             ],
             "default": "WEB",
-            "description": "创建来源。WEB - 页面创建；COMMAND_LINE - 命令行创建。默认为WEB"
+            "description": "创建来源。WEB - 页面创建（默认）"
           },
           "triggerAIReviewRun": {
             "type": "boolean",
@@ -6046,7 +6045,7 @@
     },
     {
       "name": "update_app_orchestration",
-      "description": "[application delivery] Update an application orchestration",
+      "description": "[application delivery] Update an application orchestration. This is a full replacement — include all existing spec fields (componentList, labels, placeholderList, groupNameMap) to avoid data loss. Call get_app_orchestration first to retrieve the current state.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6087,9 +6086,174 @@
           },
           "spec": {
             "type": "object",
-            "properties": {},
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "编排类型"
+              },
+              "componentList": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "string",
+                      "description": "组件内容，以 go 标准库 text/template 的形式呈现"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "组件描述"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "description": "组件类型（在 kubernetes 场景下，沿用 kubernetes 对象的 kind）"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "组件名"
+                    },
+                    "priority": {
+                      "type": "number",
+                      "description": "组件优先级，从 1 开始；部署时按优先级从低到高下发"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "KUBERNETES",
+                        "HOST"
+                      ],
+                      "description": "适用的部署架构类型"
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "description",
+                    "kind",
+                    "name",
+                    "priority",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "组件列表"
+              },
+              "groupNameMap": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "发布阶段名，key 为阶段下标（从 0 开始），value 为阶段名"
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "displayName": {
+                      "type": "string",
+                      "description": "标签展示名"
+                    },
+                    "displayValue": {
+                      "type": "string",
+                      "description": "标签展示值"
+                    },
+                    "extraMap": {
+                      "type": "object",
+                      "additionalProperties": {},
+                      "description": "标签扩展属性"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "标签名，仅允许小写字母、中划线和数字"
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "description": "标签命名空间"
+                    },
+                    "value": {
+                      "type": "string",
+                      "description": "标签值，仅允许小写字母、中划线和数字"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "编排适用的标签列表"
+              },
+              "placeholderList": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "description": "占位符描述"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "占位符名"
+                    },
+                    "overridable": {
+                      "type": "boolean",
+                      "description": "部署时是否可修改"
+                    },
+                    "predefined": {
+                      "type": "boolean",
+                      "description": "是否预置占位符"
+                    },
+                    "rsType": {
+                      "type": "string",
+                      "enum": [
+                        "KUBERNETES",
+                        "HOST"
+                      ],
+                      "description": "适用的部署架构类型"
+                    },
+                    "rule": {
+                      "type": "string",
+                      "description": "取值校验规则"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "string",
+                        "number",
+                        "boolean",
+                        "float",
+                        "object"
+                      ],
+                      "description": "占位符类型"
+                    },
+                    "value": {
+                      "type": "string",
+                      "description": "占位符取值"
+                    },
+                    "valueSource": {
+                      "type": "string",
+                      "enum": [
+                        "CONSTANT",
+                        "VARIABLE",
+                        "NULL"
+                      ],
+                      "description": "取值数据源类型"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "overridable",
+                    "rsType",
+                    "type",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "占位符列表"
+              }
+            },
+            "required": [
+              "type"
+            ],
             "additionalProperties": true,
-            "description": "编排规范"
+            "description": "编排规范（内置编排详情）"
           }
         },
         "required": [
@@ -7657,11 +7821,17 @@
                       "type": "object",
                       "properties": {
                         "step": {
-                          "type": "string",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
                           "description": "测试步骤"
                         },
                         "expected": {
-                          "type": "string",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
                           "description": "期望结果"
                         }
                       },
@@ -7978,6 +8148,39 @@
         "required": [
           "organizationId",
           "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_test_repos",
+      "description": "[test management] 获取用例库列表，支持分页与按名称模糊筛选",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "分页参数，第几页，默认为 1"
+          },
+          "perPage": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "分页参数，每页大小，最大 100，默认为 20"
+          },
+          "name": {
+            "type": "string",
+            "description": "用例库名称模糊匹配，不传则不限制"
+          }
+        },
+        "required": [
+          "organizationId"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
