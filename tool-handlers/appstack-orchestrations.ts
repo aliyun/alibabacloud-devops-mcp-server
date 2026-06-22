@@ -58,6 +58,29 @@ export async function handleAppStackOrchestrationTools(request: any) {
       
     case 'update_app_orchestration':
       const updateParams = UpdateAppOrchestrationRequestSchema.parse(request.params.arguments);
+      if (updateParams.spec) {
+        const SPEC_FIELDS = ['labels', 'placeholderList', 'groupNameMap'] as const;
+        const missing = SPEC_FIELDS.filter(f => !(f in updateParams.spec!));
+        if (missing.length > 0) {
+          const current = await getAppOrchestration({
+            organizationId: updateParams.organizationId,
+            appName: updateParams.appName,
+            sn: updateParams.sn,
+          });
+          const fieldMap: Record<string, string> = {
+            labels: 'labelList',
+            placeholderList: 'placeholderList',
+            groupNameMap: 'groupNameMap',
+          };
+          for (const field of missing) {
+            const srcField = fieldMap[field];
+            const value = (current as any)[srcField];
+            if (value != null) {
+              (updateParams.spec as any)[field] = value;
+            }
+          }
+        }
+      }
       const updateResult = await updateAppOrchestration(updateParams);
       return {
         content: [{ type: "text", text: JSON.stringify(updateResult, null, 2) }],
