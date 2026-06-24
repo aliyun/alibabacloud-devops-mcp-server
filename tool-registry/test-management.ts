@@ -7,6 +7,8 @@ import {
   SearchTestcasesRequestSchema,
   GetTestcaseRequestSchema,
   DeleteTestcaseRequestSchema,
+  ListTestcaseCommentsRequestSchema,
+  CreateTestcaseCommentRequestSchema,
 } from '../operations/testhub/testcases.js';
 import {
   ListTestPlanRequestSchema,
@@ -92,6 +94,16 @@ export const getTestManagementTools = () => [
     name: 'list_test_repos',
     description: '[test management] 获取用例库列表，支持分页与按名称模糊筛选',
     inputSchema: zodToJsonSchema(ListTestReposRequestSchema),
+  },
+  {
+    name: 'list_testcase_comments',
+    description: '[test management] 获取测试用例评论列表',
+    inputSchema: zodToJsonSchema(ListTestcaseCommentsRequestSchema),
+  },
+  {
+    name: 'create_testcase_comment',
+    description: '[test management] 创建测试用例评论，支持回复（通过parentId）',
+    inputSchema: zodToJsonSchema(CreateTestcaseCommentRequestSchema),
   },
 ];
 

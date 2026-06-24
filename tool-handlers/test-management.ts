@@ -6,6 +6,8 @@ import {
   searchTestcases,
   getTestcase,
   deleteTestcase,
+  listTestcaseComments,
+  createTestcaseComment,
   ListDirectoriesRequestSchema,
   CreateTestcaseDirectoryRequestSchema,
   GetTestcaseFieldConfigRequestSchema,
@@ -13,6 +15,8 @@ import {
   SearchTestcasesRequestSchema,
   GetTestcaseRequestSchema,
   DeleteTestcaseRequestSchema,
+  ListTestcaseCommentsRequestSchema,
+  CreateTestcaseCommentRequestSchema,
 } from '../operations/testhub/testcases.js';
 import {
   listTestPlan,
@@ -136,6 +140,22 @@ export async function handleTestManagementTools(request: any) {
     case 'list_test_repos': {
       const params = ListTestReposRequestSchema.parse(request.params.arguments);
       const result = await listTestRepos(params);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case 'list_testcase_comments': {
+      const params = ListTestcaseCommentsRequestSchema.parse(request.params.arguments);
+      const result = await listTestcaseComments(params);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case 'create_testcase_comment': {
+      const params = CreateTestcaseCommentRequestSchema.parse(request.params.arguments);
+      const result = await createTestcaseComment(params);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };

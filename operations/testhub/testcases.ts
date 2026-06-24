@@ -285,3 +285,58 @@ export async function deleteTestcase(params: DeleteTestcaseRequest): Promise<Del
   return DeleteTestcaseResponseSchema.parse(response);
 }
 
+// ============ Testcase Comments ============
+
+export const CommentDTOSchema = z.object({
+  id: z.string().optional().describe("评论id"),
+  content: z.string().optional().describe("评论内容"),
+  contentFormat: z.string().optional().describe("内容格式，RICHTEXT 或 MARKDOWN"),
+  parentId: z.string().nullable().optional().describe("父评论id"),
+  top: z.boolean().optional().describe("是否置顶"),
+  topTime: z.string().nullable().optional().describe("置顶时间"),
+  gmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("创建时间"),
+  gmtModified: z.union([z.string(), z.number()]).nullable().optional().describe("修改时间"),
+  user: MiniUserSchema.optional().describe("评论人"),
+});
+
+export const ListTestcaseCommentsRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  testRepoId: z.string().describe("用例库唯一标识"),
+  id: z.string().describe("用例唯一标识"),
+});
+
+export const CreateTestcaseCommentRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  testRepoId: z.string().describe("用例库唯一标识"),
+  id: z.string().describe("用例唯一标识"),
+  content: z.string().describe("评论内容"),
+  parentId: z.string().optional().describe("父评论的ID，用于回复评论"),
+  operatorId: z.string().optional().describe("操作者的userId"),
+});
+
+export type ListTestcaseCommentsRequest = z.infer<typeof ListTestcaseCommentsRequestSchema>;
+export type CreateTestcaseCommentRequest = z.infer<typeof CreateTestcaseCommentRequestSchema>;
+
+export async function listTestcaseComments(params: ListTestcaseCommentsRequest) {
+  const { organizationId, testRepoId, id } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases/${id}/comments`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/testcases/${id}/comments`;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
+  return z.array(CommentDTOSchema).parse(response);
+}
+
+export async function createTestcaseComment(params: CreateTestcaseCommentRequest) {
+  const { organizationId, testRepoId, id, content, parentId, operatorId } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases/${id}/comments`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testRepos/${testRepoId}/testcases/${id}/comments`;
+  const body: Record<string, any> = { content };
+  if (parentId) body.parentId = parentId;
+  if (operatorId) body.operatorId = operatorId;
+  const response = await yunxiaoRequest(url, { method: 'POST', body });
+  return z.object({ id: z.string().describe("评论id") }).parse(response);
+}
+
