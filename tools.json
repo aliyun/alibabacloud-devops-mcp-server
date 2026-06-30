@@ -1,6 +1,6 @@
 {
-  "total": 189,
-  "generatedAt": "2026-06-10T10:05:08.951Z",
+  "total": 192,
+  "generatedAt": "2026-06-30T08:26:57.662Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -2385,6 +2385,29 @@
           "organizationId",
           "id",
           "category"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "delete_work_item",
+      "description": "[Project Management] Delete a work item. This operation is irreversible.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+          },
+          "workItemId": {
+            "type": "string",
+            "description": "Work item unique identifier, required parameter"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -8181,6 +8204,75 @@
         },
         "required": [
           "organizationId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_testcase_comments",
+      "description": "[test management] 获取测试用例评论列表",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "testRepoId": {
+            "type": "string",
+            "description": "用例库唯一标识"
+          },
+          "id": {
+            "type": "string",
+            "description": "用例唯一标识"
+          }
+        },
+        "required": [
+          "organizationId",
+          "testRepoId",
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "create_testcase_comment",
+      "description": "[test management] 创建测试用例评论，支持回复（通过parentId）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "testRepoId": {
+            "type": "string",
+            "description": "用例库唯一标识"
+          },
+          "id": {
+            "type": "string",
+            "description": "用例唯一标识"
+          },
+          "content": {
+            "type": "string",
+            "description": "评论内容"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "父评论的ID，用于回复评论"
+          },
+          "operatorId": {
+            "type": "string",
+            "description": "操作者的userId"
+          }
+        },
+        "required": [
+          "organizationId",
+          "testRepoId",
+          "id",
+          "content"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
