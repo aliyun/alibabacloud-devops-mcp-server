@@ -40,6 +40,7 @@ import * as types from "./common/types.js";
 import { getAllTools, getEnabledTools } from "./tool-registry/index.js";
 import { handleToolRequest, handleEnabledToolRequest } from "./tool-handlers/index.js";
 import { Toolset } from "./common/toolsets.js";
+import { loadConfig, type ServerConfig } from "./common/config.js";
 
 /**
  * Create a new MCP Server instance with all request handlers configured.
@@ -170,37 +171,9 @@ function formatYunxiaoError(error: YunxiaoError): string {
 
 config({ quiet: true });
 
-// 解析启用的工具集
-const parseEnabledToolsets = (input: string | undefined): Toolset[] => {
-  if (!input) return [];
-  
-  return input.split(',').map(toolset => {
-    const trimmed = toolset.trim() as Toolset;
-    // 验证工具集名称是否有效
-    if (!Object.values(Toolset).includes(trimmed)) {
-      throw new Error(`Unknown toolset: ${trimmed}`);
-    }
-    return trimmed;
-  });
-};
-
-// 获取启用的工具集（从命令行参数或环境变量）
-const enabledToolsets = parseEnabledToolsets(
-  process.argv.find(arg => arg.startsWith('--toolsets='))?.split('=')[1] || 
-  process.env.DEVOPS_TOOLSETS
-);
-
-// Remote transports: SSE and/or Streamable HTTP (can run together on one port)
-const mcpTransportEnv = process.env.MCP_TRANSPORT;
-const wantSse =
-    process.argv.includes('--sse') ||
-    mcpTransportEnv === 'sse' ||
-    mcpTransportEnv === 'both';
-const wantStreamable =
-    process.argv.includes('--streamable-http') ||
-    mcpTransportEnv === 'streamable-http' ||
-    mcpTransportEnv === 'both';
-const useHttpRemote = wantSse || wantStreamable;
+const serverConfig = loadConfig();
+const enabledToolsets = serverConfig.toolsets;
+const useHttpRemote = serverConfig.transport.sse || serverConfig.transport.streamableHttp;
 
 type StreamableSessionEntry = {
     transport: StreamableHTTPServerTransport;
@@ -214,10 +187,16 @@ function getMcpSessionIdHeader(req: { headers: Record<string, string | string[] 
     return typeof raw === 'string' ? raw : undefined;
 }
 
-function resolveStreamableYunxiaoAuth(req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined> }): {
-    yunxiao_access_token?: string;
-    yunxiao_api_base_url?: string;
-} {
+function parseBearerToken(authHeader: string | string[] | undefined): string | undefined {
+    if (typeof authHeader !== 'string') return undefined;
+    const match = authHeader.match(/^Bearer\s+(.+)$/i);
+    return match ? match[1] : undefined;
+}
+
+function resolveYunxiaoAuth(
+    req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined> },
+    sessionAuth?: { yunxiao_access_token?: string; yunxiao_api_base_url?: string },
+): { token?: string; apiBaseUrl?: string } {
     const qTok = req.query['yunxiao_access_token'];
     const qBase = req.query['yunxiao_api_base_url'];
     const tokenFromQuery = typeof qTok === 'string' ? qTok : undefined;
@@ -226,10 +205,11 @@ function resolveStreamableYunxiaoAuth(req: { query: Record<string, unknown>; hea
     const hdrBase = req.headers['x-yunxiao-api-base-url'];
     const tokenFromHeader = typeof hdrTok === 'string' ? hdrTok : undefined;
     const baseFromHeader = typeof hdrBase === 'string' ? hdrBase : undefined;
+    const tokenFromBearer = parseBearerToken(req.headers['authorization']);
 
     return {
-        yunxiao_access_token: tokenFromQuery || tokenFromHeader || process.env.YUNXIAO_ACCESS_TOKEN,
-        yunxiao_api_base_url: baseFromQuery || baseFromHeader || undefined,
+        token: tokenFromQuery || tokenFromHeader || tokenFromBearer || sessionAuth?.yunxiao_access_token || process.env.YUNXIAO_ACCESS_TOKEN,
+        apiBaseUrl: baseFromQuery || baseFromHeader || sessionAuth?.yunxiao_api_base_url || undefined,
     };
 }
 
@@ -248,24 +228,19 @@ type SseSessionEntry = {
 async function registerSseRoutes(
     app: any,
     sessions: Record<string, SseSessionEntry>,
+    cfg: ServerConfig,
     options: { installJsonParser: boolean },
 ): Promise<void> {
-    app.get('/sse', async (req: any, res: any) => {
+    app.get(cfg.paths.sse, async (req: any, res: any) => {
         console.log(`New SSE connection from ${req.ip}`);
-        console.log(`SSE query params: ${JSON.stringify(req.query)}`);
-        console.log(`SSE headers x-yunxiao-token: ${req.headers['x-yunxiao-token'] ? 'present' : 'missing'}`);
-        console.log(`SSE headers x-yunxiao-api-base-url: ${req.headers['x-yunxiao-api-base-url'] || 'missing'}`);
 
-        const yunxiao_access_token =
-            req.query.yunxiao_access_token || req.headers['x-yunxiao-token'] || process.env.YUNXIAO_ACCESS_TOKEN;
-        const yunxiao_api_base_url =
-            req.query.yunxiao_api_base_url || req.headers['x-yunxiao-api-base-url'] || undefined;
+        const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url } = resolveYunxiaoAuth(req);
 
         console.log(`[SSE] Resolved token: ${yunxiao_access_token ? yunxiao_access_token.substring(0, 10) + '...' : 'none'}`);
         console.log(`[SSE] Resolved API base URL: ${yunxiao_api_base_url || 'none (will use default)'}`);
 
         const sessionServer = createMcpServer();
-        const sseTransport = new SSEServerTransport('/messages', res);
+        const sseTransport = new SSEServerTransport(cfg.paths.sseMessages, res);
         const sessionId = sseTransport.sessionId;
 
         if (sessionId) {
@@ -296,7 +271,7 @@ async function registerSseRoutes(
         app.use(express.json({ limit: '10mb' }));
     }
 
-    app.post('/messages', async (req: any, res: any) => {
+    app.post(cfg.paths.sseMessages, async (req: any, res: any) => {
         const sessionId = req.query.sessionId as string;
         const session = sessions[sessionId];
 
@@ -306,15 +281,14 @@ async function registerSseRoutes(
         }
 
         try {
-            const utils = await import('./common/utils.js');
+            const { runWithAuth } = await import('./common/utils.js');
+            const auth = resolveYunxiaoAuth(req, session);
             console.log(
-                `[POST] Session ${sessionId} - setting token: ${session.yunxiao_access_token ? session.yunxiao_access_token.substring(0, 10) + '...' : 'none'}`,
+                `[POST] Session ${sessionId} - token: ${auth.token ? auth.token.substring(0, 10) + '...' : 'none'}`,
             );
-            console.log(`[POST] Session ${sessionId} - setting API base URL: ${session.yunxiao_api_base_url || 'none'}`);
-            utils.setCurrentSessionToken(session.yunxiao_access_token);
-            utils.setCurrentSessionApiBaseUrl(session.yunxiao_api_base_url);
+            console.log(`[POST] Session ${sessionId} - API base URL: ${auth.apiBaseUrl || 'none'}`);
 
-            await session.transport.handlePostMessage(req, res, req.body);
+            await runWithAuth(auth, () => session.transport.handlePostMessage(req, res, req.body));
         } catch (error) {
             console.error('Error handling POST message:', error);
             if (!res.headersSent) {
@@ -357,10 +331,9 @@ function registerStreamableRoutes(
                 });
                 return;
             }
-            utils.setCurrentSessionToken(entry.yunxiao_access_token);
-            utils.setCurrentSessionApiBaseUrl(entry.yunxiao_api_base_url);
+            const auth = resolveYunxiaoAuth(req, entry);
             const parsedBody = req.method === 'POST' ? req.body : undefined;
-            await entry.transport.handleRequest(req, res, parsedBody);
+            await utils.runWithAuth(auth, () => entry.transport.handleRequest(req, res, parsedBody));
             return;
         }
 
@@ -388,7 +361,7 @@ function registerStreamableRoutes(
             return;
         }
 
-        const { yunxiao_access_token, yunxiao_api_base_url } = resolveStreamableYunxiaoAuth(req);
+        const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url } = resolveYunxiaoAuth(req);
         const sessionServer = createMcpServer();
 
         let transport!: StreamableHTTPServerTransport;
@@ -410,35 +383,29 @@ function registerStreamableRoutes(
         });
 
         await sessionServer.connect(transport);
-        utils.setCurrentSessionToken(yunxiao_access_token);
-        utils.setCurrentSessionApiBaseUrl(yunxiao_api_base_url);
 
         console.log(`New Streamable HTTP connection from ${req.ip}`);
         if (yunxiao_access_token) {
             console.error(`Streamable HTTP session using custom token`);
         }
 
-        await transport.handleRequest(req, res, req.body);
+        await utils.runWithAuth({ token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url }, () =>
+            transport.handleRequest(req, res, req.body),
+        );
     });
 }
 
 async function runServer() {
     if (useHttpRemote) {
         const utils = await import('./common/utils.js');
-        const port = Number(process.env.PORT) || 3000;
-        const mcpPath = process.env.MCP_STREAMABLE_PATH || '/mcp';
-        const mcpHttpHost = process.env.MCP_HTTP_HOST || '0.0.0.0';
-        const allowedHostsEnv = process.env.MCP_ALLOWED_HOSTS;
+        const { port, host, allowedHosts, transport, paths } = serverConfig;
 
         let app: any;
-        if (wantStreamable) {
+        if (transport.streamableHttp) {
             app =
-                allowedHostsEnv && allowedHostsEnv.trim().length > 0
-                    ? createMcpExpressApp({
-                          host: mcpHttpHost,
-                          allowedHosts: allowedHostsEnv.split(',').map((s) => s.trim()).filter(Boolean),
-                      })
-                    : createMcpExpressApp({ host: mcpHttpHost });
+                allowedHosts.length > 0
+                    ? createMcpExpressApp({ host, allowedHosts })
+                    : createMcpExpressApp({ host });
         } else {
             const { default: express } = await import('express');
             app = express();
@@ -447,25 +414,25 @@ async function runServer() {
         const sseSessions: Record<string, SseSessionEntry> = {};
         const streamSessions = new Map<string, StreamableSessionEntry>();
 
-        if (wantSse) {
-            await registerSseRoutes(app, sseSessions, { installJsonParser: !wantStreamable });
+        if (transport.sse) {
+            await registerSseRoutes(app, sseSessions, serverConfig, { installJsonParser: !transport.streamableHttp });
         }
 
-        if (wantStreamable) {
-            registerStreamableRoutes(app, utils, streamSessions, mcpPath);
+        if (transport.streamableHttp) {
+            registerStreamableRoutes(app, utils, streamSessions, paths.streamableHttp);
         }
 
         const serverInstance: any = app.listen(port, () => {
             const modes: string[] = [];
-            if (wantSse) modes.push('SSE (/sse, /messages)');
-            if (wantStreamable) modes.push(`Streamable HTTP (${mcpPath})`);
+            if (transport.sse) modes.push(`SSE (${paths.sse}, ${paths.sseMessages})`);
+            if (transport.streamableHttp) modes.push(`Streamable HTTP (${paths.streamableHttp})`);
             console.log(`Yunxiao MCP Server running on port ${port} — ${modes.join(' + ')}`);
-            if (wantSse) {
-                console.log(`  SSE: http://localhost:${port}/sse`);
-                console.log(`  Messages: http://localhost:${port}/messages?sessionId=<session-id>`);
+            if (transport.sse) {
+                console.log(`  SSE: http://localhost:${port}${paths.sse}`);
+                console.log(`  Messages: http://localhost:${port}${paths.sseMessages}?sessionId=<session-id>`);
             }
-            if (wantStreamable) {
-                console.log(`  Streamable: http://localhost:${port}${mcpPath}`);
+            if (transport.streamableHttp) {
+                console.log(`  Streamable: http://localhost:${port}${paths.streamableHttp}`);
             }
         });
 

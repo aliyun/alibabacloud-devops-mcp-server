@@ -1,6 +1,18 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { getUserAgent } from "universal-user-agent";
 import { createYunxiaoError } from "./errors.js";
 import { VERSION } from "./version.js";
+
+type RequestAuthContext = {
+  token?: string;
+  apiBaseUrl?: string;
+};
+
+const requestContext = new AsyncLocalStorage<RequestAuthContext>();
+
+export function runWithAuth<T>(auth: RequestAuthContext, fn: () => T): T {
+  return requestContext.run(auth, fn);
+}
 
 const DEFAULT_YUNXIAO_API_BASE_URL = "https://openapi-rdc.aliyuncs.com";
 
@@ -119,39 +131,12 @@ export function buildUrl(baseUrl: string, params: Record<string, string | number
 
 const USER_AGENT = `modelcontextprotocol/servers/alibabacloud-devops-mcp-server/v${VERSION} ${getUserAgent()}`;
 
-let currentSessionToken: string | undefined = undefined;
-let currentSessionApiBaseUrl: string | undefined = undefined;
-
-/** 
- * Set the token for the current session (used in SSE mode)
- * @param yunxiao_access_token The token to use for the current session
- */
-export function setCurrentSessionToken(yunxiao_access_token: string | undefined): void {
-  currentSessionToken = yunxiao_access_token;
-}
-
-/**
- * Set the API base URL for the current session (used in SSE mode)
- * @param yunxiao_api_base_url The base URL to use for the current session
- */
-export function setCurrentSessionApiBaseUrl(yunxiao_api_base_url: string | undefined): void {
-  currentSessionApiBaseUrl = yunxiao_api_base_url;
-}
-
-/**
- * Get the API base URL for the current session
- * @returns The base URL for the current session, or the default from environment/default
- */
 export function getCurrentSessionApiBaseUrl(): string | undefined {
-  return currentSessionApiBaseUrl;
+  return requestContext.getStore()?.apiBaseUrl;
 }
 
-/**
- * Get the token for the current session
- * @returns The token for the current session, or the default token from environment
- */
 export function getCurrentSessionToken(): string | undefined {
-  return currentSessionToken || process.env.YUNXIAO_ACCESS_TOKEN;
+  return requestContext.getStore()?.token ?? process.env.YUNXIAO_ACCESS_TOKEN;
 }
 
 export async function yunxiaoRequest(
