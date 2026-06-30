@@ -1,4 +1,6 @@
 import { Toolset } from "./toolsets.js";
+import type { ClusterConfig } from "./process-manager.js";
+import { resolveWorkerCount } from "./process-manager.js";
 
 export interface ServerConfig {
   port: number;
@@ -15,6 +17,10 @@ export interface ServerConfig {
     sseMessages: string;
     streamableHttp: string;
   };
+
+  stateless: boolean;
+
+  cluster: ClusterConfig;
 
   toolsets: Toolset[];
 }
@@ -61,6 +67,20 @@ export function loadConfig(): ServerConfig {
       sse: process.env.MCP_SSE_PATH || "/sse",
       sseMessages: process.env.MCP_SSE_MESSAGES_PATH || "/messages",
       streamableHttp: process.env.MCP_STREAMABLE_PATH || "/mcp",
+    },
+
+    stateless:
+      process.argv.includes("--stateless") ||
+      process.env.MCP_STATELESS === "true",
+
+    cluster: {
+      enabled:
+        process.argv.includes("--cluster") ||
+        process.env.MCP_CLUSTER === "true",
+      workers: resolveWorkerCount(
+        process.argv.find((a) => a.startsWith("--workers="))?.split("=")[1] ||
+          process.env.MCP_CLUSTER_WORKERS,
+      ),
     },
 
     toolsets: parseEnabledToolsets(

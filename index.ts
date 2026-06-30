@@ -41,6 +41,7 @@ import { getAllTools, getEnabledTools } from "./tool-registry/index.js";
 import { handleToolRequest, handleEnabledToolRequest } from "./tool-handlers/index.js";
 import { Toolset } from "./common/toolsets.js";
 import { loadConfig, type ServerConfig } from "./common/config.js";
+import { runWithCluster, setupWorkerGuards } from "./common/process-manager.js";
 
 /**
  * Create a new MCP Server instance with all request handlers configured.
@@ -395,6 +396,53 @@ function registerStreamableRoutes(
     });
 }
 
+function registerStatelessStreamableRoutes(
+    app: any,
+    utils: typeof import('./common/utils.js'),
+    mcpPath: string,
+): void {
+    app.use(mcpPath, (req: any, res: any, next: any) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+        res.setHeader(
+            'Access-Control-Allow-Headers',
+            'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization, X-Yunxiao-Token, X-Yunxiao-Api-Base-Url',
+        );
+        if (req.method === 'OPTIONS') {
+            res.status(204).end();
+            return;
+        }
+        next();
+    });
+
+    app.all(mcpPath, async (req: any, res: any) => {
+        if (req.method !== 'POST') {
+            res.status(405).json({
+                jsonrpc: '2.0',
+                error: { code: -32600, message: 'Method Not Allowed: stateless mode only accepts POST' },
+                id: null,
+            });
+            return;
+        }
+
+        const auth = resolveYunxiaoAuth(req);
+        const server = createMcpServer();
+        const transport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: undefined,
+            enableJsonResponse: true,
+        });
+
+        await server.connect(transport);
+
+        try {
+            await utils.runWithAuth(auth, () => transport.handleRequest(req, res, req.body));
+        } finally {
+            await transport.close();
+            await server.close();
+        }
+    });
+}
+
 async function runServer() {
     if (useHttpRemote) {
         const utils = await import('./common/utils.js');
@@ -419,13 +467,17 @@ async function runServer() {
         }
 
         if (transport.streamableHttp) {
-            registerStreamableRoutes(app, utils, streamSessions, paths.streamableHttp);
+            if (serverConfig.stateless) {
+                registerStatelessStreamableRoutes(app, utils, paths.streamableHttp);
+            } else {
+                registerStreamableRoutes(app, utils, streamSessions, paths.streamableHttp);
+            }
         }
 
         const serverInstance: any = app.listen(port, () => {
             const modes: string[] = [];
             if (transport.sse) modes.push(`SSE (${paths.sse}, ${paths.sseMessages})`);
-            if (transport.streamableHttp) modes.push(`Streamable HTTP (${paths.streamableHttp})`);
+            if (transport.streamableHttp) modes.push(`Streamable HTTP${serverConfig.stateless ? ' (stateless)' : ''} (${paths.streamableHttp})`);
             console.log(`Yunxiao MCP Server running on port ${port} — ${modes.join(' + ')}`);
             if (transport.sse) {
                 console.log(`  SSE: http://localhost:${port}${paths.sse}`);
@@ -450,9 +502,11 @@ async function runServer() {
     }
 }
 
-runServer().catch((error) => {
-    if (useHttpRemote) {
-        console.error('Fatal error in main():', error);
-    }
-    process.exit(1);
-});
+if (useHttpRemote) {
+    runWithCluster(serverConfig.cluster, runServer);
+} else {
+    setupWorkerGuards();
+    runServer().catch((error) => {
+        process.exit(1);
+    });
+}
