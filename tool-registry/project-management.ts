@@ -95,6 +95,11 @@ export const getProjectManagementTools = () => [
     })),
   },
   {
+    name: "delete_work_item",
+    description: "[Project Management] Delete a work item. This operation is irreversible.",
+    inputSchema: zodToJsonSchema(types.DeleteWorkItemSchema),
+  },
+  {
     name: "update_work_item",
     description: "[Project Management] Update a work item. \n调用参数结构：除 organizationId / workItemId 外，所有要更新的字段必须放在 updateWorkItemFields 对象中（包括 subject / description / formatType / status / assignedTo / priority / labels / sprint / trackers / verifier / participants / versions / customFieldValues）。\n描述中插入图片：先调 create_workitem_attachment 拿到返回值的 embedMarkdown（formatType=\"MARKDOWN\"）或 embedHtml（formatType=\"RICHTEXT\"），拼进 updateWorkItemFields.description，同时 updateWorkItemFields.formatType 设为对应值。⚠️ 不要把 create_workitem_attachment 返回的 url 嵌入 description，那是 30 秒过期的 OSS 临时签名。\n受控字段提醒：实际工时（fieldId 101587）与预计工时（fieldId 101586）为云效受控系统字段，不能通过 updateWorkItemFields.customFieldValues 修改；请改用 `create_effort_record`/`update_effort_record` 与 `create_estimated_effort`/`update_estimated_effort`。",
     inputSchema: zodToJsonSchema(types.UpdateWorkItemSchema),

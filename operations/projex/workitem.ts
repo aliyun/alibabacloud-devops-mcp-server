@@ -24,6 +24,20 @@ import { ProjectInfoSchema } from "./types.js";
 import { ListWorkItemCommentsParams } from "./types.js";
 import { getCurrentUserFunc, resolveOrganizationId } from "../organization/organization.js";
 
+export async function deleteWorkItemFunc(
+  organizationId: string | undefined,
+  workItemId: string
+): Promise<void> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}`;
+
+  await yunxiaoRequest(url, {
+    method: "DELETE",
+  });
+}
+
 export async function getWorkItemFunc(
   organizationId: string | undefined,
   workItemId: string

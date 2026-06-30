@@ -355,6 +355,11 @@ export const SearchProgramsSchema = z.object({
 });
 
 // Work item related schemas
+export const DeleteWorkItemSchema = z.object({
+  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  workItemId: z.string().describe("Work item unique identifier, required parameter"),
+});
+
 export const GetWorkItemSchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
   workItemId: z.string().describe("Work item unique identifier, required parameter"),

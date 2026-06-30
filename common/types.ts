@@ -96,6 +96,7 @@ export {
   UpdateSprintSchema,
   
   // Work item schemas
+  DeleteWorkItemSchema,
   GetWorkItemSchema,
   CreateWorkItemSchema,
   SearchWorkitemsSchema,

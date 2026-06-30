@@ -276,6 +276,14 @@ export const handleProjectManagementTools = async (request: any) => {
       };
     }
 
+    case "delete_work_item": {
+      const args = types.DeleteWorkItemSchema.parse(request.params.arguments);
+      await workitem.deleteWorkItemFunc(args.organizationId, args.workItemId);
+      return {
+        content: [{ type: "text", text: JSON.stringify({ success: true, message: "Work item deleted successfully" }, null, 2) }],
+      };
+    }
+
     case "update_work_item": {
       const args = types.UpdateWorkItemSchema.parse(request.params.arguments);
       await workitem.updateWorkItemFunc(
