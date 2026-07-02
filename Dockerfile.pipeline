@@ -1,0 +1,22 @@
+# 云效流水线专用 Dockerfile
+# 前置：由流水线「Node.js 构建」步骤在同一工作目录产出 dist/ 与 node_modules
+#   npm install && npm run build && npm prune --omit=dev
+# 本阶段只做「打包预构建产物」，不再执行 tsc / npm install，镜像构建为纯拷贝，极快。
+FROM build-steps-public-registry.cn-beijing.cr.aliyuncs.com/mirrors/node:22.12-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=production \
+    PORT=3000
+
+# 直接拷贝上游「Node.js 构建」步骤的产物
+COPY package.json ./
+COPY dist ./dist
+COPY node_modules ./node_modules
+
+EXPOSE 3000
+
+# 默认以 Streamable HTTP + 无状态模式启动（单机 docker run 时生效）
+# K8s 部署时 helm chart 会用 command/args 覆盖此处
+ENTRYPOINT ["node", "dist/index.js"]
+CMD ["--streamable-http", "--stateless"]
