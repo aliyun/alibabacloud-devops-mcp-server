@@ -459,6 +459,12 @@ async function runServer() {
             app = express();
         }
 
+        // 轻量健康检查端点（供 ALB 后端健康检查 / K8s 存活就绪探针使用）。
+        // 挂在根路径，不依赖任何 transport 或鉴权，始终返回 200。
+        app.get('/healthz', (_req: any, res: any) => {
+            res.status(200).json({ status: 'ok' });
+        });
+
         const sseSessions: Record<string, SseSessionEntry> = {};
         const streamSessions = new Map<string, StreamableSessionEntry>();
 
