@@ -18,6 +18,8 @@ import {
   GetTestPlanResultDirectoryListRequestSchema,
   ListTestRepoTagsRequestSchema,
   ListTestReposRequestSchema,
+  ListTestPlanTestcaseCommentsRequestSchema,
+  CreateTestPlanTestcaseCommentRequestSchema,
 } from '../operations/testhub/testplans.js';
 
 // Export all test management tools
@@ -104,6 +106,16 @@ export const getTestManagementTools = () => [
     name: 'create_testcase_comment',
     description: '[test management] 创建测试用例评论，支持回复（通过parentId）',
     inputSchema: zodToJsonSchema(CreateTestcaseCommentRequestSchema),
+  },
+  {
+    name: 'list_test_plan_testcase_comments',
+    description: '[test management] 获取测试计划中测试用例的评论列表（与用例库中的用例评论不同，这里是测试计划上下文）',
+    inputSchema: zodToJsonSchema(ListTestPlanTestcaseCommentsRequestSchema),
+  },
+  {
+    name: 'create_test_plan_testcase_comment',
+    description: '[test management] 创建测试计划中测试用例的评论，支持回复（通过parentId）。与用例库中的用例评论不同，这里是测试计划上下文',
+    inputSchema: zodToJsonSchema(CreateTestPlanTestcaseCommentRequestSchema),
   },
 ];
 

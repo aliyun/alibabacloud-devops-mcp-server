@@ -26,6 +26,8 @@ import {
   getTestPlanResultDirectoryList,
   listTestRepoTags,
   listTestRepos,
+  listTestPlanTestcaseComments,
+  createTestPlanTestcaseComment,
   ListTestPlanRequestSchema,
   GetTestResultListRequestSchema,
   UpdateTestResultRequestSchema,
@@ -33,6 +35,8 @@ import {
   GetTestPlanResultDirectoryListRequestSchema,
   ListTestRepoTagsRequestSchema,
   ListTestReposRequestSchema,
+  ListTestPlanTestcaseCommentsRequestSchema,
+  CreateTestPlanTestcaseCommentRequestSchema,
 } from '../operations/testhub/testplans.js';
 
 /**
@@ -156,6 +160,22 @@ export async function handleTestManagementTools(request: any) {
     case 'create_testcase_comment': {
       const params = CreateTestcaseCommentRequestSchema.parse(request.params.arguments);
       const result = await createTestcaseComment(params);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case 'list_test_plan_testcase_comments': {
+      const params = ListTestPlanTestcaseCommentsRequestSchema.parse(request.params.arguments);
+      const result = await listTestPlanTestcaseComments(params);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
+    case 'create_test_plan_testcase_comment': {
+      const params = CreateTestPlanTestcaseCommentRequestSchema.parse(request.params.arguments);
+      const result = await createTestPlanTestcaseComment(params);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };

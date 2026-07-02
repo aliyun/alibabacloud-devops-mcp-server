@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { yunxiaoRequest, isRegionEdition } from '../../common/utils.js';
 import { resolveOrganizationId } from '../organization/organization.js';
 import { isYunxiaoError } from '../../common/errors.js';
+import { CommentDTOSchema } from './testcases.js';
 
 // Schema for TestPlanDTO
 export const TestPlanDTOSchema = z.object({
@@ -303,4 +304,53 @@ export async function listTestRepos(params: ListTestReposRequest): Promise<ListT
   const url = queryParts.length > 0 ? `${basePath}?${queryParts.join('&')}` : basePath;
   const response = await yunxiaoRequest(url, { method: 'GET' });
   return ListTestReposResponseSchema.parse(response);
+}
+
+// ========== Test Plan Testcase Comments ==========
+
+export const ListTestPlanTestcaseCommentsRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  testplanId: z.string().describe("测试计划唯一标识"),
+  id: z.string().describe("测试用例唯一标识"),
+});
+
+export const CreateTestPlanTestcaseCommentRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  testplanId: z.string().describe("测试计划唯一标识"),
+  id: z.string().describe("测试用例唯一标识"),
+  content: z.string().describe("评论内容"),
+  parentId: z.string().optional().describe("父评论的ID，用于回复评论"),
+  formatType: z.enum(["RICHTEXT", "MARKDOWN"]).optional().describe("内容格式，RICHTEXT 或 MARKDOWN，默认 RICHTEXT"),
+});
+
+export type ListTestPlanTestcaseCommentsRequest = z.infer<typeof ListTestPlanTestcaseCommentsRequestSchema>;
+export type CreateTestPlanTestcaseCommentRequest = z.infer<typeof CreateTestPlanTestcaseCommentRequestSchema>;
+
+/**
+ * 获取测试计划用例评论列表
+ */
+export async function listTestPlanTestcaseComments(params: ListTestPlanTestcaseCommentsRequest) {
+  const { organizationId, testplanId, id } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testPlans/${testplanId}/testcases/${id}/comments`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testPlans/${testplanId}/testcases/${id}/comments`;
+  const response = await yunxiaoRequest(url, { method: 'GET' });
+  return z.array(CommentDTOSchema).parse(response);
+}
+
+/**
+ * 创建测试计划用例评论
+ */
+export async function createTestPlanTestcaseComment(params: CreateTestPlanTestcaseCommentRequest) {
+  const { organizationId, testplanId, id, content, parentId, formatType } = params;
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/testhub/testPlans/${testplanId}/testcases/${id}/comments`
+    : `/oapi/v1/testhub/organizations/${finalOrgId}/testPlans/${testplanId}/testcases/${id}/comments`;
+  const body: Record<string, any> = { content };
+  if (parentId) body.parentId = parentId;
+  if (formatType) body.formatType = formatType;
+  const response = await yunxiaoRequest(url, { method: 'POST', body });
+  return z.object({ id: z.string().describe("评论id") }).parse(response);
 }

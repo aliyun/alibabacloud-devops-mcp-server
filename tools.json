@@ -1,6 +1,6 @@
 {
-  "total": 192,
-  "generatedAt": "2026-06-30T08:26:57.662Z",
+  "total": 194,
+  "generatedAt": "2026-07-02T03:40:02.459Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -8271,6 +8271,79 @@
         "required": [
           "organizationId",
           "testRepoId",
+          "id",
+          "content"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_test_plan_testcase_comments",
+      "description": "[test management] 获取测试计划中测试用例的评论列表（与用例库中的用例评论不同，这里是测试计划上下文）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "testplanId": {
+            "type": "string",
+            "description": "测试计划唯一标识"
+          },
+          "id": {
+            "type": "string",
+            "description": "测试用例唯一标识"
+          }
+        },
+        "required": [
+          "organizationId",
+          "testplanId",
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "create_test_plan_testcase_comment",
+      "description": "[test management] 创建测试计划中测试用例的评论，支持回复（通过parentId）。与用例库中的用例评论不同，这里是测试计划上下文",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "testplanId": {
+            "type": "string",
+            "description": "测试计划唯一标识"
+          },
+          "id": {
+            "type": "string",
+            "description": "测试用例唯一标识"
+          },
+          "content": {
+            "type": "string",
+            "description": "评论内容"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "父评论的ID，用于回复评论"
+          },
+          "formatType": {
+            "type": "string",
+            "enum": [
+              "RICHTEXT",
+              "MARKDOWN"
+            ],
+            "description": "内容格式，RICHTEXT 或 MARKDOWN，默认 RICHTEXT"
+          }
+        },
+        "required": [
+          "organizationId",
+          "testplanId",
           "id",
           "content"
         ],
