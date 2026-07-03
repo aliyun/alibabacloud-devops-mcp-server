@@ -7,12 +7,22 @@ import { logger, sanitizeUrl } from "./logger.js";
 type RequestAuthContext = {
   token?: string;
   apiBaseUrl?: string;
+  // 本次请求想启用的工具集（原始字符串，逗号分隔解析后的数组）；
+  // 用于按请求裁剪 ListTools/CallTool，缓解工具过多导致的 context 膨胀。
+  toolsets?: string[];
 };
 
 const requestContext = new AsyncLocalStorage<RequestAuthContext>();
 
 export function runWithAuth<T>(auth: RequestAuthContext, fn: () => T): T {
   return requestContext.run(auth, fn);
+}
+
+/**
+ * 获取本次请求指定的工具集（若未指定返回 undefined，调用方回退到全局默认）。
+ */
+export function getCurrentToolsets(): string[] | undefined {
+  return requestContext.getStore()?.toolsets;
 }
 
 const DEFAULT_YUNXIAO_API_BASE_URL = "https://openapi-rdc.aliyuncs.com";

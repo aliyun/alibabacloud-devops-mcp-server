@@ -43,6 +43,7 @@ import { Toolset } from "./common/toolsets.js";
 import { loadConfig, type ServerConfig } from "./common/config.js";
 import { runWithCluster, setupWorkerGuards } from "./common/process-manager.js";
 import { logger } from "./common/logger.js";
+import { getCurrentToolsets } from "./common/utils.js";
 
 /**
  * Create a new MCP Server instance with all request handlers configured.
@@ -64,15 +65,18 @@ function createMcpServer(): Server {
 
     mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
         let tools: any[];
-        
-        if (enabledToolsets.length > 0) {
+
+        // 优先使用本次请求指定的工具集（缓解工具过多导致的 context 膨胀），
+        // 未指定时回退到进程级默认 enabledToolsets。
+        const effective = effectiveToolsets();
+        if (effective.length > 0) {
             const baseTools = getEnabledTools([Toolset.BASE]);
-            const enabledTools = getEnabledTools(enabledToolsets);
+            const enabledTools = getEnabledTools(effective);
             tools = [...baseTools, ...enabledTools];
         } else {
             tools = getAllTools();
         }
-        
+
         return {
             tools,
         };
@@ -84,10 +88,11 @@ function createMcpServer(): Server {
                 throw new Error("Arguments are required");
             }
 
-            const result = enabledToolsets.length > 0 
-                ? await handleEnabledToolRequest(request, enabledToolsets)
+            const effective = effectiveToolsets();
+            const result = effective.length > 0
+                ? await handleEnabledToolRequest(request, effective)
                 : await handleToolRequest(request);
-                
+
             return result;
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -182,6 +187,7 @@ type StreamableSessionEntry = {
     server: Server;
     yunxiao_access_token?: string;
     yunxiao_api_base_url?: string;
+    toolsets?: string[];
 };
 
 function getMcpSessionIdHeader(req: { headers: Record<string, string | string[] | undefined> }): string | undefined {
@@ -215,6 +221,47 @@ function resolveYunxiaoAuth(
     };
 }
 
+/**
+ * 从请求中解析本次希望启用的工具集：
+ * - query: ?toolsets=code-management,project-management
+ * - header: X-Devops-Toolsets: code-management,project-management
+ * 返回原始字符串数组（未做合法性校验），未指定则返回 undefined。
+ */
+function resolveToolsets(
+    req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined> },
+): string[] | undefined {
+    const q = req.query['toolsets'];
+    const h = req.headers['x-devops-toolsets'];
+    const raw = (typeof q === 'string' ? q : undefined) ?? (typeof h === 'string' ? h : undefined);
+    if (!raw) return undefined;
+    const parts = raw.split(',').map((s) => s.trim()).filter((s) => s.length > 0);
+    return parts.length > 0 ? parts : undefined;
+}
+
+/** 将原始工具集字符串校验并转换为 Toolset 枚举，非法项忽略并告警。 */
+function toValidToolsets(raw: string[] | undefined): Toolset[] {
+    if (!raw || raw.length === 0) return [];
+    const valid = Object.values(Toolset) as string[];
+    const out: Toolset[] = [];
+    for (const t of raw) {
+        if (valid.includes(t)) {
+            out.push(t as Toolset);
+        } else {
+            logger.warn({ toolset: t }, "ignoring unknown toolset from request");
+        }
+    }
+    return out;
+}
+
+/**
+ * 计算本次请求的有效工具集：优先用请求指定的（校验后），
+ * 否则回退到进程级默认 enabledToolsets。返回空数组表示“全部工具”。
+ */
+function effectiveToolsets(): Toolset[] {
+    const perReq = toValidToolsets(getCurrentToolsets());
+    return perReq.length > 0 ? perReq : enabledToolsets;
+}
+
 function bodyLooksLikeInitialize(body: unknown): boolean {
     const messages = Array.isArray(body) ? body : [body];
     return messages.some((m) => typeof m === 'object' && m !== null && isInitializeRequest(m));
@@ -225,6 +272,7 @@ type SseSessionEntry = {
     server: Server;
     yunxiao_access_token?: string;
     yunxiao_api_base_url?: string;
+    toolsets?: string[];
 };
 
 async function registerSseRoutes(
@@ -251,6 +299,7 @@ async function registerSseRoutes(
                 server: sessionServer,
                 yunxiao_access_token,
                 yunxiao_api_base_url,
+                toolsets: resolveToolsets(req),
             };
         }
 
@@ -283,12 +332,13 @@ async function registerSseRoutes(
         try {
             const { runWithAuth } = await import('./common/utils.js');
             const auth = resolveYunxiaoAuth(req, session);
+            const toolsets = resolveToolsets(req) ?? session.toolsets;
             logger.debug(
                 { sessionId, hasToken: !!auth.token, apiBaseUrl: auth.apiBaseUrl || null },
                 "SSE POST message",
             );
 
-            await runWithAuth(auth, () => session.transport.handlePostMessage(req, res, req.body));
+            await runWithAuth({ ...auth, toolsets }, () => session.transport.handlePostMessage(req, res, req.body));
         } catch (error) {
             logger.error({ err: error }, "error handling SSE POST message");
             if (!res.headersSent) {
@@ -309,7 +359,7 @@ function registerStreamableRoutes(
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
         res.setHeader(
             'Access-Control-Allow-Headers',
-            'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization, X-Yunxiao-Token, X-Yunxiao-Api-Base-Url',
+            'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization, X-Yunxiao-Token, X-Yunxiao-Api-Base-Url, X-Devops-Toolsets',
         );
         if (req.method === 'OPTIONS') {
             res.status(204).end();
@@ -332,8 +382,9 @@ function registerStreamableRoutes(
                 return;
             }
             const auth = resolveYunxiaoAuth(req, entry);
+            const toolsets = resolveToolsets(req) ?? entry.toolsets;
             const parsedBody = req.method === 'POST' ? req.body : undefined;
-            await utils.runWithAuth(auth, () => entry.transport.handleRequest(req, res, parsedBody));
+            await utils.runWithAuth({ ...auth, toolsets }, () => entry.transport.handleRequest(req, res, parsedBody));
             return;
         }
 
@@ -362,6 +413,7 @@ function registerStreamableRoutes(
         }
 
         const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url } = resolveYunxiaoAuth(req);
+        const toolsets = resolveToolsets(req);
         const sessionServer = createMcpServer();
 
         let transport!: StreamableHTTPServerTransport;
@@ -373,6 +425,7 @@ function registerStreamableRoutes(
                     server: sessionServer,
                     yunxiao_access_token,
                     yunxiao_api_base_url,
+                    toolsets,
                 });
                 logger.info({ sessionId: sid }, "Streamable HTTP MCP session initialized");
             },
@@ -389,7 +442,7 @@ function registerStreamableRoutes(
             "new Streamable HTTP connection",
         );
 
-        await utils.runWithAuth({ token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url }, () =>
+        await utils.runWithAuth({ token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url, toolsets }, () =>
             transport.handleRequest(req, res, req.body),
         );
     });
@@ -405,7 +458,7 @@ function registerStatelessStreamableRoutes(
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
         res.setHeader(
             'Access-Control-Allow-Headers',
-            'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization, X-Yunxiao-Token, X-Yunxiao-Api-Base-Url',
+            'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization, X-Yunxiao-Token, X-Yunxiao-Api-Base-Url, X-Devops-Toolsets',
         );
         if (req.method === 'OPTIONS') {
             res.status(204).end();
@@ -425,6 +478,7 @@ function registerStatelessStreamableRoutes(
         }
 
         const auth = resolveYunxiaoAuth(req);
+        const toolsets = resolveToolsets(req);
         const server = createMcpServer();
         const transport = new StreamableHTTPServerTransport({
             sessionIdGenerator: undefined,
@@ -434,7 +488,7 @@ function registerStatelessStreamableRoutes(
         await server.connect(transport);
 
         try {
-            await utils.runWithAuth(auth, () => transport.handleRequest(req, res, req.body));
+            await utils.runWithAuth({ ...auth, toolsets }, () => transport.handleRequest(req, res, req.body));
         } finally {
             await transport.close();
             await server.close();
