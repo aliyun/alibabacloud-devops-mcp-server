@@ -62,23 +62,6 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
 }
 ```
 
-仅支持 stdio 的客户端，用 `mcp-remote` 桥接：
-
-```json
-{
-  "mcpServers": {
-    "yunxiao": {
-      "command": "npx",
-      "args": [
-        "-y", "mcp-remote",
-        "https://openapi-rdc.aliyuncs.com/ai/mcp",
-        "--header", "Authorization: Bearer <YOUR_TOKEN>"
-      ]
-    }
-  }
-}
-```
-
 > 提示：只启用需要的工具集可显著降低 context 占用——`?toolsets=code-management,project-management` 或请求头 `X-Devops-Toolsets`。完整说明见 [docs/hosted-mcp-guide.zh-CN.md](docs/hosted-mcp-guide.zh-CN.md)。
 
 ---

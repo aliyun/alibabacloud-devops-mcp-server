@@ -79,23 +79,6 @@ Client config (clients with native remote support, e.g. Cursor):
 }
 ```
 
-For stdio-only clients, bridge it with `mcp-remote`:
-
-```json
-{
-  "mcpServers": {
-    "yunxiao": {
-      "command": "npx",
-      "args": [
-        "-y", "mcp-remote",
-        "https://openapi-rdc.aliyuncs.com/ai/mcp",
-        "--header", "Authorization: Bearer <YOUR_TOKEN>"
-      ]
-    }
-  }
-}
-```
-
 > Tip: cut context usage by requesting only the toolsets you need — `?toolsets=code-management,project-management` or header `X-Devops-Toolsets`. See the full guide: [docs/hosted-mcp-guide.zh-CN.md](docs/hosted-mcp-guide.zh-CN.md).
 
 ---
