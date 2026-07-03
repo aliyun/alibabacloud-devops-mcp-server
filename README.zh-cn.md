@@ -41,9 +41,51 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
   
   ![个人令牌授权页面](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/img_8.jpg)
 
-## 快速开始（推荐：使用 Stdio 模式）
+## 官方托管服务（免安装，推荐）
 
-**Stdio 模式**是最简单、最常用的方式，适合大多数 MCP 客户端（如 Cursor、Claude Desktop、iFlow 等）。无需安装 Docker，直接通过 npx 运行即可。
+云效提供**官方托管**的 MCP 端点，**无需本地安装或 Docker**——把客户端指向该地址、用你的云效令牌鉴权即可。
+
+- 服务地址：`https://openapi-rdc.aliyuncs.com/ai/mcp`
+- 传输协议：Streamable HTTP（无状态）
+- 鉴权：`Authorization: Bearer <YOUR_TOKEN>`（或请求头 `X-Yunxiao-Token: <YOUR_TOKEN>`）
+
+客户端配置（原生支持远程的客户端，如 Cursor）：
+
+```json
+{
+  "mcpServers": {
+    "yunxiao": {
+      "url": "https://openapi-rdc.aliyuncs.com/ai/mcp",
+      "headers": { "Authorization": "Bearer <YOUR_TOKEN>" }
+    }
+  }
+}
+```
+
+仅支持 stdio 的客户端，用 `mcp-remote` 桥接：
+
+```json
+{
+  "mcpServers": {
+    "yunxiao": {
+      "command": "npx",
+      "args": [
+        "-y", "mcp-remote",
+        "https://openapi-rdc.aliyuncs.com/ai/mcp",
+        "--header", "Authorization: Bearer <YOUR_TOKEN>"
+      ]
+    }
+  }
+}
+```
+
+> 提示：只启用需要的工具集可显著降低 context 占用——`?toolsets=code-management,project-management` 或请求头 `X-Devops-Toolsets`。完整说明见 [docs/hosted-mcp-guide.zh-CN.md](docs/hosted-mcp-guide.zh-CN.md)。
+
+---
+
+## 快速开始（自建：使用 Stdio 模式）
+
+**Stdio 模式**是最简单的自建方式，适合大多数 MCP 客户端（如 Cursor、Claude Desktop、iFlow 等）。无需安装 Docker，直接通过 npx 运行即可。
 
 ### 方式一：通过 npx 直接使用（最简单）
 
@@ -72,10 +114,6 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
 > - 默认调用云效中心站 OpenAPI（`https://openapi-rdc.aliyuncs.com`），无需额外配置
 > - 如果您使用的是 **Region 站点**（专属域名），需要额外设置环境变量 `YUNXIAO_API_BASE_URL` 为您的云效实例地址，如 `https://your-org.devops.aliyuncs.com`。节
 > - 这种方式使用 **stdio 模式**，通过标准输入输出与 MCP 客户端通信
-
-### 方式二：通过 MCP 市场安装
-
-通义灵码内置的 MCP 市场中已经提供了云效的 MCP 服务，在通义灵码中进入 MCP 市场并且找到「云效DevOps」，直接安装即可。
 
 ---
 

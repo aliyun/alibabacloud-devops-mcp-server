@@ -58,9 +58,51 @@ When using a Region edition, set the `YUNXIAO_API_BASE_URL` environment variable
 
   ![The personal token authorization page](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/img_8.jpg)
 
-## Quick Start (Recommended: Using Stdio Mode)
+## Official Hosted MCP Service (No Install)
 
-**Stdio mode** is the simplest and most common way, suitable for most MCP clients (like Cursor, Claude Desktop, iFlow, etc.). No Docker installation required, just run via npx.
+Yunxiao provides an **officially hosted** MCP endpoint — no local install or Docker needed. Just point your client at it and authenticate with your Yunxiao token.
+
+- Endpoint: `https://openapi-rdc.aliyuncs.com/ai/mcp`
+- Transport: Streamable HTTP (stateless)
+- Auth: `Authorization: Bearer <YOUR_TOKEN>` (or header `X-Yunxiao-Token: <YOUR_TOKEN>`)
+
+Client config (clients with native remote support, e.g. Cursor):
+
+```json
+{
+  "mcpServers": {
+    "yunxiao": {
+      "url": "https://openapi-rdc.aliyuncs.com/ai/mcp",
+      "headers": { "Authorization": "Bearer <YOUR_TOKEN>" }
+    }
+  }
+}
+```
+
+For stdio-only clients, bridge it with `mcp-remote`:
+
+```json
+{
+  "mcpServers": {
+    "yunxiao": {
+      "command": "npx",
+      "args": [
+        "-y", "mcp-remote",
+        "https://openapi-rdc.aliyuncs.com/ai/mcp",
+        "--header", "Authorization: Bearer <YOUR_TOKEN>"
+      ]
+    }
+  }
+}
+```
+
+> Tip: cut context usage by requesting only the toolsets you need — `?toolsets=code-management,project-management` or header `X-Devops-Toolsets`. See the full guide: [docs/hosted-mcp-guide.zh-CN.md](docs/hosted-mcp-guide.zh-CN.md).
+
+---
+
+## Quick Start (Self-host, Using Stdio Mode)
+
+**Stdio mode** is the simplest self-hosting way, suitable for most MCP clients (like Cursor, Claude Desktop, iFlow, etc.). No Docker installation required, just run via npx.
 
 ### Option 1: Direct Use via NPX (Simplest)
 
@@ -89,10 +131,6 @@ Add the following configuration to your MCP client configuration file:
 > - By default the tool calls the Yunxiao Central Station OpenAPI (`https://openapi-rdc.aliyuncs.com`); no extra configuration is required
 > - If you are on a **Region edition** (organization-specific domain), set an additional environment variable `YUNXIAO_API_BASE_URL` to your Yunxiao instance URL, e.g. `https://your-org.devops.aliyuncs.com`. See the [Configuring Region Edition](#configuring-region-edition) section above for details
 > - This method uses **stdio mode**, communicating with the MCP client via standard input/output
-
-### Option 2: Install via MCP Marketplace
-
-The MCP market built into Lingma (AlibabaCloud Tongyi Lingma) has already provided the AlibabaCloud Devops MCP service. To install it, simply enter the MCP market in Lingma and search for "Yunxiao DevOps", then click install.
 
 ---
 
