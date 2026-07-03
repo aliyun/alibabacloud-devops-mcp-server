@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { getUserAgent } from "universal-user-agent";
 import { createYunxiaoError } from "./errors.js";
 import { VERSION } from "./version.js";
+import { logger, sanitizeUrl } from "./logger.js";
 
 type RequestAuthContext = {
   token?: string;
@@ -49,24 +50,10 @@ type RequestOptions = {
   headers?: Record<string, string>;
 }
 
-export function debug(message: string, data?: unknown): void {
-  if (data === undefined) {
-    console.error(`[DEBUG] ${message} <undefined>`);
-  } else if (data === null) {
-    console.error(`[DEBUG] ${message} <null>`);
-  } else if (typeof data === 'string') {
-    console.error(`[DEBUG] ${message} ${data.length === 0 ? '<empty string>' : data}`);
-  } else if (typeof data === 'object') {
-    console.error(`[DEBUG] ${message}`, JSON.stringify(data, null, 2));
-  } else {
-    console.error(`[DEBUG] ${message}`, data);
-  }
-}
-
 async function parseResponseBody(response: Response): Promise<unknown> {
   const text = await response.text();
-  // Always log the raw body to ease debugging when Content-Type and actual payload mismatch
-  debug(`Raw Response Body:`, text);
+  // body 可能含业务敏感数据，降到 trace（默认关闭）
+  logger.trace({ rawBody: text }, "raw response body");
   if (!text) {
     return undefined;
   }
@@ -97,7 +84,7 @@ export function buildUrl(baseUrl: string, params: Record<string, string | number
     });
 
     const result = url.toString();
-    console.error(`[DEBUG] Final URL: ${result}`);
+    logger.debug({ url: sanitizeUrl(result) }, "built url");
 
     // If we started with a relative URL, return just the path portion
     if (!baseUrl.startsWith('http')) {
@@ -108,7 +95,7 @@ export function buildUrl(baseUrl: string, params: Record<string, string | number
 
     return result;
   } catch (error) {
-    console.error(`[ERROR] Failed to build URL: ${error}`);
+    logger.error({ err: error }, "failed to build URL");
 
     // Fallback: manually append query parameters
     let urlWithParams = baseUrl;
@@ -124,7 +111,7 @@ export function buildUrl(baseUrl: string, params: Record<string, string | number
       urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + queryParts.join('&');
     }
 
-    console.error(`[DEBUG] Fallback URL: ${urlWithParams}`);
+    logger.debug({ url: sanitizeUrl(urlWithParams) }, "fallback url");
     return urlWithParams;
   }
 }
@@ -159,9 +146,10 @@ export async function yunxiaoRequest(
     requestHeaders["x-yunxiao-token"] = token;
   }
 
-  debug(`Request: ${options.method} ${url}`);
-  debug(`Headers:`, requestHeaders);
-  debug(`Body:`, options.body);
+  logger.debug({ method: options.method || "GET", url: sanitizeUrl(url) }, "yunxiao request");
+  // headers 里的 x-yunxiao-token / authorization 由 logger.redact 自动脱敏
+  logger.debug({ headers: requestHeaders }, "yunxiao request headers");
+  logger.trace({ body: options.body }, "yunxiao request body");
 
   const response = await fetch(url, {
     method : options.method || "GET",
@@ -170,8 +158,8 @@ export async function yunxiaoRequest(
   } as RequestInit);
 
   const responseBody = await parseResponseBody(response);
-  debug(`Response Body:`, responseBody)
-  debug(`Response status:`, response.ok)
+  logger.trace({ body: responseBody }, "yunxiao response body");
+  logger.debug({ status: response.status, ok: response.ok }, "yunxiao response");
 
   if (!response.ok) {
     throw createYunxiaoError(

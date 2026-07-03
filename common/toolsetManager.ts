@@ -1,5 +1,6 @@
 import { Tool } from "./toolsets.js";
 import { Toolset, ToolsetConfig, ToolsetManager, DEFAULT_ENABLED_TOOLSETS } from "./toolsets.js";
+import { logger } from "./logger.js";
 
 // 导入所有工具集函数
 import { getCodeManagementTools } from '../tool-registry/code-management.js';
@@ -123,7 +124,7 @@ export class DefaultToolsetManager implements ToolsetManager {
     return toolsets.flatMap(toolsetName => {
       const config = ALL_TOOLSET_CONFIGS[toolsetName];
       if (!config) {
-        console.warn(`Unknown toolset: ${toolsetName}, skipping...`);
+        logger.warn({ toolset: toolsetName }, "unknown toolset, skipping");
         return [];
       }
       return config.tools() as Tool[];

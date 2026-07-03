@@ -42,6 +42,7 @@ import { handleToolRequest, handleEnabledToolRequest } from "./tool-handlers/ind
 import { Toolset } from "./common/toolsets.js";
 import { loadConfig, type ServerConfig } from "./common/config.js";
 import { runWithCluster, setupWorkerGuards } from "./common/process-manager.js";
+import { logger } from "./common/logger.js";
 
 /**
  * Create a new MCP Server instance with all request handlers configured.
@@ -233,12 +234,12 @@ async function registerSseRoutes(
     options: { installJsonParser: boolean },
 ): Promise<void> {
     app.get(cfg.paths.sse, async (req: any, res: any) => {
-        console.log(`New SSE connection from ${req.ip}`);
+        logger.info({ ip: req.ip }, "new SSE connection");
 
         const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url } = resolveYunxiaoAuth(req);
 
-        console.log(`[SSE] Resolved token: ${yunxiao_access_token ? yunxiao_access_token.substring(0, 10) + '...' : 'none'}`);
-        console.log(`[SSE] Resolved API base URL: ${yunxiao_api_base_url || 'none (will use default)'}`);
+        // 只记录是否携带 token，绝不打印 token 本身
+        logger.debug({ hasToken: !!yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url || null }, "SSE resolved auth");
 
         const sessionServer = createMcpServer();
         const sseTransport = new SSEServerTransport(cfg.paths.sseMessages, res);
@@ -255,14 +256,12 @@ async function registerSseRoutes(
 
         try {
             await sessionServer.connect(sseTransport);
-            console.info(`Yunxiao MCP Server connected via SSE with session ${sessionId}`);
-            if (yunxiao_access_token) {
-                console.error(`Session ${sessionId} using custom token`);
-            } else {
-                console.error(`Session ${sessionId} using default token from environment`);
-            }
+            logger.info(
+                { sessionId, auth: yunxiao_access_token ? "custom" : "env-default" },
+                "MCP server connected via SSE",
+            );
         } catch (error) {
-            console.error('Failed to start SSE server:', error);
+            logger.error({ err: error }, "failed to start SSE server");
             res.status(500).send('Server error');
         }
     });
@@ -284,14 +283,14 @@ async function registerSseRoutes(
         try {
             const { runWithAuth } = await import('./common/utils.js');
             const auth = resolveYunxiaoAuth(req, session);
-            console.log(
-                `[POST] Session ${sessionId} - token: ${auth.token ? auth.token.substring(0, 10) + '...' : 'none'}`,
+            logger.debug(
+                { sessionId, hasToken: !!auth.token, apiBaseUrl: auth.apiBaseUrl || null },
+                "SSE POST message",
             );
-            console.log(`[POST] Session ${sessionId} - API base URL: ${auth.apiBaseUrl || 'none'}`);
 
             await runWithAuth(auth, () => session.transport.handlePostMessage(req, res, req.body));
         } catch (error) {
-            console.error('Error handling POST message:', error);
+            logger.error({ err: error }, "error handling SSE POST message");
             if (!res.headersSent) {
                 res.status(500).send('Server error');
             }
@@ -375,20 +374,20 @@ function registerStreamableRoutes(
                     yunxiao_access_token,
                     yunxiao_api_base_url,
                 });
-                console.info(`Streamable HTTP MCP session initialized: ${sid}`);
+                logger.info({ sessionId: sid }, "Streamable HTTP MCP session initialized");
             },
             onsessionclosed: async (sid) => {
                 streamSessions.delete(sid);
-                console.info(`Streamable HTTP MCP session closed: ${sid}`);
+                logger.info({ sessionId: sid }, "Streamable HTTP MCP session closed");
             },
         });
 
         await sessionServer.connect(transport);
 
-        console.log(`New Streamable HTTP connection from ${req.ip}`);
-        if (yunxiao_access_token) {
-            console.error(`Streamable HTTP session using custom token`);
-        }
+        logger.info(
+            { ip: req.ip, auth: yunxiao_access_token ? "custom" : "env-default" },
+            "new Streamable HTTP connection",
+        );
 
         await utils.runWithAuth({ token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url }, () =>
             transport.handleRequest(req, res, req.body),
@@ -484,20 +483,13 @@ async function runServer() {
             const modes: string[] = [];
             if (transport.sse) modes.push(`SSE (${paths.sse}, ${paths.sseMessages})`);
             if (transport.streamableHttp) modes.push(`Streamable HTTP${serverConfig.stateless ? ' (stateless)' : ''} (${paths.streamableHttp})`);
-            console.log(`Yunxiao MCP Server running on port ${port} — ${modes.join(' + ')}`);
-            if (transport.sse) {
-                console.log(`  SSE: http://localhost:${port}${paths.sse}`);
-                console.log(`  Messages: http://localhost:${port}${paths.sseMessages}?sessionId=<session-id>`);
-            }
-            if (transport.streamableHttp) {
-                console.log(`  Streamable: http://localhost:${port}${paths.streamableHttp}`);
-            }
+            logger.info({ port, modes }, "Yunxiao MCP Server running");
         });
 
         process.on('SIGINT', () => {
-            console.log('Shutting down HTTP server...');
+            logger.info("shutting down HTTP server...");
             serverInstance.close(() => {
-                console.log('Server closed.');
+                logger.info("server closed");
                 process.exit(0);
             });
         });

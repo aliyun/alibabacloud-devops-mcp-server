@@ -1,4 +1,5 @@
 import { yunxiaoRequest, buildUrl, isRegionEdition } from "../../common/utils.js";
+import { logger } from "../../common/logger.js";
 import { resolveOrganizationId } from "../organization/organization.js";
 import {
   ArtifactSchema,
@@ -96,7 +97,7 @@ export async function getArtifactFunc(
 
     return ArtifactSchema.parse(response);
   } catch (error) {
-    console.error(`Error fetching artifact: ${error}`);
+    logger.error({ err: error }, "error fetching artifact");
     return null;
   }
 }

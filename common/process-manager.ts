@@ -1,5 +1,6 @@
 import cluster from "node:cluster";
 import { availableParallelism } from "node:os";
+import { logger } from "./logger.js";
 
 export interface ClusterConfig {
   enabled: boolean;
@@ -24,12 +25,12 @@ function getBackoffMs(failures: number): number {
 
 export function setupWorkerGuards(): void {
   process.on("uncaughtException", (err) => {
-    console.error(`[worker ${process.pid}] Uncaught exception:`, err);
+    logger.error({ err }, "uncaught exception");
     process.exit(1);
   });
 
   process.on("unhandledRejection", (reason) => {
-    console.error(`[worker ${process.pid}] Unhandled rejection:`, reason);
+    logger.error({ err: reason }, "unhandled rejection");
     process.exit(1);
   });
 }
@@ -41,7 +42,7 @@ export function runWithCluster(
   if (!cfg.enabled) {
     setupWorkerGuards();
     workerMain().catch((err) => {
-      console.error("Fatal error:", err);
+      logger.error({ err }, "fatal error");
       process.exit(1);
     });
     return;
@@ -49,9 +50,7 @@ export function runWithCluster(
 
   if (cluster.isPrimary) {
     const numWorkers = cfg.workers || 1;
-    console.log(
-      `[primary ${process.pid}] Starting ${numWorkers} worker(s)...`,
-    );
+    logger.info({ numWorkers }, "primary starting workers");
 
     for (let i = 0; i < numWorkers; i++) {
       forkWorker(i);
@@ -65,16 +64,18 @@ export function runWithCluster(
       };
 
       if (signal === "SIGTERM" || signal === "SIGINT") {
-        console.log(
-          `[primary] Worker ${worker.process.pid} exited on ${signal}, not restarting`,
+        logger.info(
+          { workerPid: worker.process.pid, signal },
+          "worker exited on signal, not restarting",
         );
         workerStates.delete(idx);
         if (allWorkersExited()) process.exit(0);
         return;
       }
 
-      console.error(
-        `[primary] Worker ${worker.process.pid} exited (code=${code}, signal=${signal})`,
+      logger.error(
+        { workerPid: worker.process.pid, code, signal },
+        "worker exited",
       );
 
       const now = Date.now();
@@ -86,31 +87,33 @@ export function runWithCluster(
       workerStates.set(idx, state);
 
       if (state.restartTimestamps.length >= MAX_RAPID_RESTARTS) {
-        console.error(
-          `[primary] Worker ${idx} crashed ${MAX_RAPID_RESTARTS} times in ${RAPID_RESTART_WINDOW_MS / 1000}s, giving up`,
+        logger.error(
+          { workerIdx: idx, max: MAX_RAPID_RESTARTS, windowMs: RAPID_RESTART_WINDOW_MS },
+          "worker crash-looping, giving up",
         );
         workerStates.delete(idx);
         if (allWorkersExited()) {
-          console.error("[primary] All workers failed, exiting");
+          logger.error("all workers failed, exiting");
           process.exit(1);
         }
         return;
       }
 
       const delay = getBackoffMs(state.consecutiveFailures);
-      console.log(
-        `[primary] Restarting worker ${idx} in ${delay}ms (failure #${state.consecutiveFailures})`,
+      logger.info(
+        { workerIdx: idx, delay, failure: state.consecutiveFailures },
+        "restarting worker",
       );
       setTimeout(() => forkWorker(idx), delay);
     });
 
     const shutdown = (sig: string) => {
-      console.log(`[primary] Received ${sig}, shutting down workers...`);
+      logger.info({ signal: sig }, "primary received signal, shutting down workers");
       for (const id in cluster.workers) {
         cluster.workers[id]?.process.kill("SIGTERM");
       }
       setTimeout(() => {
-        console.error("[primary] Forcing exit after timeout");
+        logger.error("forcing exit after timeout");
         process.exit(1);
       }, 10_000);
     };
@@ -119,9 +122,9 @@ export function runWithCluster(
     process.on("SIGTERM", () => shutdown("SIGTERM"));
   } else {
     setupWorkerGuards();
-    console.log(`[worker ${process.pid}] Starting...`);
+    logger.info("worker starting");
     workerMain().catch((err) => {
-      console.error(`[worker ${process.pid}] Fatal error:`, err);
+      logger.error({ err }, "worker fatal error");
       process.exit(1);
     });
   }
@@ -129,7 +132,7 @@ export function runWithCluster(
 
 function forkWorker(idx: number): void {
   const w = cluster.fork();
-  console.log(`[primary] Forked worker ${idx} (pid=${w.process.pid})`);
+  logger.info({ workerIdx: idx, workerPid: w.process.pid }, "forked worker");
 }
 
 function allWorkersExited(): boolean {

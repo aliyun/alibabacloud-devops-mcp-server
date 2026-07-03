@@ -1,4 +1,5 @@
 import * as utils from "../../common/utils.js";
+import { logger } from "../../common/logger.js";
 import { resolveOrganizationId } from "../organization/organization.js";
 import {
   PipelineDetailSchema,
@@ -215,7 +216,7 @@ export async function createPipelineRunFunc(
       
     } catch (e) {
       // 获取失败时，保持 repositories 为空，后续会有 fallback 处理
-      console.error('[ERROR] Failed to fetch pipeline detail for repositories:', e);
+      logger.error({ err: e }, "failed to fetch pipeline detail for repositories");
     }
   }
   
@@ -778,7 +779,7 @@ export async function createPipelineWithOptionsFunc(
     };
   } catch (error) {
     // 如果是YAML校验失败或其他流水线创建错误，将详细信息透出给用户
-    console.error('Create pipeline failed:', error);
+    logger.error({ err: error }, "create pipeline failed");
     
     // 构造包含生成YAML的错误信息，方便用户排查
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -813,7 +814,7 @@ async function getDefaultServiceConnectionId(organizationId: string): Promise<st
     }
     return null;
   } catch (error) {
-    console.error('获取Codeup服务连接失败:', error);
+    logger.error({ err: error }, "failed to get Codeup service connection");
     return null;
   }
 }
@@ -832,7 +833,7 @@ async function getDefaultPackagesServiceConnectionId(organizationId: string): Pr
     }
     return null;
   } catch (error) {
-    console.error('获取Packages服务连接失败:', error);
+    logger.error({ err: error }, "failed to get Packages service connection");
     return null;
   }
 }
@@ -850,7 +851,7 @@ async function getDefaultHostGroupId(organizationId: string): Promise<string | n
     }
     return null;
   } catch (error) {
-    console.error('获取主机组失败:', error);
+    logger.error({ err: error }, "failed to get host group");
     return null;
   }
 }

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {buildUrl, yunxiaoRequest, isRegionEdition} from "../../common/utils.js";
+import { logger, sanitizeUrl } from "../../common/logger.js";
 import { resolveOrganizationId } from "../organization/organization.js";
 import {
   CodeupBranchSchema
@@ -47,7 +48,7 @@ export async function createBranchFunc(
   };
 
   const url = buildUrl(baseUrl, queryParams);
-  console.error("createBranchFunc url:" + url);
+  logger.debug({ url: sanitizeUrl(url) }, "createBranchFunc");
 
   const response = await yunxiaoRequest(url, {
     method: "POST",
@@ -154,7 +155,7 @@ export async function listBranchesFunc(
     search?: string
 ): Promise<z.infer<typeof CodeupBranchSchema>[]> {
   const finalOrgId = await resolveOrganizationId(organizationId);
-  console.error("listBranchesFunc page:" + page + " perPage:" + perPage + " sort:" + sort + " search:" + search);
+  logger.debug({ page, perPage, sort, search }, "listBranchesFunc");
   // Automatically handle unencoded slashes in repositoryId
   if (repositoryId.includes("/")) {
     // Found unencoded slash, automatically URL encode it
