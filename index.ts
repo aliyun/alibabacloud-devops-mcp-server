@@ -267,6 +267,73 @@ function bodyLooksLikeInitialize(body: unknown): boolean {
     return messages.some((m) => typeof m === 'object' && m !== null && isInitializeRequest(m));
 }
 
+/** 本次 JSON-RPC 请求体是否包含需要鉴权的方法（tools/call）。 */
+function bodyNeedsAuth(body: unknown): boolean {
+    const messages = Array.isArray(body) ? body : [body];
+    return messages.some(
+        (m) => typeof m === 'object' && m !== null && (m as any).method === 'tools/call',
+    );
+}
+
+/** 取请求体里第一个可用的 JSON-RPC id，用于回填 401 错误响应。 */
+function firstRequestId(body: unknown): string | number | null {
+    const messages = Array.isArray(body) ? body : [body];
+    for (const m of messages) {
+        if (typeof m === 'object' && m !== null && 'id' in (m as any)) {
+            const id = (m as any).id;
+            if (typeof id === 'string' || typeof id === 'number') return id;
+        }
+    }
+    return null;
+}
+
+/**
+ * 返回标准 HTTP 401 + 基础 WWW-Authenticate。
+ * 注意：这里不带 resource_metadata，因此不会触发 MCP 的 OAuth 自动发现——
+ * OAuth 由上游应用负责，本服务只如实把鉴权失败暴露为 HTTP 401。
+ */
+function sendUnauthorized(res: any, body: unknown, message: string): void {
+    res.status(401)
+        .set('WWW-Authenticate', 'Bearer error="invalid_token"')
+        .set('Access-Control-Expose-Headers', 'WWW-Authenticate')
+        .json({
+            jsonrpc: '2.0',
+            error: { code: -32001, message },
+            id: firstRequestId(body),
+        });
+}
+
+/**
+ * HTTP 层鉴权 gate：仅对 tools/call 校验云效 token。
+ * - 无 token → 401
+ * - token 明确无效（云效 401）→ 401
+ * - token 有效 / 无法判定 → 放行
+ * 返回 true 表示已发送 401 响应，调用方应立即 return。
+ */
+async function enforceToolCallAuth(
+    req: any,
+    res: any,
+    sessionAuth?: { yunxiao_access_token?: string; yunxiao_api_base_url?: string },
+): Promise<boolean> {
+    // 鉴权 gate 未开启时直接放行（默认关闭；自建 + env token 场景无需验证）。
+    if (!serverConfig.authCheck) return false;
+    if (req.method !== 'POST' || !bodyNeedsAuth(req.body)) return false;
+
+    const { token, apiBaseUrl } = resolveYunxiaoAuth(req, sessionAuth);
+    if (!token) {
+        sendUnauthorized(res, req.body, 'Unauthorized: missing Yunxiao access token');
+        return true;
+    }
+
+    const utils = await import('./common/utils.js');
+    const valid = await utils.verifyToken(token, apiBaseUrl);
+    if (valid === false) {
+        sendUnauthorized(res, req.body, 'Unauthorized: invalid or expired Yunxiao access token');
+        return true;
+    }
+    return false;
+}
+
 type SseSessionEntry = {
     transport: SSEServerTransport;
     server: Server;
@@ -332,6 +399,7 @@ async function registerSseRoutes(
         try {
             const { runWithAuth } = await import('./common/utils.js');
             const auth = resolveYunxiaoAuth(req, session);
+            if (await enforceToolCallAuth(req, res, session)) return;
             const toolsets = resolveToolsets(req) ?? session.toolsets;
             logger.debug(
                 { sessionId, hasToken: !!auth.token, apiBaseUrl: auth.apiBaseUrl || null },
@@ -382,6 +450,7 @@ function registerStreamableRoutes(
                 return;
             }
             const auth = resolveYunxiaoAuth(req, entry);
+            if (await enforceToolCallAuth(req, res, entry)) return;
             const toolsets = resolveToolsets(req) ?? entry.toolsets;
             const parsedBody = req.method === 'POST' ? req.body : undefined;
             await utils.runWithAuth({ ...auth, toolsets }, () => entry.transport.handleRequest(req, res, parsedBody));
@@ -476,6 +545,10 @@ function registerStatelessStreamableRoutes(
             });
             return;
         }
+
+        // 鉴权 gate：tools/call 无 token / token 无效时直接 HTTP 401，
+        // 不进入 MCP，避免被 stateless 的 enableJsonResponse 封成 200。
+        if (await enforceToolCallAuth(req, res)) return;
 
         const auth = resolveYunxiaoAuth(req);
         const toolsets = resolveToolsets(req);

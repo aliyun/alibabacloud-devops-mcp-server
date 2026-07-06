@@ -20,6 +20,11 @@ export interface ServerConfig {
 
   stateless: boolean;
 
+  // HTTP 层鉴权 gate 开关：开启后对 tools/call 校验云效 token，
+  // 无 token / token 无效时返回 HTTP 401（供上游 OAuth 发现使用）。
+  // 默认关闭：自建 + env token 的单用户场景无需验证。
+  authCheck: boolean;
+
   cluster: ClusterConfig;
 
   toolsets: Toolset[];
@@ -72,6 +77,10 @@ export function loadConfig(): ServerConfig {
     stateless:
       process.argv.includes("--stateless") ||
       process.env.MCP_STATELESS === "true",
+
+    authCheck:
+      process.argv.includes("--auth-check") ||
+      process.env.MCP_AUTH_CHECK === "true",
 
     cluster: {
       enabled:

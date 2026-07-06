@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import { createHash } from "node:crypto";
 import { getUserAgent } from "universal-user-agent";
-import { createYunxiaoError } from "./errors.js";
+import { createYunxiaoError, isYunxiaoError } from "./errors.js";
 import { VERSION } from "./version.js";
 import { logger, sanitizeUrl } from "./logger.js";
 
@@ -183,6 +184,51 @@ export async function yunxiaoRequest(
   }
 
   return responseBody;
+}
+
+// token 有效性缓存（60s），避免每次 tools/call 都打一次用户信息接口。
+type TokenCheck = { ok: boolean; exp: number };
+const tokenVerifyCache = new Map<string, TokenCheck>();
+const TOKEN_VERIFY_TTL_MS = 60_000;
+
+/**
+ * 轻量校验云效 token 是否有效，供 HTTP 层鉴权 gate 使用。
+ * 探针接口 GET /oapi/v1/platform/user：中心站/region 通用，任意有效身份都能访问，
+ * token 无效/过期时云效返回 401。
+ * - true：token 有效
+ * - false：token 明确无效（云效 401）
+ * - "unknown"：无法判定（网络/5xx 等），调用方应放行（fail-open），避免云效抖动误伤
+ * 结果按 sha256(apiBaseUrl + token) 缓存 60s；token 变化会立即换 key，无需等待过期。
+ */
+export async function verifyToken(
+  token: string,
+  apiBaseUrl?: string,
+): Promise<boolean | "unknown"> {
+  const key = createHash("sha256").update(`${apiBaseUrl ?? ""}\n${token}`).digest("hex");
+  const now = Date.now();
+  const cached = tokenVerifyCache.get(key);
+  if (cached && cached.exp > now) {
+    return cached.ok;
+  }
+  try {
+    await runWithAuth({ token, apiBaseUrl }, () =>
+      yunxiaoRequest("/oapi/v1/platform/user", { method: "GET" }),
+    );
+    tokenVerifyCache.set(key, { ok: true, exp: now + TOKEN_VERIFY_TTL_MS });
+    return true;
+  } catch (error) {
+    if (isYunxiaoError(error) && error.status === 401) {
+      tokenVerifyCache.set(key, { ok: false, exp: now + TOKEN_VERIFY_TTL_MS });
+      return false;
+    }
+    // 网络抖动 / 5xx 等无法判定：不缓存，交由调用方 fail-open。
+    // 只记状态码，不记整个 error（其 requestHeaders 含 token，且不在 logger.redact 覆盖路径内）。
+    logger.debug(
+      { status: isYunxiaoError(error) ? error.status : undefined },
+      "verifyToken inconclusive; failing open",
+    );
+    return "unknown";
+  }
 }
 
 export function pathEscape(filePath: string): string {
