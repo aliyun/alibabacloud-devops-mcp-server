@@ -267,11 +267,19 @@ function bodyLooksLikeInitialize(body: unknown): boolean {
     return messages.some((m) => typeof m === 'object' && m !== null && isInitializeRequest(m));
 }
 
-/** 本次 JSON-RPC 请求体是否包含需要鉴权的方法（tools/call）。 */
+/**
+ * 需要鉴权的 JSON-RPC 方法集合。
+ * 覆盖 initialize / tools/list / tools/call：QoderWork 在连接探测阶段执行
+ * initialize + listTools，靠其中的 401 触发 OAuth 发现，故这三者都需鉴权。
+ * notifications/* 与 ping 等无需身份，不在内。
+ */
+const AUTH_REQUIRED_METHODS = new Set(['initialize', 'tools/list', 'tools/call']);
+
+/** 本次 JSON-RPC 请求体是否包含需要鉴权的方法。 */
 function bodyNeedsAuth(body: unknown): boolean {
     const messages = Array.isArray(body) ? body : [body];
     return messages.some(
-        (m) => typeof m === 'object' && m !== null && (m as any).method === 'tools/call',
+        (m) => typeof m === 'object' && m !== null && AUTH_REQUIRED_METHODS.has((m as any).method),
     );
 }
 
@@ -304,13 +312,13 @@ function sendUnauthorized(res: any, body: unknown, message: string): void {
 }
 
 /**
- * HTTP 层鉴权 gate：仅对 tools/call 校验云效 token。
+ * HTTP 层鉴权 gate：对 initialize / tools/list / tools/call 校验云效 token。
  * - 无 token → 401
  * - token 明确无效（云效 401）→ 401
  * - token 有效 / 无法判定 → 放行
  * 返回 true 表示已发送 401 响应，调用方应立即 return。
  */
-async function enforceToolCallAuth(
+async function enforceAuthGate(
     req: any,
     res: any,
     sessionAuth?: { yunxiao_access_token?: string; yunxiao_api_base_url?: string },
@@ -399,7 +407,7 @@ async function registerSseRoutes(
         try {
             const { runWithAuth } = await import('./common/utils.js');
             const auth = resolveYunxiaoAuth(req, session);
-            if (await enforceToolCallAuth(req, res, session)) return;
+            if (await enforceAuthGate(req, res, session)) return;
             const toolsets = resolveToolsets(req) ?? session.toolsets;
             logger.debug(
                 { sessionId, hasToken: !!auth.token, apiBaseUrl: auth.apiBaseUrl || null },
@@ -450,7 +458,7 @@ function registerStreamableRoutes(
                 return;
             }
             const auth = resolveYunxiaoAuth(req, entry);
-            if (await enforceToolCallAuth(req, res, entry)) return;
+            if (await enforceAuthGate(req, res, entry)) return;
             const toolsets = resolveToolsets(req) ?? entry.toolsets;
             const parsedBody = req.method === 'POST' ? req.body : undefined;
             await utils.runWithAuth({ ...auth, toolsets }, () => entry.transport.handleRequest(req, res, parsedBody));
@@ -480,6 +488,9 @@ function registerStreamableRoutes(
             });
             return;
         }
+
+        // initialize 也纳入鉴权 gate：无 token / token 无效时 401，供上游在连接探测阶段发现 OAuth。
+        if (await enforceAuthGate(req, res)) return;
 
         const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url } = resolveYunxiaoAuth(req);
         const toolsets = resolveToolsets(req);
@@ -546,9 +557,9 @@ function registerStatelessStreamableRoutes(
             return;
         }
 
-        // 鉴权 gate：tools/call 无 token / token 无效时直接 HTTP 401，
+        // 鉴权 gate：initialize/tools/list/tools/call 无 token / token 无效时直接 HTTP 401，
         // 不进入 MCP，避免被 stateless 的 enableJsonResponse 封成 200。
-        if (await enforceToolCallAuth(req, res)) return;
+        if (await enforceAuthGate(req, res)) return;
 
         const auth = resolveYunxiaoAuth(req);
         const toolsets = resolveToolsets(req);
