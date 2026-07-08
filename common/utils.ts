@@ -37,11 +37,17 @@ export function getYunxiaoApiBaseUrl(): string {
 }
 
 /**
- * 根据 YUNXIAO_API_BASE_URL 自动判断是否为 region 站：
+ * 判断是否为 region 站。
+ * 优先读显式配置 YUNXIAO_EDITION（central / region），解耦"站点判定"与"网络地址"——
+ * 便于把 API 地址换成 K8s service 等不含 openapi-rdc.aliyuncs.com 的内网地址时仍正确判定。
+ * 未显式配置时，回退到按 base url 域名判断(向后兼容):
  * - 域名包含 openapi-rdc.aliyuncs.com -> 中心站
  * - 其他域名 -> 认为是 region 站
  */
 export function isRegionEdition(): boolean {
+  const explicit = (process.env.YUNXIAO_EDITION || "").trim().toLowerCase();
+  if (explicit === "central") return false;
+  if (explicit === "region") return true;
   const baseUrl = getYunxiaoApiBaseUrl();
   return !baseUrl.includes("openapi-rdc.aliyuncs.com");
 }
