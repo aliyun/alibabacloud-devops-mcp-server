@@ -31,6 +31,17 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
 - 如果 URL 包含 `openapi-rdc.aliyuncs.com`，则为中心站模式
 - 否则为 Region 站模式
 
+#### 显式指定站点类型（`YUNXIAO_EDITION`）
+
+上面的自动判定依赖 API 基础 URL 是否包含 `openapi-rdc.aliyuncs.com`。如果把 `YUNXIAO_API_BASE_URL` 指向**不含**该域名的地址（例如集群内 K8s service `http://devops-traefik:6880`），而后端其实是中心站，会被**误判为 Region 站**。此时用 `YUNXIAO_EDITION` 显式覆盖：
+
+- `YUNXIAO_EDITION=central` — 强制中心站
+- `YUNXIAO_EDITION=region` — 强制 Region 站
+
+不设置时使用基于 URL 的自动判定（向后兼容）；设置后优先级高于 URL 判定。
+
+> ⚠️ 把 API 地址改为内网 service 时，必须同时显式设置 `YUNXIAO_EDITION=central`，否则带 organizationId 的工具（代码/流水线/项目等）会因走 Region 路径而报错。
+
 #### 配置 Region 站点
 
 使用 Region 站点时，需要设置环境变量 `YUNXIAO_API_BASE_URL`。
@@ -112,6 +123,15 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
 | 双传输 | `--sse --streamable-http` | `MCP_TRANSPORT=both` | `/sse` + `/mcp` |
 
 > Streamable HTTP 是 MCP 规范推荐的远程传输方式。SSE 为旧版协议；迁移期可使用 `both` 同时提供两种端点。
+
+### HTTP 鉴权 Gate（可选）
+
+作为远程 HTTP 服务对外提供时，可在传输层强制云效鉴权，让未授权的 MCP 请求返回真正的 **HTTP 401**（而非 HTTP 200 内包 JSON-RPC 错误），从而让支持 OAuth 的客户端在连接阶段自动发现鉴权要求。
+
+- 通过 `--auth-check` 或 `MCP_AUTH_CHECK=true` 开启（**默认关闭**）。
+- 开启后，`initialize` / `tools/list` / `tools/call` 在 token 缺失或无效时返回 **HTTP 401** 并带 `WWW-Authenticate: Bearer`。token 有效性会请求云效校验并带 60s 短缓存；无法判定时放行（fail-open）。
+- 覆盖 stateless / stateful Streamable HTTP 及 SSE 传输。
+- 自建、单用户、用 `YUNXIAO_ACCESS_TOKEN` 鉴权的部署建议**保持关闭**。
 
 ### 1. 拉取镜像
 

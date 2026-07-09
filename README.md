@@ -33,6 +33,15 @@ The tool automatically determines the deployment mode based on the configured AP
 - If the URL contains `openapi-rdc.aliyuncs.com`, it operates in central station mode
 - Otherwise, it operates in region edition mode
 
+#### Explicit Edition Override (`YUNXIAO_EDITION`)
+
+The auto-detection above relies on the API base URL containing `openapi-rdc.aliyuncs.com`. If you point `YUNXIAO_API_BASE_URL` at an address that does **not** contain it (for example an in-cluster K8s service such as `http://devops-traefik:6880`) while the backend is still central station, the tool would be **misdetected as region edition**. Set `YUNXIAO_EDITION` explicitly to override:
+
+- `YUNXIAO_EDITION=central` — force central station
+- `YUNXIAO_EDITION=region` — force region edition
+
+When unset, the URL-based auto-detection is used (backward compatible). This takes precedence over the URL check.
+
 #### Configuring Region Edition
 
 When using a Region edition, set the `YUNXIAO_API_BASE_URL` environment variable:
@@ -129,6 +138,15 @@ Add the following configuration to your MCP client configuration file:
 | Both | `--sse --streamable-http` | `MCP_TRANSPORT=both` | `/sse` + `/mcp` |
 
 > Streamable HTTP is the MCP specification's recommended remote transport. SSE is legacy; use `both` during migration.
+
+### HTTP Auth Gate (Optional)
+
+When exposed as a remote HTTP service, you can enforce Yunxiao authentication at the transport layer so unauthenticated MCP requests receive a real **HTTP 401** (instead of HTTP 200 wrapping a JSON-RPC error). This lets OAuth-capable clients discover the auth requirement during connection.
+
+- Enable with `--auth-check` or `MCP_AUTH_CHECK=true` (**disabled by default**).
+- When enabled, `initialize` / `tools/list` / `tools/call` return **HTTP 401** with `WWW-Authenticate: Bearer` when the token is missing or invalid. Token validity is checked against Yunxiao with a short-TTL (60s) cache; inconclusive checks fail open.
+- Covers stateless / stateful Streamable HTTP and SSE transports.
+- Leave it **off** for self-hosted single-user setups that authenticate via `YUNXIAO_ACCESS_TOKEN`.
 
 ### 1. Pull Image
 

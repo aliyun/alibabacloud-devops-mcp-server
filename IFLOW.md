@@ -21,6 +21,8 @@ This file provides guidance to iFlow Cli when working with code in this reposito
 - To run in Streamable HTTP mode: `node dist/index.js --streamable-http` or `MCP_TRANSPORT=streamable-http`
 - To run **both** transports: `MCP_TRANSPORT=both node dist/index.js`, or `node dist/index.js --sse --streamable-http`, or `npm run start:both`
 - To run with specific toolsets: `node dist/index.js --toolsets=code-management,project-management`
+- To enforce HTTP 401 auth on remote transports: `node dist/index.js --streamable-http --auth-check` (or `MCP_AUTH_CHECK=true`). Off by default; gates `initialize` / `tools/list` / `tools/call` with HTTP 401 + `WWW-Authenticate: Bearer` when the Yunxiao token is missing/invalid (token validity checked against Yunxiao with a 60s cache, fail-open)
+- To force central vs region detection when `YUNXIAO_API_BASE_URL` is an internal address (e.g. a K8s service that doesn't contain `openapi-rdc.aliyuncs.com`): set `YUNXIAO_EDITION=central` (or `region`); this overrides the URL-based auto-detection
 
 ## Architecture Overview
 
@@ -33,6 +35,8 @@ The server is structured into several modules:
    - Registers available tools based on enabled toolsets
    - Handles tool requests and maps them to appropriate functions
    - Supports stdio, legacy SSE, Streamable HTTP, and **dual** mode (SSE + Streamable on one port)
+   - Optional HTTP auth gate (`MCP_AUTH_CHECK` / `--auth-check`, off by default): returns HTTP 401 + `WWW-Authenticate` for unauthenticated `initialize` / `tools/list` / `tools/call`, so OAuth-capable clients can discover the auth requirement
+   - Region vs central detection via `isRegionEdition()` (`common/utils.ts`): prefers `YUNXIAO_EDITION` (`central` | `region`), otherwise falls back to whether the API base URL contains `openapi-rdc.aliyuncs.com`
 
 2. **Operations Modules** (in `operations/` directory):
    - `codeup/` - Contains functions for code repository operations (branches, files, repositories, change requests)
