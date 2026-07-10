@@ -391,6 +391,42 @@ export const handleProjectManagementTools = async (request: any) => {
       };
     }
 
+    // Work item related testcase Operations
+    case "list_workitem_testcase_relations": {
+      const args = types.ListWorkitemTestcaseRelationsSchema.parse(request.params.arguments);
+      const relations = await workitem.listWorkitemTestcaseRelationsFunc(
+        args.organizationId,
+        args.workItemId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(relations, null, 2) }],
+      };
+    }
+
+    case "create_workitem_testcase_relation": {
+      const args = types.CreateWorkitemTestcaseRelationSchema.parse(request.params.arguments);
+      const relation = await workitem.createWorkitemTestcaseRelationFunc(
+        args.organizationId,
+        args.workItemId,
+        args.testcaseId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(relation, null, 2) }],
+      };
+    }
+
+    case "delete_workitem_testcase_relation": {
+      const args = types.DeleteWorkitemTestcaseRelationSchema.parse(request.params.arguments);
+      const result = await workitem.deleteWorkitemTestcaseRelationFunc(
+        args.organizationId,
+        args.workItemId,
+        args.relationRecordId
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
     // Attachment Operations
     case "list_workitem_attachments": {
       const args = types.ListWorkitemAttachmentsSchema.parse(request.params.arguments);

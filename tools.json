@@ -1,6 +1,6 @@
 {
-  "total": 194,
-  "generatedAt": "2026-07-02T03:40:02.459Z",
+  "total": 197,
+  "generatedAt": "2026-07-10T03:15:17.902Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -2726,6 +2726,85 @@
           "organizationId",
           "workItemId",
           "content"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_workitem_testcase_relations",
+      "description": "[Project Management] List test cases related to a work item. Returns relation records including relationRecordId (used for deletion), testcaseId, subject and owner.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+          },
+          "workItemId": {
+            "type": "string",
+            "description": "工作项唯一标识"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "create_workitem_testcase_relation",
+      "description": "[Project Management] Relate a test case to a work item. Returns the created relation record id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+          },
+          "workItemId": {
+            "type": "string",
+            "description": "工作项唯一标识"
+          },
+          "testcaseId": {
+            "type": "string",
+            "description": "要关联的测试用例唯一标识"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "testcaseId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "delete_workitem_testcase_relation",
+      "description": "[Project Management] Remove a test case relation from a work item by relationRecordId (obtained from list_workitem_testcase_relations).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+          },
+          "workItemId": {
+            "type": "string",
+            "description": "工作项唯一标识"
+          },
+          "relationRecordId": {
+            "type": "string",
+            "description": "关联记录ID（通过 list 或 create 返回获取）"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "relationRecordId"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"

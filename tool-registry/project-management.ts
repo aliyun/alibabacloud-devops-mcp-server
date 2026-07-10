@@ -147,6 +147,26 @@ export const getProjectManagementTools = () => [
     inputSchema: zodToJsonSchema(types.CreateWorkItemCommentSchema),
   },
 
+  // Work item related testcase Operations
+  {
+    name: "list_workitem_testcase_relations",
+    description: "[Project Management] List test cases related to a work item. Returns relation records including relationRecordId (used for deletion), testcaseId, subject and owner.",
+    inputSchema: zodToJsonSchema(types.ListWorkitemTestcaseRelationsSchema),
+  },
+  {
+    name: "create_workitem_testcase_relation",
+    description: "[Project Management] Relate a test case to a work item. Returns the created relation record id.",
+    inputSchema: zodToJsonSchema(types.CreateWorkitemTestcaseRelationSchema),
+  },
+  {
+    name: "delete_workitem_testcase_relation",
+    description: "[Project Management] Remove a test case relation from a work item by relationRecordId (obtained from list_workitem_testcase_relations).",
+    inputSchema: zodToJsonSchema(types.DeleteWorkitemTestcaseRelationSchema),
+    annotations: {
+      destructiveHint: true,
+    },
+  },
+
   // Attachment Operations
   {
     name: "list_workitem_attachments",

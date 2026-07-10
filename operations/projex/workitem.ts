@@ -1024,3 +1024,90 @@ export async function listWorkitemActivitiesFunc(
 
   return [];
 }
+
+/**
+ * 查询工作项关联测试用例列表
+ * @param organizationId 企业ID
+ * @param workItemId 工作项唯一标识
+ * @returns 关联记录列表
+ */
+export async function listWorkitemTestcaseRelationsFunc(
+  organizationId: string | undefined,
+  workItemId: string
+): Promise<any[]> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/testcaseRelationRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/testcaseRelationRecords`;
+
+  const response = await yunxiaoRequest(url, {
+    method: "GET",
+  });
+
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  if (response && typeof response === 'object' && 'result' in response && Array.isArray(response.result)) {
+    return response.result;
+  }
+
+  return [];
+}
+
+/**
+ * 新建工作项关联测试用例
+ * @param organizationId 企业ID
+ * @param workItemId 工作项唯一标识
+ * @param testcaseId 要关联的测试用例唯一标识
+ * @returns 创建的关联记录（含关联记录 id）
+ */
+export async function createWorkitemTestcaseRelationFunc(
+  organizationId: string | undefined,
+  workItemId: string,
+  testcaseId: string
+): Promise<any> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/testcaseRelationRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/testcaseRelationRecords`;
+
+  const response = await yunxiaoRequest(url, {
+    method: "POST",
+    body: { testcaseId },
+  });
+
+  if (response && typeof response === 'object' && 'result' in response) {
+    return response.result;
+  }
+
+  return response;
+}
+
+/**
+ * 删除工作项关联测试用例
+ * @param organizationId 企业ID
+ * @param workItemId 工作项唯一标识
+ * @param relationRecordId 关联记录ID
+ * @returns 删除结果（布尔值）
+ */
+export async function deleteWorkitemTestcaseRelationFunc(
+  organizationId: string | undefined,
+  workItemId: string,
+  relationRecordId: string
+): Promise<any> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/testcaseRelationRecords/${relationRecordId}`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/testcaseRelationRecords/${relationRecordId}`;
+
+  const response = await yunxiaoRequest(url, {
+    method: "DELETE",
+  });
+
+  if (response && typeof response === 'object' && 'result' in response) {
+    return response.result;
+  }
+
+  return response;
+}

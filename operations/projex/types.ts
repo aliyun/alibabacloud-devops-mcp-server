@@ -799,3 +799,25 @@ export type ListEstimatedEffortsParams = z.infer<typeof ListEstimatedEffortsSche
 export type CreateEstimatedEffortParams = z.infer<typeof CreateEstimatedEffortSchema>;
 export type UpdateEffortRecordParams = z.infer<typeof UpdateEffortRecordSchema>;
 export type UpdateEstimatedEffortParams = z.infer<typeof UpdateEstimatedEffortSchema>;
+
+// Work item related testcase schemas
+export const ListWorkitemTestcaseRelationsSchema = z.object({
+  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  workItemId: z.string().describe("工作项唯一标识"),
+});
+
+export const CreateWorkitemTestcaseRelationSchema = z.object({
+  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  workItemId: z.string().describe("工作项唯一标识"),
+  testcaseId: z.string().describe("要关联的测试用例唯一标识"),
+});
+
+export const DeleteWorkitemTestcaseRelationSchema = z.object({
+  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  workItemId: z.string().describe("工作项唯一标识"),
+  relationRecordId: z.string().describe("关联记录ID（通过 list 或 create 返回获取）"),
+});
+
+export type ListWorkitemTestcaseRelationsParams = z.infer<typeof ListWorkitemTestcaseRelationsSchema>;
+export type CreateWorkitemTestcaseRelationParams = z.infer<typeof CreateWorkitemTestcaseRelationSchema>;
+export type DeleteWorkitemTestcaseRelationParams = z.infer<typeof DeleteWorkitemTestcaseRelationSchema>;

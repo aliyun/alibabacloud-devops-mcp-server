@@ -113,7 +113,12 @@ export {
   // Work item comment schemas
   ListWorkItemCommentsSchema,
   CreateWorkItemCommentSchema,
-  
+
+  // Work item related testcase schemas
+  ListWorkitemTestcaseRelationsSchema,
+  CreateWorkitemTestcaseRelationSchema,
+  DeleteWorkitemTestcaseRelationSchema,
+
   // Attachment schemas
   ListWorkitemAttachmentsSchema,
   GetWorkitemFileSchema,
