@@ -1,5 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { createHash } from "node:crypto";
+import * as http from "node:http";
+import * as https from "node:https";
 import { getUserAgent } from "universal-user-agent";
 import { createYunxiaoError, isYunxiaoError } from "./errors.js";
 import { VERSION } from "./version.js";
@@ -72,7 +74,61 @@ type RequestOptions = {
   headers?: Record<string, string>;
 }
 
-async function parseResponseBody(response: Response): Promise<unknown> {
+// fetch 会丢弃自定义 Host 头（Host 是 fetch 规范的 forbidden header，被静默删除），
+// region 多租户需要把租户子域名作为 Host 送达 openapi 网关时改用 http(s).request。
+type MinimalResponse = {
+  status: number;
+  ok: boolean;
+  headers: { get(name: string): string | null };
+  text(): Promise<string>;
+};
+
+function requestWithHostOverride(
+  urlStr: string,
+  options: { method: string; headers: Record<string, string>; body?: string },
+): Promise<MinimalResponse> {
+  return new Promise((resolve, reject) => {
+    const u = new URL(urlStr);
+    const mod = u.protocol === "https:" ? https : http;
+    const req = mod.request(
+      {
+        protocol: u.protocol,
+        hostname: u.hostname,
+        port: u.port || (u.protocol === "https:" ? 443 : 80),
+        path: `${u.pathname}${u.search}`,
+        method: options.method,
+        headers: options.headers,
+      },
+      (res) => {
+        const chunks: Buffer[] = [];
+        res.on("data", (c: Buffer) => chunks.push(c));
+        res.on("end", () => {
+          const status = res.statusCode ?? 0;
+          const text = Buffer.concat(chunks).toString("utf8");
+          resolve({
+            status,
+            ok: status >= 200 && status < 300,
+            headers: {
+              get: (name: string) => {
+                const v = res.headers[name.toLowerCase()];
+                return Array.isArray(v) ? v.join(", ") : (v ?? null);
+              },
+            },
+            text: async () => text,
+          });
+        });
+      },
+    );
+    req.on("error", reject);
+    if (options.body) req.write(options.body);
+    req.end();
+  });
+}
+
+// 同时接受原生 fetch 的 Response 与上面的 MinimalResponse。
+type BodyReadable = { text(): Promise<string>; headers: { get(name: string): string | null } };
+
+async function parseResponseBody(response: BodyReadable): Promise<unknown> {
   const text = await response.text();
   // body 可能含业务敏感数据，降到 trace（默认关闭）
   logger.trace({ rawBody: text }, "raw response body");
@@ -175,9 +231,11 @@ export async function yunxiaoRequest(
 
   // region 多租户：透传进入 MCP 的原始 Host，让 openapi 网关（devops-traefik-openapi）
   // 按子域名定位租户。仅 region 站注入，避免覆盖中心站（openapi-rdc）自身的 Host。
+  // 注意：fetch 会丢弃 Host（forbidden header），需覆盖 Host 时走 requestWithHostOverride。
   const forwardHost = getCurrentForwardHost();
-  if (forwardHost && isRegionEdition()) {
-    requestHeaders["Host"] = forwardHost;
+  const overrideHost = !!forwardHost && isRegionEdition();
+  if (overrideHost) {
+    requestHeaders["Host"] = forwardHost as string;
   }
 
   logger.debug({ method: options.method || "GET", url: sanitizeUrl(url) }, "yunxiao request");
@@ -185,11 +243,11 @@ export async function yunxiaoRequest(
   logger.debug({ headers: requestHeaders }, "yunxiao request headers");
   logger.trace({ body: options.body }, "yunxiao request body");
 
-  const response = await fetch(url, {
-    method : options.method || "GET",
-    headers: requestHeaders,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  } as RequestInit);
+  const method = options.method || "GET";
+  const bodyStr = options.body ? JSON.stringify(options.body) : undefined;
+  const response: BodyReadable & { status: number; ok: boolean } = overrideHost
+    ? await requestWithHostOverride(url, { method, headers: requestHeaders, body: bodyStr })
+    : await fetch(url, { method, headers: requestHeaders, body: bodyStr } as RequestInit);
 
   const responseBody = await parseResponseBody(response);
   logger.trace({ body: responseBody }, "yunxiao response body");
