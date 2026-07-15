@@ -33,7 +33,9 @@ const DEFAULT_YUNXIAO_API_BASE_URL = "https://openapi-rdc.aliyuncs.com";
  * @returns The Yunxiao API base URL
  */
 export function getYunxiaoApiBaseUrl(): string {
-  return getCurrentSessionApiBaseUrl() || process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
+  const baseUrl = getCurrentSessionApiBaseUrl() || process.env.YUNXIAO_API_BASE_URL || DEFAULT_YUNXIAO_API_BASE_URL;
+  // 归一化:去掉结尾的斜杠,避免与以 "/" 开头的 urlPath 拼接后出现双斜杠(如 https://host//oapi/v1/...)
+  return baseUrl.replace(/\/+$/, "");
 }
 
 /**
