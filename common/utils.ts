@@ -11,6 +11,9 @@ type RequestAuthContext = {
   // 本次请求想启用的工具集（原始字符串，逗号分隔解析后的数组）；
   // 用于按请求裁剪 ListTools/CallTool，缓解工具过多导致的 context 膨胀。
   toolsets?: string[];
+  // region 多租户：把进入 MCP 的原始请求 Host 透传给 openapi 调用，
+  // 供 devops-traefik-openapi 按子域名区分租户。仅 region 站生效（见 yunxiaoRequest）。
+  forwardHost?: string;
 };
 
 const requestContext = new AsyncLocalStorage<RequestAuthContext>();
@@ -141,6 +144,11 @@ export function getCurrentSessionApiBaseUrl(): string | undefined {
   return requestContext.getStore()?.apiBaseUrl;
 }
 
+/** region 多租户：本次请求要透传给 openapi 的 Host（来自进入 MCP 的原始请求）。 */
+export function getCurrentForwardHost(): string | undefined {
+  return requestContext.getStore()?.forwardHost;
+}
+
 export function getCurrentSessionToken(): string | undefined {
   return requestContext.getStore()?.token ?? process.env.YUNXIAO_ACCESS_TOKEN;
 }
@@ -163,6 +171,13 @@ export async function yunxiaoRequest(
   const token = getCurrentSessionToken();
   if (token) {
     requestHeaders["x-yunxiao-token"] = token;
+  }
+
+  // region 多租户：透传进入 MCP 的原始 Host，让 openapi 网关（devops-traefik-openapi）
+  // 按子域名定位租户。仅 region 站注入，避免覆盖中心站（openapi-rdc）自身的 Host。
+  const forwardHost = getCurrentForwardHost();
+  if (forwardHost && isRegionEdition()) {
+    requestHeaders["Host"] = forwardHost;
   }
 
   logger.debug({ method: options.method || "GET", url: sanitizeUrl(url) }, "yunxiao request");
@@ -211,15 +226,18 @@ const TOKEN_VERIFY_TTL_MS = 60_000;
 export async function verifyToken(
   token: string,
   apiBaseUrl?: string,
+  forwardHost?: string,
 ): Promise<boolean | "unknown"> {
-  const key = createHash("sha256").update(`${apiBaseUrl ?? ""}\n${token}`).digest("hex");
+  // 缓存 key 纳入 forwardHost：region 多租户下 apiBaseUrl 相同（同一内网 service），
+  // 靠 Host 区分租户，若不纳入 key，不同租户会串用彼此的校验结果。
+  const key = createHash("sha256").update(`${apiBaseUrl ?? ""}\n${forwardHost ?? ""}\n${token}`).digest("hex");
   const now = Date.now();
   const cached = tokenVerifyCache.get(key);
   if (cached && cached.exp > now) {
     return cached.ok;
   }
   try {
-    await runWithAuth({ token, apiBaseUrl }, () =>
+    await runWithAuth({ token, apiBaseUrl, forwardHost }, () =>
       yunxiaoRequest("/oapi/v1/platform/user", { method: "GET" }),
     );
     tokenVerifyCache.set(key, { ok: true, exp: now + TOKEN_VERIFY_TTL_MS });

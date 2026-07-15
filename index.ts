@@ -204,7 +204,7 @@ function parseBearerToken(authHeader: string | string[] | undefined): string | u
 function resolveYunxiaoAuth(
     req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined> },
     sessionAuth?: { yunxiao_access_token?: string; yunxiao_api_base_url?: string },
-): { token?: string; apiBaseUrl?: string } {
+): { token?: string; apiBaseUrl?: string; forwardHost?: string } {
     const qTok = req.query['yunxiao_access_token'];
     const qBase = req.query['yunxiao_api_base_url'];
     const tokenFromQuery = typeof qTok === 'string' ? qTok : undefined;
@@ -215,9 +215,18 @@ function resolveYunxiaoAuth(
     const baseFromHeader = typeof hdrBase === 'string' ? hdrBase : undefined;
     const tokenFromBearer = parseBearerToken(req.headers['authorization']);
 
+    // region 多租户：提取进入本服务的原始 Host，后续透传给 openapi（devops-traefik-openapi 按子域名分租户）。
+    // 经 nginx ingress 后原始租户域名一般同时在 X-Forwarded-Host 与 Host；优先 X-Forwarded-Host
+    // （更抗中间代理改写），回退 Host，取第一跳（逗号分隔时的首个）。
+    const xfh = req.headers['x-forwarded-host'];
+    const hostHdr = req.headers['host'];
+    const rawHost = (typeof xfh === 'string' ? xfh : undefined) ?? (typeof hostHdr === 'string' ? hostHdr : undefined);
+    const forwardHost = rawHost?.split(',')[0].trim() || undefined;
+
     return {
         token: tokenFromQuery || tokenFromHeader || tokenFromBearer || sessionAuth?.yunxiao_access_token || process.env.YUNXIAO_ACCESS_TOKEN,
         apiBaseUrl: baseFromQuery || baseFromHeader || sessionAuth?.yunxiao_api_base_url || undefined,
+        forwardHost,
     };
 }
 
@@ -327,14 +336,14 @@ async function enforceAuthGate(
     if (!serverConfig.authCheck) return false;
     if (req.method !== 'POST' || !bodyNeedsAuth(req.body)) return false;
 
-    const { token, apiBaseUrl } = resolveYunxiaoAuth(req, sessionAuth);
+    const { token, apiBaseUrl, forwardHost } = resolveYunxiaoAuth(req, sessionAuth);
     if (!token) {
         sendUnauthorized(res, req.body, 'Unauthorized: missing Yunxiao access token');
         return true;
     }
 
     const utils = await import('./common/utils.js');
-    const valid = await utils.verifyToken(token, apiBaseUrl);
+    const valid = await utils.verifyToken(token, apiBaseUrl, forwardHost);
     if (valid === false) {
         sendUnauthorized(res, req.body, 'Unauthorized: invalid or expired Yunxiao access token');
         return true;
@@ -492,7 +501,7 @@ function registerStreamableRoutes(
         // initialize 也纳入鉴权 gate：无 token / token 无效时 401，供上游在连接探测阶段发现 OAuth。
         if (await enforceAuthGate(req, res)) return;
 
-        const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url } = resolveYunxiaoAuth(req);
+        const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url, forwardHost } = resolveYunxiaoAuth(req);
         const toolsets = resolveToolsets(req);
         const sessionServer = createMcpServer();
 
@@ -522,7 +531,7 @@ function registerStreamableRoutes(
             "new Streamable HTTP connection",
         );
 
-        await utils.runWithAuth({ token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url, toolsets }, () =>
+        await utils.runWithAuth({ token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url, forwardHost, toolsets }, () =>
             transport.handleRequest(req, res, req.body),
         );
     });
