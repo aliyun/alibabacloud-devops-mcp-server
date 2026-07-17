@@ -100,9 +100,10 @@ function createMcpServer(): Server {
         } catch (error) {
             // 工具调用失败多为客户端参数错误或云效 4xx（可容忍），用 warn；只记错误摘要，
             // 不带 error 里的 requestHeaders（含 token），避免令牌落日志。
+            // 用 err 字段承载错误详情，避免与 pino 的 msg（"tool call failed"）键冲突产生重复 msg
             const errInfo = isYunxiaoError(error)
-                ? { status: error.status, msg: error.message }
-                : { msg: error instanceof Error ? error.message : String(error) };
+                ? { status: error.status, err: error.message }
+                : { err: error instanceof Error ? error.message : String(error) };
             logger.warn({ tool: toolName, ok: false, durationMs: Date.now() - startedAt, ...errInfo }, "tool call failed");
             if (error instanceof z.ZodError) {
                 throw new Error(`Invalid input: ${JSON.stringify(error.errors)}`);
