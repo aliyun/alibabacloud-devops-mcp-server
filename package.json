@@ -30,7 +30,7 @@
     "devops-mcp"
   ],
   "scripts": {
-    "build": "tsc && chmod +x dist/*.js",
+    "build": "rm -rf dist && tsc && chmod +x dist/*.js",
     "watch": "tsc --watch",
     "test": "tsc -p tsconfig.test.json && node --test dist-test/tests/*.test.js",
     "start": "node dist/index.js",
