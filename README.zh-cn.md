@@ -45,17 +45,31 @@ alibabacloud-devops-mcp-server提供了以下功能，让AI助手能够：
 
 云效提供**官方托管**的 MCP 端点，**无需本地安装或 Docker**——把客户端指向该地址、用你的云效令牌鉴权即可。
 
-- 服务地址：`https://openapi-rdc.aliyuncs.com/ai/mcp`
+- **中心站**：`https://openapi-rdc.aliyuncs.com/ai/mcp`
+- **Region 站（专有域名）**：你所在 region 的组织专属域名 + `/ai/mcp`，例如 `https://<your-org>.devops.aliyuncs.com/ai/mcp`——即你平时访问云效 region 的那个域名。
 - 传输协议：Streamable HTTP（无状态）
 - 鉴权：`Authorization: Bearer <YOUR_TOKEN>`（或请求头 `X-Yunxiao-Token: <YOUR_TOKEN>`）
 
-客户端配置（原生支持远程的客户端，如 Cursor）：
+客户端配置——**中心站**（原生支持远程的客户端，如 Cursor）：
 
 ```json
 {
   "mcpServers": {
     "yunxiao": {
       "url": "https://openapi-rdc.aliyuncs.com/ai/mcp",
+      "headers": { "Authorization": "Bearer <YOUR_TOKEN>" }
+    }
+  }
+}
+```
+
+客户端配置——**Region 站**（把 URL 换成你自己的 region 域名）：
+
+```json
+{
+  "mcpServers": {
+    "yunxiao": {
+      "url": "https://<your-org>.devops.aliyuncs.com/ai/mcp",
       "headers": { "Authorization": "Bearer <YOUR_TOKEN>" }
     }
   }

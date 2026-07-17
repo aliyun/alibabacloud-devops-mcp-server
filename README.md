@@ -62,17 +62,31 @@ When using a Region edition, set the `YUNXIAO_API_BASE_URL` environment variable
 
 Yunxiao provides an **officially hosted** MCP endpoint — no local install or Docker needed. Just point your client at it and authenticate with your Yunxiao token.
 
-- Endpoint: `https://openapi-rdc.aliyuncs.com/ai/mcp`
+- **Central**: `https://openapi-rdc.aliyuncs.com/ai/mcp`
+- **Region edition**: your organization's region domain + `/ai/mcp`, e.g. `https://<your-org>.devops.aliyuncs.com/ai/mcp` — the same domain you use to access Yunxiao in your region.
 - Transport: Streamable HTTP (stateless)
 - Auth: `Authorization: Bearer <YOUR_TOKEN>` (or header `X-Yunxiao-Token: <YOUR_TOKEN>`)
 
-Client config (clients with native remote support, e.g. Cursor):
+Client config — **Central** (clients with native remote support, e.g. Cursor):
 
 ```json
 {
   "mcpServers": {
     "yunxiao": {
       "url": "https://openapi-rdc.aliyuncs.com/ai/mcp",
+      "headers": { "Authorization": "Bearer <YOUR_TOKEN>" }
+    }
+  }
+}
+```
+
+Client config — **Region edition** (replace the URL with your own region domain):
+
+```json
+{
+  "mcpServers": {
+    "yunxiao": {
+      "url": "https://<your-org>.devops.aliyuncs.com/ai/mcp",
       "headers": { "Authorization": "Bearer <YOUR_TOKEN>" }
     }
   }
