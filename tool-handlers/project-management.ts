@@ -456,8 +456,12 @@ export const handleProjectManagementTools = async (request: any) => {
       const result = await attachment.createWorkitemAttachmentFunc(
         args.organizationId,
         args.workItemId,
-        args.filePath,
-        args.operatorId
+        {
+          filePath: args.filePath,
+          fileContent: args.fileContent,
+          fileName: args.fileName,
+          operatorId: args.operatorId,
+        }
       );
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],

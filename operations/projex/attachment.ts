@@ -1,12 +1,16 @@
 import { z } from "zod";
 import { readFile } from "fs/promises";
 import { existsSync } from "fs";
+import { randomBytes } from "crypto";
 import path from "path";
 import {
   yunxiaoRequest,
   isRegionEdition,
   getYunxiaoApiBaseUrl,
-  getCurrentSessionToken
+  getCurrentSessionToken,
+  getCurrentForwardHost,
+  requestWithHostOverride,
+  isNetworkTransport
 } from "../../common/utils.js";
 import { getUserAgent } from "universal-user-agent";
 import { VERSION } from "../../common/version.js";
@@ -128,17 +132,44 @@ export async function getWorkitemFileFunc(
 export async function createWorkitemAttachmentFunc(
   organizationId: string | undefined,
   workItemId: string,
-  filePath: string,
-  operatorId?: string
+  opts: {
+    filePath?: string;
+    fileContent?: string;
+    fileName?: string;
+    operatorId?: string;
+  }
 ): Promise<WorkitemFile> {
-  // 验证文件存在
-  if (!existsSync(filePath)) {
-    throw new Error(`File not found: ${filePath}`);
+  const { filePath, fileContent, operatorId } = opts;
+
+  // 安全：网络(HTTP)传输下 filePath 指向的是【服务器】文件系统。若允许远程调用方传 filePath，
+  // 攻击者可传 /etc/passwd、密钥等敏感路径，让 server 读取并上传，造成任意文件读取/数据外泄。
+  // 因此远程部署一律禁止 filePath（即使同时给了 fileContent 也拒绝，避免语义混淆），只允许 base64。
+  if (filePath && isNetworkTransport()) {
+    throw new Error(
+      "远程(HTTP)部署下禁止使用 filePath 上传附件：filePath 指向服务器本地文件系统，存在任意文件读取风险。请改用 fileContent 传入文件的 base64 编码（配合 fileName）。"
+    );
   }
 
-  // 读取文件内容
-  const fileBuffer = await readFile(filePath);
-  const fileName = path.basename(filePath);
+  // 解析文件字节与文件名：优先 base64 内联内容（远程 streamable HTTP 场景，server 读不到
+  // 调用方本地文件），否则读本地路径（同机 / stdio 场景）。
+  let fileBuffer: Buffer;
+  let fileName: string;
+  if (fileContent) {
+    fileBuffer = Buffer.from(fileContent, "base64");
+    if (fileBuffer.length === 0) {
+      throw new Error("fileContent 解码后为空，请确认传入的是有效的 base64 编码");
+    }
+    fileName = opts.fileName || "file";
+  } else {
+    if (!filePath) {
+      throw new Error("必须提供 fileContent（base64）或 filePath（本地路径）之一");
+    }
+    if (!existsSync(filePath)) {
+      throw new Error(`File not found: ${filePath}`);
+    }
+    fileBuffer = await readFile(filePath);
+    fileName = opts.fileName || path.basename(filePath);
+  }
 
   const finalOrgId = await resolveOrganizationId(organizationId);
   const urlPath = isRegionEdition()
@@ -147,15 +178,7 @@ export async function createWorkitemAttachmentFunc(
 
   const fullUrl = `${getYunxiaoApiBaseUrl()}${urlPath}`;
 
-  // 构造 FormData（Node.js 18+ 原生支持）
-  const formData = new FormData();
-  const blob = new Blob([fileBuffer]);
-  formData.append("file", blob, fileName);
-  if (operatorId) {
-    formData.append("operatorId", operatorId);
-  }
-
-  // 直接用 fetch 发送 multipart/form-data（不走 yunxiaoRequest，因为它强制 JSON content-type）
+  // 不走 yunxiaoRequest：它强制 JSON content-type，无法发 multipart/form-data。
   const requestHeaders: Record<string, string> = {
     "Accept": "application/json",
     "User-Agent": `modelcontextprotocol/servers/alibabacloud-devops-mcp-server/v${VERSION} ${getUserAgent()}`,
@@ -166,25 +189,89 @@ export async function createWorkitemAttachmentFunc(
     requestHeaders["x-yunxiao-token"] = token;
   }
 
-  const response = await fetch(fullUrl, {
-    method: "POST",
-    headers: requestHeaders,
-    body: formData,
-  } as RequestInit);
+  // region 多租户：需要把租户子域名作为 Host 送达 openapi 网关。fetch 会静默丢弃
+  // Host 头（forbidden header），故此时手动构造 multipart 并走 http.request；
+  // 中心站 / 无 forwardHost 时保持原生 fetch + FormData 路径（行为零变化）。
+  const forwardHost = getCurrentForwardHost();
+  const overrideHost = !!forwardHost && isRegionEdition();
 
-  const contentType = response.headers.get("content-type");
-  const responseBody = contentType?.includes("application/json")
-    ? await response.json()
-    : await response.text();
+  let status: number;
+  let ok: boolean;
+  let responseBody: unknown;
 
-  if (!response.ok) {
+  if (overrideHost) {
+    requestHeaders["Host"] = forwardHost as string;
+
+    const boundary = `----mcpFormBoundary${randomBytes(16).toString("hex")}`;
+    const CRLF = "\r\n";
+    // filename 去掉可能破坏 multipart 头的字符
+    const safeFileName = fileName.replace(/["\\\r\n]/g, "_");
+    const parts: Buffer[] = [
+      Buffer.from(
+        `--${boundary}${CRLF}` +
+          `Content-Disposition: form-data; name="file"; filename="${safeFileName}"${CRLF}` +
+          `Content-Type: application/octet-stream${CRLF}${CRLF}`,
+        "utf8"
+      ),
+      fileBuffer,
+      Buffer.from(CRLF, "utf8"),
+    ];
+    if (operatorId) {
+      parts.push(
+        Buffer.from(
+          `--${boundary}${CRLF}` +
+            `Content-Disposition: form-data; name="operatorId"${CRLF}${CRLF}` +
+            `${operatorId}${CRLF}`,
+          "utf8"
+        )
+      );
+    }
+    parts.push(Buffer.from(`--${boundary}--${CRLF}`, "utf8"));
+    const bodyBuffer = Buffer.concat(parts);
+
+    requestHeaders["Content-Type"] = `multipart/form-data; boundary=${boundary}`;
+    requestHeaders["Content-Length"] = String(bodyBuffer.length);
+
+    const response = await requestWithHostOverride(fullUrl, {
+      method: "POST",
+      headers: requestHeaders,
+      body: bodyBuffer,
+    });
+    status = response.status;
+    ok = response.ok;
+    const text = await response.text();
+    responseBody = response.headers.get("content-type")?.includes("application/json")
+      ? (text ? JSON.parse(text) : {})
+      : text;
+  } else {
+    // 构造 FormData（Node.js 18+ 原生支持），fetch 自动设置 multipart 边界
+    const formData = new FormData();
+    const blob = new Blob([new Uint8Array(fileBuffer)]);
+    formData.append("file", blob, fileName);
+    if (operatorId) {
+      formData.append("operatorId", operatorId);
+    }
+
+    const response = await fetch(fullUrl, {
+      method: "POST",
+      headers: requestHeaders,
+      body: formData,
+    } as RequestInit);
+    status = response.status;
+    ok = response.ok;
+    responseBody = response.headers.get("content-type")?.includes("application/json")
+      ? await response.json()
+      : await response.text();
+  }
+
+  if (!ok) {
     throw createYunxiaoError(
-      response.status,
+      status,
       responseBody,
       fullUrl,
       "POST",
       requestHeaders,
-      { filePath, fileName }
+      { fileName, source: fileContent ? "base64" : "filePath" }
     );
   }
 

@@ -43,7 +43,7 @@ import { Toolset } from "./common/toolsets.js";
 import { loadConfig, type ServerConfig } from "./common/config.js";
 import { runWithCluster, setupWorkerGuards } from "./common/process-manager.js";
 import { logger } from "./common/logger.js";
-import { getCurrentToolsets } from "./common/utils.js";
+import { getCurrentToolsets, setNetworkTransport } from "./common/utils.js";
 
 /**
  * Create a new MCP Server instance with all request handlers configured.
@@ -83,6 +83,8 @@ function createMcpServer(): Server {
     });
 
     mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
+        const toolName = request.params.name;
+        const startedAt = Date.now();
         try {
             if (!request.params.arguments) {
                 throw new Error("Arguments are required");
@@ -93,8 +95,15 @@ function createMcpServer(): Server {
                 ? await handleEnabledToolRequest(request, effective)
                 : await handleToolRequest(request);
 
+            logger.info({ tool: toolName, ok: true, durationMs: Date.now() - startedAt }, "tool call");
             return result;
         } catch (error) {
+            // 工具调用失败多为客户端参数错误或云效 4xx（可容忍），用 warn；只记错误摘要，
+            // 不带 error 里的 requestHeaders（含 token），避免令牌落日志。
+            const errInfo = isYunxiaoError(error)
+                ? { status: error.status, msg: error.message }
+                : { msg: error instanceof Error ? error.message : String(error) };
+            logger.warn({ tool: toolName, ok: false, durationMs: Date.now() - startedAt, ...errInfo }, "tool call failed");
             if (error instanceof z.ZodError) {
                 throw new Error(`Invalid input: ${JSON.stringify(error.errors)}`);
             }
@@ -181,6 +190,10 @@ config({ quiet: true });
 const serverConfig = loadConfig();
 const enabledToolsets = serverConfig.toolsets;
 const useHttpRemote = serverConfig.transport.sse || serverConfig.transport.streamableHttp;
+
+// 网络(HTTP)传输下，来自远程调用方的本地路径不可信 —— 安全敏感操作(如按 filePath
+// 读取服务器文件)据此收紧。stdio(同机)模式保持 false。
+setNetworkTransport(useHttpRemote);
 
 type StreamableSessionEntry = {
     transport: StreamableHTTPServerTransport;
@@ -401,7 +414,10 @@ async function registerSseRoutes(
 
     if (options.installJsonParser) {
         const { default: express } = await import('express');
-        app.use(express.json({ limit: '10mb' }));
+        // 附件上传走 base64 内联（create_workitem_attachment 的 fileContent），10MB 文件
+        // base64 编码后约 13.5MB，整个 JSON-RPC body 需能容纳；放宽到 20mb（可用
+        // MCP_JSON_BODY_LIMIT 覆盖）。
+        app.use(express.json({ limit: process.env.MCP_JSON_BODY_LIMIT || '20mb' }));
     }
 
     app.post(cfg.paths.sseMessages, async (req: any, res: any) => {

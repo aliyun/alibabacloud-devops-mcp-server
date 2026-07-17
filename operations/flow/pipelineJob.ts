@@ -89,7 +89,9 @@ export async function listPipelineJobHistorysFunc(
 
   const url = utils.buildUrl(baseUrl, queryParams);
 
-  const response = await utils.yunxiaoRequest(url, {
+  // 走 yunxiaoRequestRaw 以读取响应头中的分页信息（x-total / x-page 等）；
+  // yunxiaoRequest 只返回 body，拿不到响应头。
+  const { body, headers } = await utils.yunxiaoRequestRaw(url, {
     method: "GET",
   });
 
@@ -102,36 +104,38 @@ export async function listPipelineJobHistorysFunc(
     totalPages: 0
   };
 
-  if (response && 'headers' in (response as any)) {
-    const headers = (response as any).headers;
-    
-    if (headers['x-next-page']) {
-      pagination.nextPage = parseInt(headers['x-next-page']);
-    }
-    
-    if (headers['x-page']) {
-      pagination.page = parseInt(headers['x-page']);
-    }
-    
-    if (headers['x-per-page']) {
-      pagination.perPage = parseInt(headers['x-per-page']);
-    }
-    
-    if (headers['x-prev-page']) {
-      pagination.prevPage = parseInt(headers['x-prev-page']);
-    }
-    
-    if (headers['x-total']) {
-      pagination.total = parseInt(headers['x-total']);
-    }
-    
-    if (headers['x-total-pages']) {
-      pagination.totalPages = parseInt(headers['x-total-pages']);
-    }
+  const xNextPage = headers.get('x-next-page');
+  if (xNextPage) {
+    pagination.nextPage = parseInt(xNextPage);
   }
 
-  const items = Array.isArray(response) 
-    ? response.map(item => PipelineJobHistoryItemSchema.parse(item))
+  const xPage = headers.get('x-page');
+  if (xPage) {
+    pagination.page = parseInt(xPage);
+  }
+
+  const xPerPage = headers.get('x-per-page');
+  if (xPerPage) {
+    pagination.perPage = parseInt(xPerPage);
+  }
+
+  const xPrevPage = headers.get('x-prev-page');
+  if (xPrevPage) {
+    pagination.prevPage = parseInt(xPrevPage);
+  }
+
+  const xTotal = headers.get('x-total');
+  if (xTotal) {
+    pagination.total = parseInt(xTotal);
+  }
+
+  const xTotalPages = headers.get('x-total-pages');
+  if (xTotalPages) {
+    pagination.totalPages = parseInt(xTotalPages);
+  }
+
+  const items = Array.isArray(body)
+    ? body.map(item => PipelineJobHistoryItemSchema.parse(item))
     : [];
 
   return {

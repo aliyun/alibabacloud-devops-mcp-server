@@ -2,13 +2,9 @@ import {RecordType, string, TypeOf, z, ZodString} from "zod";
 import {
   buildUrl,
   yunxiaoRequest,
-  getYunxiaoApiBaseUrl,
-  getCurrentSessionToken,
+  yunxiaoRequestRaw,
   isRegionEdition
 } from "../../common/utils.js";
-import { createYunxiaoError } from "../../common/errors.js";
-import { getUserAgent } from "universal-user-agent";
-import { VERSION } from "../../common/version.js";
 import {
   WorkItemSchema,
   FilterConditionSchema,
@@ -177,49 +173,21 @@ export async function searchWorkitemsFunc(
     payload.perPage = perPage;
   }
 
-  // 使用 fetch 直接获取响应，以便读取响应头中的分页信息
-  const isAbsolute = url.startsWith("http://") || url.startsWith("https://");
-  const fullUrl = isAbsolute ? url : `${getYunxiaoApiBaseUrl()}${url.startsWith("/") ? url : `/${url}`}`;
-  
-  const requestHeaders: Record<string, string> = {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-    "User-Agent": `modelcontextprotocol/servers/alibabacloud-devops-mcp-server/v${VERSION} ${getUserAgent()}`,
-  };
-
-  const token = getCurrentSessionToken();
-  if (token) {
-    requestHeaders["x-yunxiao-token"] = token;
-  }
-
-  const response = await fetch(fullUrl, {
+  // 走 yunxiaoRequestRaw 读取响应头中的分页信息：它统一处理了 token 注入与
+  // region 多租户的 Host 透传（自己直发 fetch 会丢失 Host，导致 region 站无法定位租户）。
+  const { body: responseBody, headers } = await yunxiaoRequestRaw(url, {
     method: "POST",
-    headers: requestHeaders,
-    body: JSON.stringify(payload),
-  } as RequestInit);
+    body: payload,
+  });
 
-  if (!response.ok) {
-    const responseBody = await response.json().catch(() => ({}));
-    throw createYunxiaoError(
-      response.status,
-      responseBody,
-      fullUrl,
-      "POST",
-      requestHeaders,
-      payload
-    );
-  }
-
-  const responseBody = await response.json();
-  
   // 从响应头中提取分页信息
   const pagination: PaginationInfo | undefined = (() => {
-    const xPage = response.headers.get("x-page");
-    const xPerPage = response.headers.get("x-per-page");
-    const xTotalPages = response.headers.get("x-total-pages");
-    const xTotal = response.headers.get("x-total");
-    const xNextPage = response.headers.get("x-next-page");
-    const xPrevPage = response.headers.get("x-prev-page");
+    const xPage = headers.get("x-page");
+    const xPerPage = headers.get("x-per-page");
+    const xTotalPages = headers.get("x-total-pages");
+    const xTotal = headers.get("x-total");
+    const xNextPage = headers.get("x-next-page");
+    const xPrevPage = headers.get("x-prev-page");
 
     if (xPage && xPerPage && xTotalPages && xTotal) {
       return {

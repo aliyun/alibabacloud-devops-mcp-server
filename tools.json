@@ -1,6 +1,6 @@
 {
   "total": 197,
-  "generatedAt": "2026-07-10T03:15:17.902Z",
+  "generatedAt": "2026-07-17T07:03:05.850Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -2863,7 +2863,7 @@
     },
     {
       "name": "create_workitem_attachment",
-      "description": "[Project Management] Upload a local file as an attachment to a work item via multipart/form-data. MCP Server reads the file at the given absolute path and uploads it. Supports any file type (单文件 ≤ 10MB，云效不支持 svg/tiff)。\n返回 WorkitemFile 含以下关键字段：\n- `id`/`name`/`size`/`suffix`：文件基础信息\n- `url`：OSS 临时下载地址，约 30 秒过期。⚠️ 仅用于下载，不要嵌入工作项描述/评论\n- `embedUrl`：永久代理 URL，适用于在工作项描述/评论中嵌入图片\n- `embedMarkdown`：预拼好的 Markdown 图片标签，formatType=MARKDOWN 时拼接进 description 即可\n- `embedHtml`：预拼好的 HTML <img> 标签，formatType=RICHTEXT 时拼接进 description 即可\n在工作项描述中插入图片的标准三步法：① 创建工作项（如已有则跳过）；② 调本工具上传图片、读出 embedMarkdown / embedHtml；③ 调 update_work_item，在 updateWorkItemFields.description 中拼入该 embed* 字段，同时设置 updateWorkItemFields.formatType 为 \"MARKDOWN\" 或 \"RICHTEXT\"。\n应用 token 场景必传 operatorId，个人 token 必传可省略。",
+      "description": "[Project Management] Upload a file as an attachment to a work item via multipart/form-data. Supports any file type (单文件 ≤ 10MB，云效不支持 svg/tiff)。\n文件来源二选一：\n- 远程（streamable HTTP）部署：传 fileContent（文件内容的 base64 编码）+ fileName（含扩展名）。此时 server 与调用方通常不同机，server 读不到调用方本地文件，必须走 base64 内联。\n- 同机 / stdio 本地运行：传 filePath（绝对路径），server 直接读该文件；fileName 可省略（默认取路径 basename）。⚠️ 远程部署下 filePath 已被禁用(指向服务器文件系统,存在任意文件读取风险),只能用 fileContent。\n返回 WorkitemFile 含以下关键字段：\n- `id`/`name`/`size`/`suffix`：文件基础信息\n- `url`：OSS 临时下载地址，约 30 秒过期。⚠️ 仅用于下载，不要嵌入工作项描述/评论\n- `embedUrl`：永久代理 URL，适用于在工作项描述/评论中嵌入图片\n- `embedMarkdown`：预拼好的 Markdown 图片标签，formatType=MARKDOWN 时拼接进 description 即可\n- `embedHtml`：预拼好的 HTML <img> 标签，formatType=RICHTEXT 时拼接进 description 即可\n在工作项描述中插入图片的标准三步法：① 创建工作项（如已有则跳过）；② 调本工具上传图片、读出 embedMarkdown / embedHtml；③ 调 update_work_item，在 updateWorkItemFields.description 中拼入该 embed* 字段，同时设置 updateWorkItemFields.formatType 为 \"MARKDOWN\" 或 \"RICHTEXT\"。\n应用 token 场景必传 operatorId，个人 token 必传可省略。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2877,7 +2877,15 @@
           },
           "filePath": {
             "type": "string",
-            "description": "本地文件的绝对路径，MCP Server 将读取该文件并上传为工作项附件"
+            "description": "本地文件的绝对路径，MCP Server 将读取该文件。仅适用于 server 与调用方同机的场景（如 stdio 本地运行）。⚠️ 远程（streamable HTTP）部署下本参数已被禁用（filePath 指向服务器文件系统，存在任意文件读取的安全风险），此时请改用 fileContent"
+          },
+          "fileContent": {
+            "type": "string",
+            "description": "文件内容的 base64 编码。远程部署上传附件时使用，需配合 fileName。单文件 ≤ 10MB（base64 编码后约 13.5MB）"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "文件名（含扩展名，如 design.png）。提供 fileContent 时必填；提供 filePath 时可省略，默认取路径的 basename"
           },
           "operatorId": {
             "type": "string",
@@ -2886,8 +2894,7 @@
         },
         "required": [
           "organizationId",
-          "workItemId",
-          "filePath"
+          "workItemId"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"

@@ -83,9 +83,9 @@ type MinimalResponse = {
   text(): Promise<string>;
 };
 
-function requestWithHostOverride(
+export function requestWithHostOverride(
   urlStr: string,
-  options: { method: string; headers: Record<string, string>; body?: string },
+  options: { method: string; headers: Record<string, string>; body?: string | Buffer },
 ): Promise<MinimalResponse> {
   return new Promise((resolve, reject) => {
     const u = new URL(urlStr);
@@ -205,17 +205,43 @@ export function getCurrentForwardHost(): string | undefined {
   return requestContext.getStore()?.forwardHost;
 }
 
+// 传输模式：HTTP(SSE / Streamable)为网络传输，调用方可能是远程、不可信的一方；
+// stdio 为本机同机运行。涉及服务器本地资源的安全敏感操作（如按路径读取文件）需据此收紧。
+let networkTransport = false;
+/** 由入口在选择传输模式时设置：HTTP 传输传 true，stdio 传 false（默认）。 */
+export function setNetworkTransport(value: boolean): void {
+  networkTransport = value;
+}
+/** 当前是否为网络(HTTP)传输模式，即服务可能被远程调用方访问。 */
+export function isNetworkTransport(): boolean {
+  return networkTransport;
+}
+
 export function getCurrentSessionToken(): string | undefined {
   return requestContext.getStore()?.token ?? process.env.YUNXIAO_ACCESS_TOKEN;
 }
 
-export async function yunxiaoRequest(
+/** 带响应头的原始响应（body 已按 content-type 解析）。 */
+export type YunxiaoRawResponse = {
+  status: number;
+  ok: boolean;
+  headers: { get(name: string): string | null };
+  body: unknown;
+};
+
+/**
+ * 发起云效 openapi 请求并返回带响应头的原始响应。
+ * 需要读取响应头（如分页 x-total / x-page）的场景应使用它，而不要自己直发 fetch：
+ * 直发 fetch 会绕过 region 多租户的 Host 透传，且 fetch 会静默丢弃 Host 头。
+ * 非 2xx 时抛 createYunxiaoError，与 yunxiaoRequest 行为一致。
+ */
+export async function yunxiaoRequestRaw(
   urlPath: string,
   options: RequestOptions = {},
-): Promise<unknown> {
+): Promise<YunxiaoRawResponse> {
   // Check if the URL is already a full URL or a path
   const isAbsolute = urlPath.startsWith("http://") || urlPath.startsWith("https://");
-  let url = isAbsolute ? urlPath : `${getYunxiaoApiBaseUrl()}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
+  const url = isAbsolute ? urlPath : `${getYunxiaoApiBaseUrl()}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
   const requestHeaders: Record<string, string> = {
     "Accept": "application/json",
     "Content-Type": "application/json",
@@ -238,12 +264,13 @@ export async function yunxiaoRequest(
     requestHeaders["Host"] = forwardHost as string;
   }
 
-  logger.debug({ method: options.method || "GET", url: sanitizeUrl(url) }, "yunxiao request");
+  const method = options.method || "GET";
+  const startedAt = Date.now();
+  logger.debug({ method, url: sanitizeUrl(url) }, "yunxiao request");
   // headers 里的 x-yunxiao-token / authorization 由 logger.redact 自动脱敏
   logger.debug({ headers: requestHeaders }, "yunxiao request headers");
   logger.trace({ body: options.body }, "yunxiao request body");
 
-  const method = options.method || "GET";
   const bodyStr = options.body ? JSON.stringify(options.body) : undefined;
   const response: BodyReadable & { status: number; ok: boolean } = overrideHost
     ? await requestWithHostOverride(url, { method, headers: requestHeaders, body: bodyStr })
@@ -251,20 +278,38 @@ export async function yunxiaoRequest(
 
   const responseBody = await parseResponseBody(response);
   logger.trace({ body: responseBody }, "yunxiao response body");
-  logger.debug({ status: response.status, ok: response.ok }, "yunxiao response");
+  // info 级每请求摘要：method/url/status/耗时，供常规排障用；
+  // 请求 headers（debug）与 request/response body（trace）等细节仍留在更低级别。
+  logger.info(
+    { method, url: sanitizeUrl(url), status: response.status, ok: response.ok, durationMs: Date.now() - startedAt },
+    "yunxiao api",
+  );
 
   if (!response.ok) {
     throw createYunxiaoError(
-      response.status, 
+      response.status,
       responseBody,
       url,
-      options.method || "GET",
+      method,
       requestHeaders,
       options.body
     );
   }
 
-  return responseBody;
+  return {
+    status: response.status,
+    ok: response.ok,
+    headers: response.headers,
+    body: responseBody,
+  };
+}
+
+export async function yunxiaoRequest(
+  urlPath: string,
+  options: RequestOptions = {},
+): Promise<unknown> {
+  const { body } = await yunxiaoRequestRaw(urlPath, options);
+  return body;
 }
 
 // token 有效性缓存（60s），避免每次 tools/call 都打一次用户信息接口。

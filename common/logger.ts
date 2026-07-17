@@ -4,10 +4,13 @@ import pino from "pino";
  * 统一日志工具。
  *
  * ⚠️ 重要：MCP stdio 模式下 stdout 是 JSON-RPC 协议通道，任何写入 stdout 的日志
- * 都会污染协议、导致客户端解析失败。因此本 logger 强制写入 stderr（fd 2）。
- * 任何情况下都不要用 console.log（stdout）打印日志，统一使用本模块。
+ * 都会污染协议、导致客户端解析失败。因此日志默认写入 stderr（fd 2）。
+ * HTTP(SSE / Streamable)模式下 stdout 未被协议占用，可用 LOG_DEST=stdout 让日志改写
+ * stdout，便于按 stdout 采集的日志系统（如 SLS）抓取。⚠️ stdio 模式切勿设 LOG_DEST=stdout，
+ * 否则会污染协议。任何情况下都不要用 console.log（stdout）打印日志，统一使用本模块。
  *
  * - 级别：通过环境变量 LOG_LEVEL 控制（默认 info；排查问题时设为 debug/trace）。
+ * - 输出流：通过环境变量 LOG_DEST 控制（stdout / stderr，默认 stderr）。
  * - 脱敏：对 token / authorization 等敏感字段自动打码，避免令牌落日志。
  * - 分级建议：
  *   - error：真正的错误
@@ -17,6 +20,9 @@ import pino from "pino";
  *   - trace：请求/响应 body 等大字段（默认关闭）
  */
 const level = process.env.LOG_LEVEL || "info";
+// 输出流 fd：stdout(1) / stderr(2)。默认 stderr —— stdio 模式下 stdout 是 JSON-RPC 协议
+// 通道，必须走 stderr；HTTP 模式 stdout 空闲，可设 LOG_DEST=stdout 便于日志采集。
+const logDestFd = (process.env.LOG_DEST || "stderr").toLowerCase() === "stdout" ? 1 : 2;
 
 export const logger = pino(
   {
@@ -43,8 +49,8 @@ export const logger = pino(
       censor: "***",
     },
   },
-  // fd 2 = stderr；sync 保证顺序与退出时不丢日志
-  pino.destination({ dest: 2, sync: true }),
+  // sync 保证顺序与退出时不丢日志
+  pino.destination({ dest: logDestFd, sync: true }),
 );
 
 export default logger;

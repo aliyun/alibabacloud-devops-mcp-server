@@ -711,9 +711,17 @@ export const GetWorkitemFileSchema = z.object({
 export const CreateWorkitemAttachmentSchema = z.object({
   organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
   workItemId: z.string().describe("工作项唯一标识"),
-  filePath: z.string().describe("本地文件的绝对路径，MCP Server 将读取该文件并上传为工作项附件"),
+  filePath: z.string().optional().describe("本地文件的绝对路径，MCP Server 将读取该文件。仅适用于 server 与调用方同机的场景（如 stdio 本地运行）。⚠️ 远程（streamable HTTP）部署下本参数已被禁用（filePath 指向服务器文件系统，存在任意文件读取的安全风险），此时请改用 fileContent"),
+  fileContent: z.string().optional().describe("文件内容的 base64 编码。远程部署上传附件时使用，需配合 fileName。单文件 ≤ 10MB（base64 编码后约 13.5MB）"),
+  fileName: z.string().optional().describe("文件名（含扩展名，如 design.png）。提供 fileContent 时必填；提供 filePath 时可省略，默认取路径的 basename"),
   operatorId: z.string().optional().describe("操作者的userId，个人token时该参数无效"),
-});
+}).refine(
+  (d) => !!d.fileContent || !!d.filePath,
+  { message: "必须提供 fileContent（base64，远程场景）或 filePath（本地路径，同机场景）之一" }
+).refine(
+  (d) => !d.fileContent || !!d.fileName,
+  { message: "提供 fileContent 时必须同时提供 fileName" }
+);
 
 // Attachment type exports
 export type AttachmentDTO = z.infer<typeof AttachmentDTOSchema>;
