@@ -119,20 +119,9 @@ function createMcpServer(): Server {
 }
 
 function formatYunxiaoError(error: YunxiaoError): string {
+    // 安全:面向调用方的错误只暴露状态码与云效返回的业务错误信息，绝不回显 error.url(内部网关
+    // 地址)/ requestHeaders(含 x-yunxiao-token)/ requestBody。详细排障信息见服务端日志。
     let message = `Yunxiao API Error: ${error.message}`;
-
-    // 添加请求上下文信息
-    if (error.method || error.url) {
-        message += `\n Request: ${error.method || 'GET'} ${error.url || 'unknown'}`;
-    }
-    
-    if (error.requestHeaders) {
-        message += `\n Request Headers: ${JSON.stringify(error.requestHeaders, null, 2)}`;
-    }
-    
-    if (error.requestBody) {
-        message += `\n Request Body: ${JSON.stringify(error.requestBody, null, 2)}`;
-    }
 
     if (error instanceof YunxiaoValidationError) {
         message = `Parameter validation failed: ${error.message}`;
@@ -161,10 +150,7 @@ function formatYunxiaoError(error: YunxiaoError): string {
                 message += `\n data: ${JSON.stringify(response.data, null, 2)}`;
             }
             
-            // 如果响应体中有更多详细信息，也一并显示
-            if (Object.keys(response).length > 0) {
-                message += `\n Full Response: ${JSON.stringify(response, null, 2)}`;
-            }
+            // 安全:不再回显完整下游响应体(Full Response)，仅保留上面提取的 errorCode/errorMessage/data
         }
         
         // 根据状态码提供通用建议
@@ -215,6 +201,24 @@ function parseBearerToken(authHeader: string | string[] | undefined): string | u
     return match ? match[1] : undefined;
 }
 
+// 请求方通过 query(yunxiao_api_base_url)/ header(x-yunxiao-api-base-url)提供出站 API 地址时的处理。
+// 威胁模型:只有「公共多租户」部署下、不可信请求方覆盖 apiBaseUrl 才会造成 SSRF —— 且 server 会把
+// x-yunxiao-token 发往该地址(诱导受害者使用带恶意 apiBaseUrl 的连接即可窃取其 token)。
+// 策略:
+//   - 公共多租户部署显式设 YUNXIAO_ALLOW_REQUEST_API_BASE_URL=false 彻底禁用请求覆盖，强制走部署方
+//     env YUNXIAO_API_BASE_URL 固定的后端网关(见 helm chart devops-mcp 各环境配置)。
+//   - 默认允许(未设或非 "false"):自建/单租户场景请求方即部署方本人，可信，且其云效实例可能就在
+//     内网(10.x / 内网域名 / localhost)，故不做私网拦截以免误伤，按请求提供的地址透传。
+function sanitizeRequestedApiBaseUrl(requested?: string): string | undefined {
+    if (!requested) return undefined;
+    const disabled = (process.env.YUNXIAO_ALLOW_REQUEST_API_BASE_URL ?? 'true').trim().toLowerCase() === 'false';
+    if (disabled) {
+        logger.warn('ignoring request-provided apiBaseUrl (disabled via YUNXIAO_ALLOW_REQUEST_API_BASE_URL=false)');
+        return undefined;
+    }
+    return requested;
+}
+
 function resolveYunxiaoAuth(
     req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined> },
     sessionAuth?: { yunxiao_access_token?: string; yunxiao_api_base_url?: string },
@@ -239,7 +243,7 @@ function resolveYunxiaoAuth(
 
     return {
         token: tokenFromQuery || tokenFromHeader || tokenFromBearer || sessionAuth?.yunxiao_access_token || process.env.YUNXIAO_ACCESS_TOKEN,
-        apiBaseUrl: baseFromQuery || baseFromHeader || sessionAuth?.yunxiao_api_base_url || undefined,
+        apiBaseUrl: sanitizeRequestedApiBaseUrl(baseFromQuery || baseFromHeader || sessionAuth?.yunxiao_api_base_url || undefined),
         forwardHost,
     };
 }
