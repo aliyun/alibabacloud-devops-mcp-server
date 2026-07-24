@@ -51,5 +51,10 @@
     "@types/express": "^5.0.3",
     "@types/node": "^22.13.10",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "fast-uri": "^3.1.4",
+    "body-parser": "^2.3.0",
+    "@hono/node-server": "^2.0.11"
   }
 }
