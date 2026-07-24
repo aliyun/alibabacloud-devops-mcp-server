@@ -324,7 +324,8 @@ const TOKEN_VERIFY_TTL_MS = 60_000;
  * - true：token 有效
  * - false：token 明确无效（云效 401）
  * - "unknown"：无法判定（网络/5xx 等），调用方应放行（fail-open），避免云效抖动误伤
- * 结果按 sha256(apiBaseUrl + token) 缓存 60s；token 变化会立即换 key，无需等待过期。
+ * 仅正面结果(true)按 sha256(apiBaseUrl + token) 缓存 60s；false/"unknown" 不缓存，
+ * 避免无效判定或频控误伤被放大。token 变化会立即换 key，无需等待过期。
  */
 export async function verifyToken(
   token: string,
@@ -347,7 +348,8 @@ export async function verifyToken(
     return true;
   } catch (error) {
     if (isYunxiaoError(error) && error.status === 401) {
-      tokenVerifyCache.set(key, { ok: false, exp: now + TOKEN_VERIFY_TTL_MS });
+      // 负面结果不缓存：token 明确无效直接返回。若缓存 false 60s，用户随后
+      // 立刻换上有效 token 仍会被旧结果拦住，且频控误判会被放大 60s。
       return false;
     }
     // 网络抖动 / 5xx 等无法判定：不缓存，交由调用方 fail-open。
