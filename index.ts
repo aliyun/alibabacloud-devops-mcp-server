@@ -98,16 +98,32 @@ function createMcpServer(): Server {
             logger.info({ tool: toolName, ok: true, durationMs: Date.now() - startedAt }, "tool call");
             return result;
         } catch (error) {
-            // 工具调用失败多为客户端参数错误或云效 4xx（可容忍），用 warn；只记错误摘要，
-            // 不带 error 里的 requestHeaders（含 token），避免令牌落日志。
-            // 用 err 字段承载错误详情，避免与 pino 的 msg（"tool call failed"）键冲突产生重复 msg
+            const durationMs = Date.now() - startedAt;
+            // schema 校验失败:入参(handler 解析 arguments)或响应 DTO(operation 解析云效返回)与
+            // schema 定义不符时抛 ZodError。单独结构化记录(kind=schema_validation + 逐条 issue 的
+            // path/expected/received),便于线上按 kind 聚合、快速定位字段类型缺陷:
+            //   path 顶层是入参名 => 调用方传参问题;path 是响应字段 => 响应 schema 与云效实际返回不符(缺陷)。
+            if (error instanceof z.ZodError) {
+                logger.warn({
+                    tool: toolName,
+                    durationMs,
+                    kind: "schema_validation",
+                    issues: error.issues.map((i) => ({
+                        path: i.path.join("."),
+                        code: i.code,
+                        message: i.message,
+                        ...(i.code === "invalid_type"
+                            ? { expected: (i as any).expected, received: (i as any).received }
+                            : {}),
+                    })),
+                }, "schema validation failed");
+                throw new Error(`Invalid input: ${JSON.stringify(error.errors)}`);
+            }
+            // 其它失败(云效 4xx/5xx 等,多为可容忍),用 warn;只记错误摘要,不带 requestHeaders(含 token)。
             const errInfo = isYunxiaoError(error)
                 ? { status: error.status, err: error.message }
                 : { err: error instanceof Error ? error.message : String(error) };
-            logger.warn({ tool: toolName, ok: false, durationMs: Date.now() - startedAt, ...errInfo }, "tool call failed");
-            if (error instanceof z.ZodError) {
-                throw new Error(`Invalid input: ${JSON.stringify(error.errors)}`);
-            }
+            logger.warn({ tool: toolName, ok: false, durationMs, ...errInfo }, "tool call failed");
             if (isYunxiaoError(error)) {
                 throw new Error(formatYunxiaoError(error));
             }
