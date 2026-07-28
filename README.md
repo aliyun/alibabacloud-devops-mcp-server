@@ -2,6 +2,8 @@
 
 # alibabacloud-devops-mcp-server
 
+[![MCP Toplist](https://mcptoplist.com/badge/glama%2Faliyun%2Falibabacloud-devops-mcp-server.svg)](https://mcptoplist.com/server/glama%2Faliyun%2Falibabacloud-devops-mcp-server)
+
 [AlibabaCloud Devops](https://www.aliyun.com/product/yunxiao) MCP Server provides AI assistants with the ability to interact with the Yunxiao platform, enabling them to read work item contents in projects, automatically write code after understanding requirements, and submit code merge requests. Enterprise development teams can use it to assist with code reviews, optimize task management, reduce repetitive operations, and thus focus on more important innovation and product delivery.
 
 ## Features
