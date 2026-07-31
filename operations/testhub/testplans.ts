@@ -9,9 +9,12 @@ export const TestPlanDTOSchema = z.object({
   testPlanIdentifier: z.string().describe("测试计划id"),
   name: z.string().describe("测试计划名称"),
   managers: z.array(z.string()).nullable().optional().describe("测试计划管理员id"),
-  gmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("创建时间（时间戳或ISO字符串）"),
+  gmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("创建时间，Unix 毫秒时间戳（兼容 ISO 字符串）"),
   spaceIdentifier: z.string().nullable().optional().describe("关联项目id"),
-});
+  sprintIdentifier: z.string().nullable().optional().describe("关联迭代id，未关联时为 null"),
+  startDate: z.union([z.string(), z.number()]).nullable().optional().describe("计划开始日期，Unix 毫秒时间戳（兼容日期字符串）"),
+  endDate: z.union([z.string(), z.number()]).nullable().optional().describe("计划结束日期，Unix 毫秒时间戳（兼容日期字符串），未设置时为 null"),
+}).passthrough();
 
 // Schema for ListTestPlan
 export const ListTestPlanRequestSchema = z.object({
