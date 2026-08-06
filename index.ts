@@ -252,10 +252,14 @@ function resolveYunxiaoAuth(
     // region 多租户：提取进入本服务的原始 Host，后续透传给 openapi（devops-traefik-openapi 按子域名分租户）。
     // 经 nginx ingress 后原始租户域名一般同时在 X-Forwarded-Host 与 Host；优先 X-Forwarded-Host
     // （更抗中间代理改写），回退 Host，取第一跳（逗号分隔时的首个）。
+    // 必须剥掉尾部端口：部分客户端/代理会带上显式端口（如 xxx.devops.aliyuncs.com:443），
+    // 而 openapi 网关按 Host 反查 IAM domain 时是全串精确匹配，带端口会命中不到，
+    // 直接以 "iamv1: domain not found" 返回 404（且不转发后端），表现为所有工具调用均 404。
+    // IPv6 字面量在 Host 头中必须加方括号（[::1] / [::1]:443），故仅剥离结尾的 :数字 是安全的。
     const xfh = req.headers['x-forwarded-host'];
     const hostHdr = req.headers['host'];
     const rawHost = (typeof xfh === 'string' ? xfh : undefined) ?? (typeof hostHdr === 'string' ? hostHdr : undefined);
-    const forwardHost = rawHost?.split(',')[0].trim() || undefined;
+    const forwardHost = rawHost?.split(',')[0].trim().replace(/:\d+$/, '') || undefined;
 
     return {
         token: tokenFromQuery || tokenFromHeader || tokenFromBearer || sessionAuth?.yunxiao_access_token || process.env.YUNXIAO_ACCESS_TOKEN,
