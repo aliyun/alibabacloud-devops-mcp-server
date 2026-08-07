@@ -111,10 +111,13 @@ export const MiniLabelSchema = z.object({
 });
 
 // Schema for MiniItemDTO
+// 用例的 directory 等引用对象会返回 name: null,原先声明为必填 z.string()
+// 导致 search_testcases 抛 ZodError(N.directory.name expected string,
+// received null) —— 线上 7 天 48 次。
 export const MiniItemDTOSchema = z.object({
-  id: z.string().describe("id"),
-  name: z.string().describe("名称"),
-});
+  id: z.string().nullable().optional().describe("id"),
+  name: z.string().nullable().optional().describe("名称"),
+}).passthrough();
 
 // Schema for FieldValue
 export const FieldValueSchema = z.object({

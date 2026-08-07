@@ -86,10 +86,13 @@ export const SprintInfoSchema = z.object({
   owners: z.array(UserInfoSchema).nullable().optional().describe("Owners"),
 });
 
+// 云效在工作项的 sprint 对象里会返回 name: null,原先缺 .nullable() 导致
+// search_workitems 抛 ZodError(sprint.name expected string, received null) ——
+// 线上 7 天 90 次,是该工具最主要的失败原因。
 export const SprintSchema = z.object({
-  id: z.string().optional().describe("Sprint ID"),
-  name: z.string().optional().describe("Sprint name"),
-});
+  id: z.string().nullable().optional().describe("Sprint ID"),
+  name: z.string().nullable().optional().describe("Sprint name"),
+}).passthrough();
 
 // List Sprints Schema
 export const ListSprintsSchema = z.object({
