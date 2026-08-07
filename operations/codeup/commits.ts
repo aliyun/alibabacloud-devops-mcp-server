@@ -1,14 +1,15 @@
 import { z } from "zod";
 import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, isRegionEdition } from "../../common/utils.js";
 import { resolveOrganizationId } from "../organization/organization.js";
-import { 
+import {
   DevopsCommitVOSchema as DevopsCommitVOSchemaType
 } from "./types.js";
+import { idParam } from '../../common/zodHelpers.js';
 
 // Commit schemas
 export const ListCommitsRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径"),
+  repositoryId: idParam("代码库ID或者URL-Encoder编码的全路径"),
   refName: z.string().describe("分支名称、标签名称或提交版本，默认为代码库默认分支"),
   since: z.string().optional().describe("提交起始时间，格式：YYYY-MM-DDTHH:MM:SSZ"),
   until: z.string().optional().describe("提交截止时间，格式：YYYY-MM-DDTHH:MM:SSZ"),
@@ -22,13 +23,13 @@ export const ListCommitsRequestSchema = z.object({
 
 export const GetCommitRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径"),
+  repositoryId: idParam("代码库ID或者URL-Encoder编码的全路径"),
   sha: z.string().describe("提交ID，即Commit SHA值"),
 });
 
 export const CreateCommitCommentRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径"),
+  repositoryId: idParam("代码库ID或者URL-Encoder编码的全路径"),
   sha: z.string().describe("提交的SHA值"),
   content: z.string().describe("commit的评论内容"),
 });

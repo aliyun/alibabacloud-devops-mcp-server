@@ -1,6 +1,6 @@
 {
   "total": 197,
-  "generatedAt": "2026-08-07T10:14:06.677Z",
+  "generatedAt": "2026-08-07T10:33:55.970Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -40,7 +40,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "branch": {
@@ -72,7 +75,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "branchName": {
@@ -99,7 +105,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "branchName": {
@@ -126,7 +135,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "page": {
@@ -176,7 +188,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "filePath": {
@@ -208,7 +223,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "filePath": {
@@ -254,7 +272,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "filePath": {
@@ -301,7 +322,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "filePath": {
@@ -338,7 +362,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "path": {
@@ -373,7 +400,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "from": {
@@ -431,7 +461,10 @@
             "description": "Organization ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           }
         },
@@ -590,11 +623,17 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"
           }
         },
@@ -720,7 +759,10 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "title": {
@@ -809,11 +851,17 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"
           },
           "comment_type": {
@@ -888,11 +936,17 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "合并请求局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"
           },
           "patchSetBizIds": {
@@ -949,11 +1003,17 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "合并请求局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"
           },
           "commentBizId": {
@@ -990,11 +1050,17 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"
           }
         },
@@ -1017,7 +1083,10 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或者URL-Encoder编码的全路径"
           },
           "refName": {
@@ -1076,7 +1145,10 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或者URL-Encoder编码的全路径"
           },
           "sha": {
@@ -1103,7 +1175,10 @@
             "description": "组织ID"
           },
           "repositoryId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "代码库ID或者URL-Encoder编码的全路径"
           },
           "sha": {
@@ -3141,7 +3216,10 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           }
         },
@@ -3617,7 +3695,10 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID to run"
           },
           "params": {
@@ -3731,7 +3812,10 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID to get the latest run information"
           }
         },
@@ -3753,11 +3837,17 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run ID to retrieve details for"
           }
         },
@@ -3780,7 +3870,10 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID to list runs for"
           },
           "perPage": {
@@ -3831,7 +3924,10 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "category": {
@@ -3858,7 +3954,10 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "category": {
@@ -3903,15 +4002,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Job ID for the pipeline run task"
           }
         },
@@ -3935,15 +4043,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Job ID of the pipeline run task"
           }
         },
@@ -3967,15 +4084,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID, obtainable via GetPipelineRun"
           }
         },
@@ -3999,15 +4125,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID, obtainable via GetPipelineRun"
           }
         },
@@ -4031,15 +4166,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID, obtainable via ListPipelines"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID, obtainable via GetPipelineRun. Only deploy-type jobs are supported."
           }
         },
@@ -4063,15 +4207,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID, obtainable via GetPipelineRun"
           }
         },
@@ -4095,15 +4248,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID (manual checkpoint), obtainable via GetPipelineRun"
           }
         },
@@ -4127,15 +4289,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID (manual checkpoint), obtainable via GetPipelineRun"
           }
         },
@@ -4159,15 +4330,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID, obtainable via GetPipelineRun"
           },
           "actionId": {
@@ -4196,15 +4376,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID, obtainable via GetPipelineRun"
           }
         },
@@ -4228,15 +4417,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID, obtainable via GetPipelineRun"
           },
           "stepIndex": {
@@ -4280,15 +4478,24 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "pipelineRunId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline run instance ID, obtainable via ListPipelineRuns"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline job ID, obtainable via GetPipelineRun"
           },
           "stepIndex": {
@@ -4322,7 +4529,10 @@
             "description": "Organization ID"
           },
           "pipelineId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "Pipeline ID"
           },
           "content": {
@@ -6114,28 +6324,50 @@
                   "type": "object",
                   "properties": {
                     "displayName": {
-                      "type": "string",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
                       "description": "标签展示名"
                     },
                     "displayValue": {
-                      "type": "string",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
                       "description": "标签展示值"
                     },
                     "extraMap": {
-                      "type": "object",
-                      "additionalProperties": {},
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": {}
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
                       "description": "标签扩展属性"
                     },
                     "name": {
-                      "type": "string",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
                       "description": "标签名，仅允许小写字母、中划线和数字"
                     },
                     "namespace": {
-                      "type": "string",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
                       "description": "标签命名空间"
                     },
                     "value": {
-                      "type": "string",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
                       "description": "标签值，仅允许小写字母、中划线和数字"
                     }
                   },
@@ -6149,7 +6381,10 @@
                   "type": "object",
                   "properties": {
                     "description": {
-                      "type": "string",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
                       "description": "占位符描述"
                     },
                     "name": {
@@ -6161,7 +6396,10 @@
                       "description": "部署时是否可修改"
                     },
                     "predefined": {
-                      "type": "boolean",
+                      "type": [
+                        "boolean",
+                        "null"
+                      ],
                       "description": "是否预置占位符"
                     },
                     "rsType": {
@@ -6173,7 +6411,10 @@
                       "description": "适用的部署架构类型"
                     },
                     "rule": {
-                      "type": "string",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
                       "description": "取值校验规则"
                     },
                     "type": {
@@ -6192,11 +6433,18 @@
                       "description": "占位符取值"
                     },
                     "valueSource": {
-                      "type": "string",
-                      "enum": [
-                        "CONSTANT",
-                        "VARIABLE",
-                        "NULL"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "CONSTANT",
+                            "VARIABLE",
+                            "NULL"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
                       ],
                       "description": "取值数据源类型"
                     }
@@ -7497,7 +7745,10 @@
             "description": "发布流程阶执行序号"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "任务ID"
           }
         },
@@ -7539,7 +7790,10 @@
             "description": "研发阶段的执行记录编号"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "任务ID，可通过GetReleaseStagePipelineRun接口获取任务ID"
           }
         },
@@ -7581,7 +7835,10 @@
             "description": "研发流程阶执行序号"
           },
           "jobId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "任务ID"
           }
         },

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { idParam } from '../../common/zodHelpers.js';
 
 // Codeup Branch related schemas
 export const CodeupBranchSchema = z.object({
@@ -218,26 +219,26 @@ export const ChangeRequestSchema = z.object({
 // Codeup Branch related schemas
 export const CreateBranchSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   branch: z.string().describe("Name of the branch to be created"),
   ref: z.string().default("master").describe("Source branch name, the new branch will be created based on this branch, default value is master"),
 });
 
 export const GetBranchSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   branchName: z.string().describe("Branch name (if it contains special characters, use URL encoding), example: master or feature%2Fdev"),
 });
 
 export const DeleteBranchSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   branchName: z.string().describe("Branch name (use URL-Encoder for encoding, example: feature%2Fdev)"),
 });
 
 export const ListBranchesSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   page: z.number().int().default(1).optional().describe("Page number"),
   perPage: z.number().int().default(20).optional().describe("Items per page"),
   sort: z.enum(["name_asc", "name_desc", "updated_asc", "updated_desc"]).default("name_asc").optional().describe("Sort order: name_asc - name ascending, name_desc - name descending, updated_asc - update time ascending, updated_desc - update time descending"),
@@ -247,7 +248,7 @@ export const ListBranchesSchema = z.object({
 // Codeup repositories related Schema definitions
 export const GetRepositorySchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
 });
 
 export const ListRepositoriesSchema = z.object({
@@ -281,14 +282,14 @@ export const CreateRepositorySchema = z.object({
 // Codeup files related Schema definitions
 export const GetFileBlobsSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   filePath: z.string().describe("File path, needs to be URL encoded, for example: /src/main/java/com/aliyun/test.java"),
   ref: z.string().describe("Reference name, usually branch name, can be branch name, tag name or commit SHA. If not provided, the default branch of the repository will be used, such as master"),
 });
 
 export const CreateFileSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   filePath: z.string().describe("File path, needs to be URL encoded, for example: /src/main/java/com/aliyun/test.java"),
   content: z.string().describe("File content"),
   commitMessage: z.string().describe("Commit message, not empty, no more than 102400 characters"),
@@ -298,7 +299,7 @@ export const CreateFileSchema = z.object({
 
 export const UpdateFileSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   filePath: z.string().describe("File path, needs to be URL encoded, for example: /src/main/java/com/aliyun/test.java"),
   content: z.string().describe("File content"),
   commitMessage: z.string().describe("Commit message, not empty, no more than 102400 characters"),
@@ -308,7 +309,7 @@ export const UpdateFileSchema = z.object({
 
 export const DeleteFileSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   filePath: z.string().describe("File path, needs to be URL encoded, for example: /src/main/java/com/aliyun/test.java"),
   commitMessage: z.string().describe("Commit message"),
   branch: z.string().describe("Branch name"),
@@ -316,7 +317,7 @@ export const DeleteFileSchema = z.object({
 
 export const ListFilesSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   path: z.string().optional().describe("Specific path to query, for example to query files in the src/main directory"),
   ref: z.string().optional().describe("Reference name, usually branch name, can be branch name, tag name or commit SHA. If not provided, the default branch of the repository will be used, such as master"),
   type: z.string().default("RECURSIVE").optional().describe("File tree retrieval method: DIRECT - only get the current directory, default method; RECURSIVE - recursively find all files under the current path; FLATTEN - flat display (if it is a directory, recursively find until the subdirectory contains files or multiple directories)"),
@@ -325,7 +326,7 @@ export const ListFilesSchema = z.object({
 // Codeup compare related Schema definitions
 export const GetCompareSchema = z.object({
   organizationId: z.string().describe("Organization ID"),
-  repositoryId: z.string().describe("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
+  repositoryId: idParam("Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"),
   from: z.string().describe("Can be CommitSHA, branch name or tag name"),
   to: z.string().describe("Can be CommitSHA, branch name or tag name"),
   sourceType: z.string().nullable().optional().describe("Options: branch, tag; if it's a commit comparison, you can omit this; if it's a branch comparison, you need to provide: branch, or you can omit it but ensure there are no branch or tag name conflicts; if it's a tag comparison, you need to provide: tag; if there are branches and tags with the same name, you need to strictly provide branch or tag"),
@@ -336,8 +337,8 @@ export const GetCompareSchema = z.object({
 // Codeup change requests related Schema definitions
 export const GetChangeRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
-  localId: z.string().describe("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  localId: idParam("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
 });
 
 export const ListChangeRequestsSchema = z.object({
@@ -357,7 +358,7 @@ export const ListChangeRequestsSchema = z.object({
 
 export const CreateChangeRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
   title: z.string().max(256).describe("标题，不超过256个字符。示例：'mr title' 或 '修复登录bug'"),
   description: z.string().max(10000).nullable().optional().describe("描述，不超过10000个字符。示例：'mr description' 或 '修复了用户登录时的验证逻辑问题'"),
   sourceBranch: z.string().describe("源分支名称，即要合并的分支。示例：'demo-branch' 或 'feature/user-login'"),
@@ -372,15 +373,15 @@ export const CreateChangeRequestSchema = z.object({
 
 export const ListChangeRequestPatchSetsSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
-  localId: z.string().describe("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  localId: idParam("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
 });
 
 // Codeup change request comments related Schema definitions
 export const CreateChangeRequestCommentSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
-  localId: z.string().describe("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  localId: idParam("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
   comment_type: z.enum(["GLOBAL_COMMENT", "INLINE_COMMENT"]).default("GLOBAL_COMMENT").describe("评论类型。GLOBAL_COMMENT - 全局评论（对整个合并请求的评论）；INLINE_COMMENT - 行内评论（针对特定代码行的评论）。创建行内评论时，必须提供 file_path、line_number、from_patchset_biz_id 和 to_patchset_biz_id 参数"),
   content: z.string().min(1).max(65535).describe("评论内容，长度必须在 1 到 65535 之间。示例：'This is a comment content.' 或 '这里需要优化性能，建议使用缓存机制'"),
   draft: z.boolean().default(false).describe("是否草稿评论。true - 草稿评论（不会立即显示给其他人）；false - 正式评论（默认值）"),
@@ -395,8 +396,8 @@ export const CreateChangeRequestCommentSchema = z.object({
 
 export const ListChangeRequestCommentsSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
-  localId: z.string().describe("合并请求局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  localId: idParam("合并请求局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
   patchSetBizIds: z.array(z.string()).optional().describe("关联版本ID列表，每个评论都关联一个版本，表示该评论是在哪个版本上发布的。对于全局评论，关联的是最新合并源版本。示例：['bf117304dfe44d5d9b1132f348edf92e', '537367017a9841738ac4269fbf6aacbe']"),
   commentType: z.enum(["GLOBAL_COMMENT", "INLINE_COMMENT"]).optional().default("GLOBAL_COMMENT").describe("评论类型。GLOBAL_COMMENT - 全局评论；INLINE_COMMENT - 行内评论"),
   state: z.enum(["OPENED", "DRAFT"]).optional().default("OPENED").describe("评论状态。OPENED - 已发布的评论；DRAFT - 草稿评论"),
@@ -406,8 +407,8 @@ export const ListChangeRequestCommentsSchema = z.object({
 
 export const UpdateChangeRequestCommentSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
-  localId: z.string().describe("合并请求局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  localId: idParam("合并请求局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
   commentBizId: z.string().describe("评论 bizId，具有唯一性，用于标识要更新的评论。示例：'bf117304dfe44d5d9b1132f348edf92e'"),
   content: z.string().min(1).optional().describe("评论内容，更新后的评论内容（可选）。如果提供，将更新评论的文本内容。示例：'your new comment' 或 '更新后的评论内容：这里需要优化性能，建议使用缓存机制'"),
   resolved: z.boolean().optional().describe("是否已解决（可选）。true - 标记为已解决；false - 标记为未解决。示例：false。如果不提供此参数，将保持原有的解决状态不变"),
@@ -416,7 +417,7 @@ export const UpdateChangeRequestCommentSchema = z.object({
 // Codeup commit related Schema definitions
 export const ListCommitsRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径"),
+  repositoryId: idParam("代码库ID或者URL-Encoder编码的全路径"),
   refName: z.string().describe("分支名称、标签名称或提交版本，默认为代码库默认分支"),
   since: z.string().optional().describe("提交起始时间，格式：YYYY-MM-DDTHH:MM:SSZ"),
   until: z.string().optional().describe("提交截止时间，格式：YYYY-MM-DDTHH:MM:SSZ"),
@@ -430,13 +431,13 @@ export const ListCommitsRequestSchema = z.object({
 
 export const GetCommitRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径"),
+  repositoryId: idParam("代码库ID或者URL-Encoder编码的全路径"),
   sha: z.string().describe("提交ID，即Commit SHA值"),
 });
 
 export const CreateCommitCommentRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
-  repositoryId: z.string().describe("代码库ID或者URL-Encoder编码的全路径"),
+  repositoryId: idParam("代码库ID或者URL-Encoder编码的全路径"),
   sha: z.string().describe("提交的SHA值"),
   content: z.string().describe("commit的评论内容"),
 });
