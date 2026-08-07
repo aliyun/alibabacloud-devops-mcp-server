@@ -127,25 +127,32 @@ const ComponentSchema = z.object({
   type: z.enum(["KUBERNETES", "HOST"]).describe("适用的部署架构类型"),
 });
 
+// 同样参与 update_app_orchestration 的读-改-写回环(见下方 PlaceholderSchema 注释),
+// get 返回的 null 必须能原样传回来。
 const OrchestrationLabelSchema = z.object({
-  displayName: z.string().optional().describe("标签展示名"),
-  displayValue: z.string().optional().describe("标签展示值"),
-  extraMap: z.record(z.any()).optional().describe("标签扩展属性"),
-  name: z.string().optional().describe("标签名，仅允许小写字母、中划线和数字"),
-  namespace: z.string().optional().describe("标签命名空间"),
-  value: z.string().optional().describe("标签值，仅允许小写字母、中划线和数字"),
+  displayName: z.string().nullable().optional().describe("标签展示名"),
+  displayValue: z.string().nullable().optional().describe("标签展示值"),
+  extraMap: z.record(z.any()).nullable().optional().describe("标签扩展属性"),
+  name: z.string().nullable().optional().describe("标签名，仅允许小写字母、中划线和数字"),
+  namespace: z.string().nullable().optional().describe("标签命名空间"),
+  value: z.string().nullable().optional().describe("标签值，仅允许小写字母、中划线和数字"),
 });
 
+// update_app_orchestration 是全量替换,工具说明本身就要求"先 get_app_orchestration
+// 再原样回传"。而 get 返回的 placeholder 里 rule / description 是 null,原样传回来
+// 却被这里的入参 schema 拒掉 —— 线上 7 天 74 次
+// (spec.placeholderList.N.rule 64 次、.description 10 次),等于这个读-改-写回环
+// 被自己的 schema 卡死。可选字段一律允许 null 透传。
 const PlaceholderSchema = z.object({
-  description: z.string().optional().describe("占位符描述"),
+  description: z.string().nullable().optional().describe("占位符描述"),
   name: z.string().describe("占位符名"),
   overridable: z.boolean().describe("部署时是否可修改"),
-  predefined: z.boolean().optional().describe("是否预置占位符"),
+  predefined: z.boolean().nullable().optional().describe("是否预置占位符"),
   rsType: z.enum(["KUBERNETES", "HOST"]).describe("适用的部署架构类型"),
-  rule: z.string().optional().describe("取值校验规则"),
+  rule: z.string().nullable().optional().describe("取值校验规则"),
   type: z.enum(["string", "number", "boolean", "float", "object"]).describe("占位符类型"),
   value: z.string().describe("占位符取值"),
-  valueSource: z.enum(["CONSTANT", "VARIABLE", "NULL"]).optional().describe("取值数据源类型"),
+  valueSource: z.enum(["CONSTANT", "VARIABLE", "NULL"]).nullable().optional().describe("取值数据源类型"),
 });
 
 // Schema for the UpdateAppOrchestration API
