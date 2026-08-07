@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
 import { resolveOrganizationId } from '../organization/organization.js';
+import { idParam } from '../../common/zodHelpers.js';
 
 // Schema for Label
 export const LabelSchema = z.object({
@@ -345,6 +346,24 @@ export const ExecuteChangeRequestReleaseStageRequestSchema = z.object({
 
 export const ExecuteChangeRequestReleaseStageResponseSchema = ExecutePipelineResultSchema;
 
+/**
+ * 阶段操作型接口(cancel / retry / skip)的响应。
+ *
+ * 三者原先都声明为 z.boolean(),但云效返回的是对象:swagger 里
+ * CancelExecutionResponse 定义为 { success: boolean };retry / skip 的 200 未定义
+ * 响应体。声明与实际不符会在 parse 时抛 ZodError —— 线上
+ * cancel_app_release_stage_execution 因此是必然失败的
+ * (expected boolean, received object)。
+ *
+ * optional + passthrough 兼容 { success: true } 及多返回字段的情况;空响应体
+ * 由调用处兜为 { success: true }(能走到 parse 说明 HTTP 已经是 2xx)。
+ */
+export const ReleaseStageOperationResultSchema = z
+  .object({
+    success: z.boolean().optional().describe("操作是否成功"),
+  })
+  .passthrough();
+
 // Schema for CancelExecutionReleaseStage API
 export const CancelExecutionReleaseStageRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
@@ -354,7 +373,7 @@ export const CancelExecutionReleaseStageRequestSchema = z.object({
   executionNumber: z.string().describe("发布流程阶执行序号"),
 });
 
-export const CancelExecutionReleaseStageResponseSchema = z.boolean();
+export const CancelExecutionReleaseStageResponseSchema = ReleaseStageOperationResultSchema;
 
 // Schema for RetryChangeRequestStagePipeline API
 export const RetryChangeRequestStagePipelineRequestSchema = z.object({
@@ -365,7 +384,7 @@ export const RetryChangeRequestStagePipelineRequestSchema = z.object({
   executionNumber: z.string().describe("发布流程阶执行序号"),
 });
 
-export const RetryChangeRequestStagePipelineResponseSchema = z.boolean();
+export const RetryChangeRequestStagePipelineResponseSchema = ReleaseStageOperationResultSchema;
 
 // Schema for SkipChangeRequestStagePipeline API
 export const SkipChangeRequestStagePipelineRequestSchema = z.object({
@@ -376,7 +395,7 @@ export const SkipChangeRequestStagePipelineRequestSchema = z.object({
   executionNumber: z.string().describe("发布流程阶执行序号"),
 });
 
-export const SkipChangeRequestStagePipelineResponseSchema = z.boolean();
+export const SkipChangeRequestStagePipelineResponseSchema = ReleaseStageOperationResultSchema;
 
 // Export types
 export type ListAllReleaseWorkflowsRequest = z.infer<typeof ListAllReleaseWorkflowsRequestSchema>;
@@ -584,7 +603,7 @@ export async function cancelExecutionReleaseStage(params: CancelExecutionRelease
         method: 'POST',
       }
     );
-    return CancelExecutionReleaseStageResponseSchema.parse(response);
+    return CancelExecutionReleaseStageResponseSchema.parse(response ?? { success: true });
   } catch (error) {
     throw error;
   }
@@ -607,7 +626,7 @@ export async function retryChangeRequestStagePipeline(params: RetryChangeRequest
         method: 'POST',
       }
     );
-    return RetryChangeRequestStagePipelineResponseSchema.parse(response);
+    return RetryChangeRequestStagePipelineResponseSchema.parse(response ?? { success: true });
   } catch (error) {
     throw error;
   }
@@ -630,7 +649,7 @@ export async function skipChangeRequestStagePipeline(params: SkipChangeRequestSt
         method: 'POST',
       }
     );
-    return SkipChangeRequestStagePipelineResponseSchema.parse(response);
+    return SkipChangeRequestStagePipelineResponseSchema.parse(response ?? { success: true });
   } catch (error) {
     throw error;
   }
@@ -707,7 +726,7 @@ export const PassReleaseStagePipelineValidateRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
   executionNumber: z.string().describe("发布流程阶执行序号"),
-  jobId: z.string().describe("任务ID"),
+  jobId: idParam("任务ID"),
 });
 
 export const PassReleaseStagePipelineValidateResponseSchema = PassPipelineValidateResponseSchema;
@@ -725,7 +744,7 @@ export const RefuseReleaseStagePipelineValidateRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("研发流程唯一序列号"),
   releaseStageSn: z.string().describe("研发流程阶段唯一序列号"),
   executionNumber: z.string().describe("研发流程阶执行序号"),
-  jobId: z.string().describe("任务ID"),
+  jobId: idParam("任务ID"),
 });
 
 export const RefuseReleaseStagePipelineValidateResponseSchema = RefusePipelineValidateResponseSchema;
@@ -743,7 +762,7 @@ export const GetAppReleaseStageExecutionPipelineJobLogRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
   executionNumber: z.string().describe("研发阶段的执行记录编号"),
-  jobId: z.string().describe("任务ID，可通过GetReleaseStagePipelineRun接口获取任务ID"),
+  jobId: idParam("任务ID，可通过GetReleaseStagePipelineRun接口获取任务ID"),
 });
 
 export const GetAppReleaseStageExecutionPipelineJobLogResponseSchema = ReleaseStageExecutionPipelineJobLogResponseSchema;

@@ -17,13 +17,17 @@ const StageMetadataCommitVOSchema = z.object({
   id: z.string().describe("变更执行记录版本ID"),
 }).describe("变更执行记录版本");
 
+// swagger 的 ChangeRequestExecutionVO 没有 required 数组,5 个字段全是可选的,
+// 云效实际返回里它们确实可能缺失 —— 原先全部声明为必填 z.string(),导致
+// list_appstack_change_request_executions 在线上必然抛 ZodError
+// (records.N.id 等 expected string, received undefined)。
 const ChangeRequestExecutionVOSchema = z.object({
-  id: z.string().describe("执行记录ID"),
-  changeRequestSn: z.string().describe("变更标识符"),
-  status: z.string().describe("执行状态"),
-  gmtCreate: z.string().describe("创建时间"),
-  gmtModified: z.string().describe("修改时间"),
-}).describe("变更执行记录");
+  id: z.string().nullable().optional().describe("执行记录ID"),
+  changeRequestSn: z.string().nullable().optional().describe("变更标识符"),
+  status: z.string().nullable().optional().describe("执行状态"),
+  gmtCreate: z.string().nullable().optional().describe("创建时间"),
+  gmtModified: z.string().nullable().optional().describe("修改时间"),
+}).passthrough().describe("变更执行记录");
 
 const CodeReviewAuditItemSchema = AuditItemSchema.extend({
   auditOrderSn: z.string().optional().describe("审批单编号"),
@@ -114,13 +118,15 @@ export const ListChangeRequestExecutionsRequestSchema = z.object({
   releaseStageSn: z.string().describe("阶段唯一标识"),
 });
 
+// swagger 的 PaginationChangeRequestExecutionVO 只把 pageSize/pages/records/total
+// 列为 required,current 是可选的。
 export const ListChangeRequestExecutionsResponseSchema = z.object({
-  current: z.number().describe("当前页数"),
-  pageSize: z.number().describe("每页大小"),
-  pages: z.number().describe("总页数"),
+  current: z.number().nullable().optional().describe("当前页数"),
+  pageSize: z.number().nullable().optional().describe("每页大小"),
+  pages: z.number().nullable().optional().describe("总页数"),
   records: z.array(ChangeRequestExecutionVOSchema).describe("数据列表"),
-  total: z.number().describe("总数"),
-});
+  total: z.number().nullable().optional().describe("总数"),
+}).passthrough();
 
 // Schema for the ListChangeRequestWorkItems API
 export const ListChangeRequestWorkItemsRequestSchema = z.object({
@@ -129,13 +135,16 @@ export const ListChangeRequestWorkItemsRequestSchema = z.object({
   sn: z.string().describe("变更标识符"),
 });
 
+// 云效对 description / value 会返回 null —— 线上
+// list_appstack_change_request_work_items 因此报错(N.description、N.value
+// expected string, received null)。同一对象的其余字段一并放宽。
 export const ListChangeRequestWorkItemsResponseSchema = z.array(z.object({
-  description: z.string().optional().describe("变更工作项描述"),
-  name: z.string().optional().describe("变更工作项名称"),
-  sn: z.string().optional().describe("变更工作项唯一标识"),
-  type: z.string().optional().describe("变更工作项类型"),
-  value: z.string().optional().describe("变更工作项内容"),
-}));
+  description: z.string().nullable().optional().describe("变更工作项描述"),
+  name: z.string().nullable().optional().describe("变更工作项名称"),
+  sn: z.string().nullable().optional().describe("变更工作项唯一标识"),
+  type: z.string().nullable().optional().describe("变更工作项类型"),
+  value: z.string().nullable().optional().describe("变更工作项内容"),
+}).passthrough());
 
 // Schema for the CancelChangeRequest API
 export const CancelChangeRequestRequestSchema = z.object({
