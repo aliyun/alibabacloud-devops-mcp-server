@@ -1,4 +1,4 @@
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toInputSchema } from '../common/inputSchema.js';
 import { 
   GetEnvVariableGroupsRequestSchema,
   CreateVariableGroupRequestSchema,
@@ -14,36 +14,36 @@ export const getAppStackVariableGroupTools = () => [
   {
     name: 'get_env_variable_groups',
     description: '[application delivery] Get variable groups for an environment',
-    inputSchema: zodToJsonSchema(GetEnvVariableGroupsRequestSchema),
+    inputSchema: toInputSchema(GetEnvVariableGroupsRequestSchema),
   },
   {
     name: 'create_variable_group',
     description: '[application delivery] Create a variable group',
-    inputSchema: zodToJsonSchema(CreateVariableGroupRequestSchema),
+    inputSchema: toInputSchema(CreateVariableGroupRequestSchema),
   },
   {
     name: 'delete_variable_group',
     description: '[application delivery] Delete a variable group',
-    inputSchema: zodToJsonSchema(DeleteVariableGroupRequestSchema),
+    inputSchema: toInputSchema(DeleteVariableGroupRequestSchema),
   },
   {
     name: 'get_variable_group',
     description: '[application delivery] Get a variable group',
-    inputSchema: zodToJsonSchema(GetVariableGroupRequestSchema),
+    inputSchema: toInputSchema(GetVariableGroupRequestSchema),
   },
   {
     name: 'update_variable_group',
     description: '[application delivery] Update a variable group',
-    inputSchema: zodToJsonSchema(UpdateVariableGroupRequestSchema),
+    inputSchema: toInputSchema(UpdateVariableGroupRequestSchema),
   },
   {
     name: 'get_app_variable_groups',
     description: '[application delivery] Get variable groups for an application',
-    inputSchema: zodToJsonSchema(GetAppVariableGroupsRequestSchema),
+    inputSchema: toInputSchema(GetAppVariableGroupsRequestSchema),
   },
   {
     name: 'get_app_variable_groups_revision',
     description: '[application delivery] Get the revision of variable groups for an application',
-    inputSchema: zodToJsonSchema(GetAppVariableGroupsRevisionRequestSchema),
+    inputSchema: toInputSchema(GetAppVariableGroupsRevisionRequestSchema),
   }
 ];

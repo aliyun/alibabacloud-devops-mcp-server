@@ -11,7 +11,6 @@ import {
     ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 
 import * as branches from './operations/codeup/branches.js';
 import * as files from './operations/codeup/files.js';

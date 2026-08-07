@@ -1,4 +1,4 @@
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toInputSchema } from '../common/inputSchema.js';
 import * as types from '../common/types.js';
 
 export const getServiceConnectionTools = () => [
@@ -6,6 +6,6 @@ export const getServiceConnectionTools = () => [
   {
     name: "list_service_connections",
     description: "[Service Connection Management] List service connections in an organization with filtering options",
-    inputSchema: zodToJsonSchema(types.ListServiceConnectionsSchema),
+    inputSchema: toInputSchema(types.ListServiceConnectionsSchema),
   },
 ];

@@ -1,4 +1,4 @@
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toInputSchema } from '../common/inputSchema.js';
 import { 
   ListSystemAllReleaseWorkflowsRequestSchema,
   CreateSystemReleaseWorkflowsRequestSchema,
@@ -11,22 +11,22 @@ export const getAppStackReleaseWorkflowTools = () => [
   {
     name: 'list_system_release_workflows',
     description: '[application delivery] 查询系统下所有发布流程',
-    inputSchema: zodToJsonSchema(ListSystemAllReleaseWorkflowsRequestSchema),
+    inputSchema: toInputSchema(ListSystemAllReleaseWorkflowsRequestSchema),
   },
   {
     name: 'create_system_release_workflow',
     description: '[application delivery] 创建系统发布流程',
-    inputSchema: zodToJsonSchema(CreateSystemReleaseWorkflowsRequestSchema),
+    inputSchema: toInputSchema(CreateSystemReleaseWorkflowsRequestSchema),
   },
   {
     name: 'update_system_release_stage',
     description: '[application delivery] 更新系统发布流程阶段',
-    inputSchema: zodToJsonSchema(UpdateSystemReleaseStageRequestSchema),
+    inputSchema: toInputSchema(UpdateSystemReleaseStageRequestSchema),
   },
   {
     name: 'execute_system_release_stage',
     description: '[application delivery] 执行系统发布流程阶段',
-    inputSchema: zodToJsonSchema(ExecuteReleaseStageRequestSchema),
+    inputSchema: toInputSchema(ExecuteReleaseStageRequestSchema),
   }
 ];
 

@@ -51,20 +51,20 @@ export const PipelineDetailSchema = z.object({
 
 // Flow Get pipeline schema
 export const GetPipelineSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID"),
 });
 
 // Flow Create pipeline schema
 export const CreatePipelineSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   name: z.string().max(60).describe("Pipeline name, maximum 60 characters"),
   content: z.string().describe("Pipeline YAML description, refer to YAML pipeline documentation for writing. This should be a complete YAML configuration including sources, stages, jobs, and steps."),
 });
 
 // Flow Create pipeline with structured options schema
 export const CreatePipelineWithStructuredOptionsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   name: z.string().max(60).describe("Pipeline name (required). LLM should generate a meaningful name based on user's request"),
   
   // 技术栈参数（必需，由大模型从IDE上下文和用户描述中提取）
@@ -118,7 +118,7 @@ export const CreatePipelineFromDescriptionSchema = CreatePipelineWithStructuredO
 
 // Flow List pipelines schema
 export const ListPipelinesSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   createStartTime: z.number().int().optional().describe("Creation start time in milliseconds timestamp format (e.g., 1729178040000). For filtering pipelines created after this time."),
   createEndTime: z.number().int().optional().describe("Creation end time in milliseconds timestamp format (e.g., 1729178040000). For filtering pipelines created before this time."),
   executeStartTime: z.number().int().optional().describe("Execution start time in milliseconds timestamp format (e.g., 1729178040000). For filtering pipelines executed after this time."),
@@ -139,7 +139,7 @@ export const PipelineListItemSchema = z.object({
 
 // Flow Create pipeline run schema
 export const CreatePipelineRunSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID to run"),
   
   // ========== 高级参数（兼容原有方式）==========
@@ -264,13 +264,13 @@ export const PipelineRunSchema = z.object({
 
 // Flow Get latest pipeline run schema
 export const GetLatestPipelineRunSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID to get the latest run information"),
 });
 
 // Flow Get pipeline run schema
 export const GetPipelineRunSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID"),
   pipelineRunId: z.string().describe("Pipeline run ID to retrieve details for"),
 });
@@ -289,7 +289,7 @@ export const PipelineRunListItemSchema = z.object({
 
 // Flow List pipeline runs schema
 export const ListPipelineRunsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID to list runs for"),
   perPage: z.number().int().min(1).max(30).default(10).optional().describe("Number of items per page, default 10, max 30"),
   page: z.number().int().min(1).default(1).optional().describe("Page number, default 1"),
@@ -301,7 +301,7 @@ export const ListPipelineRunsSchema = z.object({
 
 // Flow Pipeline job related schemas
 export const ListPipelineJobsByCategorySchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID"),
   category: z.string().describe("Task category, currently only supports DEPLOY")
 });
@@ -315,7 +315,7 @@ export const PipelineJobItemSchema = z.object({
 
 // Flow Pipeline job history related schemas
 export const ListPipelineJobHistorysSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID"),
   category: z.string().describe("Task category, currently only supports DEPLOY"),
   identifier: z.string().describe("Task identifier"),
@@ -337,7 +337,7 @@ export const PipelineJobHistoryItemSchema = z.object({
 
 // Flow Execute pipeline job run schema
 export const ExecutePipelineJobRunSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID"),
   pipelineRunId: z.string().describe("Pipeline run instance ID"),
   jobId: z.string().describe("Job ID for the pipeline run task")
@@ -345,7 +345,7 @@ export const ExecutePipelineJobRunSchema = z.object({
 
 // Flow Get pipeline job run log schema
 export const GetPipelineJobRunLogSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   pipelineId: z.string().describe("Pipeline ID"),
   pipelineRunId: z.string().describe("Pipeline run instance ID"),
   jobId: z.string().describe("Job ID of the pipeline run task")
@@ -522,7 +522,7 @@ export const ServiceConnectionSchema = z.object({
 });
 
 export const ListServiceConnectionsSchema = z.object({
-  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("组织ID"),
   serviceConnectionType: z.enum([
     "aliyun_code", 
     "codeup", 
@@ -577,7 +577,7 @@ export const HostGroupSchema = z.object({
 });
 
 export const ListHostGroupsSchema = z.object({
-  organizationId: z.string().describe("组织ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("组织ID"),
   ids: z.string().optional().describe("主机组ID，多个逗号分割"),
   name: z.string().optional().describe("主机组名称"),
   createStartTime: z.number().int().optional().describe("主机组创建开始时间"),

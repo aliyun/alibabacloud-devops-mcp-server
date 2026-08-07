@@ -1,6 +1,6 @@
 {
   "total": 197,
-  "generatedAt": "2026-07-17T07:03:05.850Z",
+  "generatedAt": "2026-08-07T10:14:06.677Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -8,8 +8,7 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -18,8 +17,7 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -28,8 +26,7 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -40,11 +37,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "branch": {
             "type": "string",
@@ -61,8 +58,7 @@
           "repositoryId",
           "branch"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -73,11 +69,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "branchName": {
             "type": "string",
@@ -89,8 +85,7 @@
           "repositoryId",
           "branchName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -101,11 +96,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "branchName": {
             "type": "string",
@@ -117,8 +112,7 @@
           "repositoryId",
           "branchName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -129,11 +123,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "page": {
             "type": "integer",
@@ -168,8 +162,7 @@
           "organizationId",
           "repositoryId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -180,11 +173,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "filePath": {
             "type": "string",
@@ -201,8 +194,7 @@
           "filePath",
           "ref"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -213,11 +205,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "filePath": {
             "type": "string",
@@ -248,8 +240,7 @@
           "commitMessage",
           "branch"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -260,11 +251,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "filePath": {
             "type": "string",
@@ -296,8 +287,7 @@
           "commitMessage",
           "branch"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -308,11 +298,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "filePath": {
             "type": "string",
@@ -334,8 +324,7 @@
           "commitMessage",
           "branch"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -346,11 +335,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "path": {
             "type": "string",
@@ -370,8 +359,7 @@
           "organizationId",
           "repositoryId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -382,11 +370,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           },
           "from": {
             "type": "string",
@@ -429,8 +417,7 @@
           "from",
           "to"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -441,19 +428,18 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "Repository ID or a combination of organization ID and repository name, for example: 2835387 or organizationId%2Frepo-name (Note: slashes need to be URL encoded as %2F)"
+            "description": "Repository ID, or org/repo path with slashes URL-encoded as %2F. e.g. 2835387 or myorg%2Fmyrepo"
           }
         },
         "required": [
           "organizationId",
           "repositoryId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -464,7 +450,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "page": {
             "type": "integer",
@@ -502,8 +488,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -514,7 +499,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "name": {
             "type": "string",
@@ -591,8 +576,7 @@
           "name",
           "path"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -603,11 +587,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"
+            "description": "组织ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
             "type": "string",
@@ -619,8 +603,7 @@
           "repositoryId",
           "localId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -631,7 +614,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"
+            "description": "组织ID"
           },
           "page": {
             "type": "integer",
@@ -723,8 +706,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -735,11 +717,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"
+            "description": "组织ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "title": {
             "type": "string",
@@ -813,8 +795,7 @@
           "sourceBranch",
           "targetBranch"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -825,11 +806,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"
+            "description": "组织ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
             "type": "string",
@@ -893,8 +874,7 @@
           "content",
           "patchset_biz_id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -905,11 +885,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"
+            "description": "组织ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
             "type": "string",
@@ -955,8 +935,7 @@
           "repositoryId",
           "localId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -967,11 +946,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"
+            "description": "组织ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
             "type": "string",
@@ -997,8 +976,7 @@
           "localId",
           "commentBizId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1009,11 +987,11 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "组织ID，可在组织管理后台的基本信息页面获取。示例：'60d54f3daccf2bbd6659f3ad'"
+            "description": "组织ID"
           },
           "repositoryId": {
             "type": "string",
-            "description": "代码库ID或者URL-Encoder编码的全路径。示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'（注意：斜杠需要URL编码为%2F）"
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
           },
           "localId": {
             "type": "string",
@@ -1025,8 +1003,7 @@
           "repositoryId",
           "localId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1085,8 +1062,7 @@
           "repositoryId",
           "refName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1113,8 +1089,7 @@
           "repositoryId",
           "sha"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1146,8 +1121,7 @@
           "sha",
           "content"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1168,8 +1142,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1191,8 +1164,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1214,8 +1186,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1240,8 +1211,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1263,8 +1233,7 @@
           "organizationId",
           "memberId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1286,8 +1255,7 @@
           "organizationId",
           "userId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1298,7 +1266,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "deptIds": {
             "type": "array",
@@ -1345,8 +1313,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1363,8 +1330,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1386,8 +1352,7 @@
           "organizationId",
           "roleId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1409,8 +1374,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1533,8 +1497,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1545,7 +1508,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "name": {
             "type": [
@@ -1624,8 +1587,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1636,7 +1598,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "id": {
             "type": "string",
@@ -1679,8 +1641,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1691,7 +1652,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "id": {
             "type": "string",
@@ -1729,8 +1690,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1741,7 +1701,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "id": {
             "type": "string",
@@ -1782,8 +1742,7 @@
           "name",
           "owners"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1794,7 +1753,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "projectId": {
             "type": "string",
@@ -1838,8 +1797,7 @@
           "id",
           "name"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1850,7 +1808,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "projectId": {
             "type": "string",
@@ -1866,8 +1824,7 @@
           "projectId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1894,8 +1851,7 @@
           "projectId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1935,8 +1891,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -1987,8 +1942,7 @@
           "name",
           "owners"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2043,8 +1997,7 @@
           "id",
           "name"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2055,7 +2008,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "workItemId": {
             "type": "string",
@@ -2066,8 +2019,7 @@
           "organizationId",
           "workItemId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2163,8 +2115,7 @@
           "workitemTypeId",
           "assignedTo"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2358,8 +2309,7 @@
           "category",
           "spaceId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2386,8 +2336,7 @@
           "id",
           "category"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2398,7 +2347,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "workItemId": {
             "type": "string",
@@ -2409,8 +2358,7 @@
           "organizationId",
           "workItemId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2508,8 +2456,7 @@
           "workItemId",
           "updateWorkItemFields"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2520,14 +2467,13 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           }
         },
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2538,7 +2484,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "projectId": {
             "type": "string",
@@ -2553,8 +2499,7 @@
           "organizationId",
           "projectId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2565,7 +2510,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "id": {
             "type": "string",
@@ -2576,8 +2521,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2588,7 +2532,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "workItemTypeId": {
             "type": "string",
@@ -2610,8 +2554,7 @@
           "organizationId",
           "workItemTypeId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2622,7 +2565,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "projectId": {
             "type": "string",
@@ -2638,8 +2581,7 @@
           "projectId",
           "workItemTypeId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2650,7 +2592,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "projectId": {
             "type": "string",
@@ -2666,8 +2608,7 @@
           "projectId",
           "workItemTypeId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2678,7 +2619,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "workItemId": {
             "type": "string",
@@ -2699,8 +2640,7 @@
           "organizationId",
           "workItemId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2711,7 +2651,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "workItemId": {
             "type": "string",
@@ -2727,8 +2667,7 @@
           "workItemId",
           "content"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2739,7 +2678,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "workItemId": {
             "type": "string",
@@ -2750,8 +2689,7 @@
           "organizationId",
           "workItemId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2762,7 +2700,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "workItemId": {
             "type": "string",
@@ -2778,8 +2716,7 @@
           "workItemId",
           "testcaseId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2790,7 +2727,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "企业ID，可在组织管理后台的基本信息页面获取"
+            "description": "企业ID"
           },
           "workItemId": {
             "type": "string",
@@ -2806,8 +2743,7 @@
           "workItemId",
           "relationRecordId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2818,7 +2754,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "workItemId": {
             "type": "string",
@@ -2829,8 +2765,7 @@
           "organizationId",
           "workItemId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2841,7 +2776,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "workitemId": {
             "type": "string",
@@ -2857,8 +2792,7 @@
           "workitemId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2869,7 +2803,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "workItemId": {
             "type": "string",
@@ -2896,8 +2830,7 @@
           "organizationId",
           "workItemId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2908,7 +2841,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "workItemId": {
             "type": "string",
@@ -2919,8 +2852,7 @@
           "organizationId",
           "workItemId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2947,8 +2879,7 @@
           "startDate",
           "endDate"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -2970,8 +2901,7 @@
           "id",
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3022,8 +2952,7 @@
           "gmtEnd",
           "gmtStart"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3045,8 +2974,7 @@
           "id",
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3092,8 +3020,7 @@
           "owner",
           "spentTime"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3149,8 +3076,7 @@
           "gmtEnd",
           "gmtStart"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3201,8 +3127,7 @@
           "owner",
           "spentTime"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3213,7 +3138,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -3224,8 +3149,7 @@
           "organizationId",
           "pipelineId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3236,7 +3160,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "createStartTime": {
             "type": "integer",
@@ -3279,19 +3203,18 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
       "name": "generate_pipeline_yaml",
-      "description": "[Pipeline Management] Generate only the YAML configuration for a pipeline without creating it.\n\n**📋 Use Cases:**\n- Preview YAML before creating pipeline\n- Generate YAML for manual deployment\n- Debug pipeline configuration\n\n**📖 Recommended Workflow:**\n1. 🎯 Parse user description for explicit parameters\n2. 🔍 If missing context, prefer IDE detection (terminal + file reading) over API calls\n3. 🚀 Call this tool with collected parameters\n\n**💡 Parameter Collection Strategy:**\n- For QUICK pipeline creation: Use IDE detection (git config, file reading)\n- For PRECISE parameter selection: Consider list_repositories, list_service_connections when needed\n- Balance efficiency vs. accuracy based on user intent\n\n**⚡ Built-in capabilities:** Handles default service connections internally, auto-extracts project name from repo URL",
+      "description": "[Pipeline Management] Generate the pipeline YAML without creating the pipeline — a dry run of create_pipeline_from_description, for previewing the config or debugging a generation problem. Takes the same parameters and follows the same guidelines.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "name": {
             "type": "string",
@@ -3459,19 +3382,18 @@
           "buildLanguage",
           "buildTool"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
       "name": "create_pipeline_from_description",
-      "description": "[Pipeline Management] Create a pipeline using structured parameters extracted from user descriptions and environment context.\n\n**🔧 Built-in Capabilities:**\n- ✅ Automatically retrieves default service connection IDs when not specified\n- ✅ Handles repository and service connection logic internally\n- ✅ Auto-extracts project name from repository URL (git@host:org/repo.git → repo)\n- ✅ Supports both IDE detection and explicit parameter specification\n\n**📖 Recommended Workflow:**\n1. 🎯 PARSE user description for explicit parameters\n2. 🔍 DETECT missing info from IDE environment FIRST:\n   - Run `git config --get remote.origin.url` → repoUrl\n   - Run `git branch --show-current` → branch\n   - Auto-extract serviceName from repoUrl\n   - Check project files for tech stack:\n     * pom.xml → buildLanguage='java', buildTool='maven'\n     * build.gradle → buildLanguage='java', buildTool='gradle'\n     * package.json + package-lock.json → buildLanguage='nodejs', buildTool='npm'\n     * package.json + yarn.lock → buildLanguage='nodejs', buildTool='yarn'\n     * requirements.txt → buildLanguage='python', buildTool='pip'\n     * go.mod → buildLanguage='go', buildTool='go'\n     * *.csproj → buildLanguage='dotnet', buildTool='dotnet'\n3. 🚀 CALL this tool with collected parameters\n\n**⚠️ Important Guidelines:**\n- DO NOT call list_repositories unless user explicitly asks to choose from available repositories\n- DO NOT call list_service_connections unless user explicitly asks to choose from available connections\n- ALWAYS try IDE detection first before making any API calls\n- If IDE detection fails, THEN consider API calls as fallback\n\n**🎯 Parameter Priority:**\n1. 👤 USER EXPLICIT (highest) - buildLanguage, buildTool, versions, deployTarget\n2. 🔍 IDE DETECTION (preferred) - repoUrl, branch, serviceName, tech stack\n3. 🤖 TOOL DEFAULTS (automatic) - serviceConnectionId, organizationId\n\n**🔍 IDE Detection Rules (MUST TRY FIRST):**\n- 📂 Repository: `git config --get remote.origin.url` → repoUrl\n- 🌿 Branch: `git branch --show-current` → branch\n- 🏷️ Service Name: Auto-extracted from repoUrl (git@host:org/repo.git → repo)\n- ☕ Java Maven: pom.xml exists → buildLanguage='java', buildTool='maven'\n- 🏗️ Java Gradle: build.gradle exists → buildLanguage='java', buildTool='gradle'\n- 🟢 Node npm: package.json + package-lock.json → buildLanguage='nodejs', buildTool='npm'\n- 🧶 Node yarn: package.json + yarn.lock → buildLanguage='nodejs', buildTool='yarn'\n- 🐍 Python: requirements.txt → buildLanguage='python', buildTool='pip'\n- 🐹 Go: go.mod → buildLanguage='go', buildTool='go'\n- 💙 .NET: *.csproj → buildLanguage='dotnet', buildTool='dotnet'\n\n**📝 Version Detection (from project files):**\n- ☕ JDK: Read pom.xml <maven.compiler.source> → jdkVersion\n- 🟢 Node: Read package.json engines.node → nodeVersion\n- 🐍 Python: Read .python-version, pyproject.toml → pythonVersion\n- 🐹 Go: Read go.mod go directive → goVersion\n\n**🎯 Deployment Parsing:**\n- '部署到主机/VM/虚拟机' → deployTarget='vm'\n- '部署到Kubernetes/K8s' → deployTarget='k8s'\n- '只构建/构建制品' → deployTarget='none'\n\n**🔗 Service Connection Strategy (3 scenarios):**\n1. **User specifies ID explicitly** (e.g., '使用服务连接ID abc123')\n   → ✅ Pass serviceConnectionId=abc123 directly, NO list_service_connections call needed\n2. **User doesn't specify any ID** (most common case)\n   → ✅ Pass serviceConnectionId=null, tool will auto-retrieve default ID internally\n3. **User wants to choose from available options** (e.g., '显示可用的服务连接让我选择')\n   → 🔍 Call list_service_connections first, then let user choose, then create pipeline\n\n**🤔 When to Use Other Tools:**\n- User asks to \"select from available repositories\" → use list_repositories first\n- User wants to \"choose from service connections\" → use list_service_connections first\n- User wants to see options before deciding → gather info first, then create\n- For quick creation with current repo → directly use IDE detection\n\n**✅ Required:** organizationId, name, buildLanguage, buildTool",
+      "description": "[Pipeline Management] Create a pipeline from structured parameters.\n\nWorkflow: take the parameters the user stated explicitly, fill the rest by inspecting the local project (each parameter's description says which file or git command to read), then call this tool.\n\nGuidelines:\n- Prefer local detection over API calls. Do NOT call list_repositories / list_service_connections first; only do so when the user explicitly wants to pick from the available options.\n- Omit serviceConnectionId to have the default resolved internally. serviceName is derived from repoUrl (git@host:org/repo.git → repo) when omitted.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "name": {
             "type": "string",
@@ -3639,8 +3561,7 @@
           "buildLanguage",
           "buildTool"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3682,19 +3603,18 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
       "name": "create_pipeline_run",
-      "description": "[Pipeline Management] Run a pipeline with flexible parameters.\n\n**⚠️ IMPORTANT: DO NOT provide 'params' parameter unless user explicitly provides a JSON string. Use simplified parameters instead!**\n\n**🎯 Most Common Use Cases:**\n1. 🌿 Run with specific branch: Use 'branch' parameter\n   - User: 'Run pipeline with dev branch' → { branch: 'dev' }\n   - User: '用master分支运行流水线' → { branch: 'master' }\n   - System will automatically fetch repository URLs from pipeline config\n\n2. 🏷️ Run with specific tag: Use 'tag' parameter\n   - User: 'Run pipeline with v1.0 tag' → { tag: 'v1.0' }\n   - User: '用v2.0标签运行流水线' → { tag: 'v2.0' }\n   - System will automatically fetch repository URLs from pipeline config\n\n3. 🔄 Run with multiple branches: Use 'branches' parameter\n   - User: 'Run pipeline with main and dev branches' → { branches: ['main', 'dev'] }\n\n4. 🏛️ Run with specific repo branch/tag: Use 'repositories' parameter\n   - { repositories: [{ url: 'https://codeup.aliyun.com/org/repo.git', branch: 'feature-x' }] }\n   - { repositories: [{ url: 'https://codeup.aliyun.com/org/repo.git', tag: 'v1.0' }] }\n\n5. 📦 Run with environment variables: Use 'environmentVariables' parameter\n   - { environmentVariables: { 'ENV': 'production', 'VERSION': '1.0.0' } }\n\n**📝 Parameter Guide:**\n- 🌿 branch: Single branch name (most common)\n- 🏷️ tag: Single tag name (for release versions)\n- 🔄 branches: Multiple branches for branch mode\n- 🏛️ repositories: Specific branch/tag per repository\n- 📦 environmentVariables: Key-value pairs for pipeline variables\n- 📝 comment: Add a note for this run\n- 🔧 params: [Advanced] ONLY use if user provides raw JSON string\n\n**⚡ Smart Behavior:**\n- If only 'branch' or 'tag' is provided → automatically fetches repo URLs from pipeline and generates runningBranchs/runningTags\n- If 'branches' is provided → automatically enables branch mode\n- If 'params' is provided → all other parameters are ignored\n\n**❌ DO NOT:**\n- Generate 'params' parameter yourself\n- Convert simplified parameters to 'params' JSON\n- The system will handle param generation automatically",
+      "description": "[Pipeline Management] Run a pipeline.\n\nUse the simplified parameters (branch, tag, branches, repositories, environmentVariables). Do NOT hand-craft the 'params' JSON — it is only for a raw JSON string the user supplies verbatim, and it overrides everything else.\n\nBehavior: passing branch or tag alone resolves the repository URLs from the pipeline config automatically; passing branches enables branch mode.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -3797,8 +3717,7 @@
           "organizationId",
           "pipelineId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3809,7 +3728,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -3820,8 +3739,7 @@
           "organizationId",
           "pipelineId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3832,7 +3750,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -3848,8 +3766,7 @@
           "pipelineId",
           "pipelineRunId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3860,7 +3777,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -3900,8 +3817,7 @@
           "organizationId",
           "pipelineId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3912,7 +3828,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -3928,8 +3844,7 @@
           "pipelineId",
           "category"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3940,7 +3855,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -3974,8 +3889,7 @@
           "category",
           "identifier"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -3986,7 +3900,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -4007,8 +3921,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4019,7 +3932,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "Organization ID, can be found in the basic information page of the organization admin console"
+            "description": "Organization ID"
           },
           "pipelineId": {
             "type": "string",
@@ -4040,8 +3953,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4073,8 +3985,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4106,8 +4017,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4139,8 +4049,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4172,8 +4081,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4205,8 +4113,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4238,8 +4145,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4276,8 +4182,7 @@
           "jobId",
           "actionId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4309,8 +4214,7 @@
           "pipelineRunId",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4362,8 +4266,7 @@
           "limit",
           "buildId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4405,8 +4308,7 @@
           "stepIndex",
           "buildId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4439,8 +4341,7 @@
           "content",
           "name"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4451,7 +4352,7 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "description": "组织ID，可在组织管理后台的基本信息页面获取"
+            "description": "组织ID"
           },
           "serviceConnectionType": {
             "type": "string",
@@ -4479,8 +4380,7 @@
           "organizationId",
           "serviceConnectionType"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4512,8 +4412,7 @@
           "resourceId",
           "userId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4540,8 +4439,7 @@
           "resourceType",
           "resourceId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4578,8 +4476,7 @@
           "roleName",
           "userId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4616,8 +4513,7 @@
           "roleName",
           "userId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4649,8 +4545,7 @@
           "resourceId",
           "newOwnerId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4677,8 +4572,7 @@
           "pipelineId",
           "deployOrderId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4710,8 +4604,7 @@
           "deployOrderId",
           "machineSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4743,8 +4636,7 @@
           "deployOrderId",
           "machineSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4771,8 +4663,7 @@
           "pipelineId",
           "deployOrderId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4799,8 +4690,7 @@
           "pipelineId",
           "deployOrderId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4832,8 +4722,7 @@
           "deployOrderId",
           "machineSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4887,8 +4776,7 @@
           "name",
           "variables"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4921,8 +4809,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -4944,8 +4831,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5004,8 +4890,7 @@
           "name",
           "variables"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5027,8 +4912,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5063,8 +4947,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5115,8 +4998,7 @@
           "repoId",
           "repoType"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5148,8 +5030,7 @@
           "id",
           "repoType"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5210,8 +5091,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5233,8 +5113,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5275,8 +5154,7 @@
           "organizationId",
           "name"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5302,8 +5180,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5363,8 +5240,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5391,8 +5267,7 @@
           "name",
           "color"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5423,8 +5298,7 @@
           "name",
           "newName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5461,8 +5335,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5492,8 +5365,7 @@
           "appName",
           "tagNames"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5553,8 +5425,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5612,8 +5483,7 @@
           "displayName",
           "name"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5639,8 +5509,7 @@
           "organizationId",
           "name"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5695,8 +5564,7 @@
           "content",
           "fromRevisionSha"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5727,8 +5595,7 @@
           "current",
           "pageSize"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5755,8 +5622,7 @@
           "appName",
           "envName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5822,8 +5688,7 @@
           "appName",
           "fromRevisionSha"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5850,8 +5715,7 @@
           "appName",
           "variableGroupName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5878,8 +5742,7 @@
           "appName",
           "variableGroupName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5950,8 +5813,7 @@
           "variableGroupName",
           "fromRevisionSha"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5973,8 +5835,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -5996,8 +5857,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6024,8 +5884,7 @@
           "appName",
           "envName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6047,8 +5906,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6084,8 +5942,7 @@
           "templateId",
           "templateType"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6112,8 +5969,7 @@
           "appName",
           "sn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6148,8 +6004,7 @@
           "appName",
           "sn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6371,8 +6226,7 @@
           "sn",
           "name"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6431,8 +6285,7 @@
           "ownerId",
           "title"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6464,8 +6317,7 @@
           "sn",
           "refType"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6529,8 +6381,7 @@
           "releaseWorkflowSn",
           "releaseStageSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6557,8 +6408,7 @@
           "appName",
           "sn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6585,8 +6435,7 @@
           "appName",
           "sn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6613,8 +6462,7 @@
           "appName",
           "sn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6672,8 +6520,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6710,8 +6557,7 @@
           "systemName",
           "releaseSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6738,8 +6584,7 @@
           "tunnelId",
           "machineSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6769,8 +6614,7 @@
           "instanceName",
           "hostSns"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6805,8 +6649,7 @@
           "groupName",
           "hostSns"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6877,8 +6720,7 @@
           "appName",
           "changeOrder"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6924,8 +6766,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6952,8 +6793,7 @@
           "appName",
           "changeOrderSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -6993,8 +6833,7 @@
           "changeOrderSn",
           "jobSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7031,8 +6870,7 @@
           "stageSn",
           "taskSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7092,8 +6930,7 @@
           "jobSn",
           "action"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7128,8 +6965,7 @@
           "originType",
           "originId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7151,8 +6987,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7174,8 +7009,7 @@
           "organizationId",
           "appName"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7207,8 +7041,7 @@
           "releaseWorkflowSn",
           "releaseStageSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7235,8 +7068,7 @@
           "appName",
           "releaseWorkflowSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7330,8 +7162,7 @@
           "releaseStageSn",
           "stage"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7403,8 +7234,7 @@
           "releaseWorkflowSn",
           "releaseStageSn"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7452,8 +7282,7 @@
           "releaseStageSn",
           "execution"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7490,8 +7319,7 @@
           "releaseStageSn",
           "executionNumber"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7528,8 +7356,7 @@
           "releaseStageSn",
           "executionNumber"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7566,8 +7393,7 @@
           "releaseStageSn",
           "executionNumber"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7604,8 +7430,7 @@
           "releaseStageSn",
           "executionNumber"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7642,8 +7467,7 @@
           "releaseStageSn",
           "executionNumber"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7685,8 +7509,7 @@
           "executionNumber",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7728,8 +7551,7 @@
           "executionNumber",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7771,8 +7593,7 @@
           "executionNumber",
           "jobId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7794,8 +7615,7 @@
           "organizationId",
           "testRepoId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7826,8 +7646,7 @@
           "testRepoId",
           "name"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7849,8 +7668,7 @@
           "organizationId",
           "testRepoId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -7969,8 +7787,7 @@
           "organizationId",
           "testRepoId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8030,8 +7847,7 @@
           "organizationId",
           "testRepoId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8058,8 +7874,7 @@
           "testRepoId",
           "testcaseId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8086,8 +7901,7 @@
           "testRepoId",
           "testcaseId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8104,8 +7918,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8132,8 +7945,7 @@
           "testPlanIdentifier",
           "directoryIdentifier"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8174,8 +7986,7 @@
           "testplanId",
           "testcaseId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8197,8 +8008,7 @@
           "organizationId",
           "testPlanIdentifier"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8220,8 +8030,7 @@
           "organizationId",
           "testPlanIdentifier"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8258,8 +8067,7 @@
           "organizationId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8291,8 +8099,7 @@
         "required": [
           "organizationId"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8319,8 +8126,7 @@
           "testRepoId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8360,8 +8166,7 @@
           "id",
           "content"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8388,8 +8193,7 @@
           "testplanId",
           "id"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     },
     {
@@ -8433,8 +8237,7 @@
           "id",
           "content"
         ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+        "additionalProperties": false
       }
     }
   ]
