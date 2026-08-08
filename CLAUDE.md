@@ -10,6 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run build           # tsc → dist/, then chmod +x dist/*.js
+npm test                # tsc -p tsconfig.test.json → dist-test/, then node --test
 npm run watch           # tsc --watch during development
 npm start               # stdio transport (default)
 npm run start:sse       # SSE: /sse + /messages
@@ -28,7 +29,13 @@ bash debug-both.sh
 node export-tools.mjs            # writes tools.json
 ```
 
-There is no test runner, lint, or formatter configured — `tsc` is the only static check (`npm run build`).
+`npm test` runs the suites in `tests/` on Node's built-in test runner (`node --test`). They are **integration** tests: every case hits the real Yunxiao OpenAPI, so `.env` must contain a valid `YUNXIAO_ACCESS_TOKEN` (`tests/setup.ts` throws without it) and the org is hardcoded there. Run it before committing — `tsc` alone will not catch a broken request path or a response schema that no longer matches.
+
+Two things the suite does *not* cover, so verify them yourself when touching schemas:
+- The test org's data has no `null`/missing optional fields, so a missing `.nullable()` passes here and only fails in production. Feed the offending shape to the schema directly instead.
+- Only a handful of tools are exercised. A `tools/list` smoke test over stdio is a cheap way to confirm all 197 still build a valid `inputSchema`.
+
+No lint or formatter is configured; `tsc` (via `npm run build`) is the only static check.
 
 ## Architecture
 
@@ -62,7 +69,9 @@ In region mode, `organizationId` is optional and `resolveOrganizationId(undefine
 3. Add a `case "<tool_name>":` to the matching `tool-handlers/<module>.ts` switch.
 4. If the tool belongs to a toolset that's a *bundle* of registry modules (e.g. `application-delivery`, `pipeline-management`, `project-management`, `code-management`), confirm both `common/toolsetManager.ts` (registry side) and `tool-handlers/index.ts → HANDLER_MAP` (handler side) include your module. Otherwise the tool will 404 when only that toolset is enabled.
 5. If the tool's path uses `repositoryId`, route it through `handleRepositoryIdEncoding()` to get correct slash encoding.
-6. Run `npm run build` and (optionally) `node export-tools.mjs` to refresh `tools.json` and `skills/alibabacloud-devops/SKILL.md` if you want the docs in sync.
+6. Build the input schema with `toInputSchema()` from `common/inputSchema.ts` — never call `zodToJsonSchema` directly. It strips `$schema`, and it is the one place to apply any future context-size trimming across all ~200 tools.
+7. For ID-like inputs (`repositoryId`, `pipelineId`, `localId`, …) use `idParam()` from `common/zodHelpers.ts` instead of `z.string()`. Yunxiao IDs are numeric, models pass numbers, and a bare `z.string()` rejects them.
+8. Run `npm run build` and `npm test`, then `node export-tools.mjs` to refresh `tools.json` and `skills/alibabacloud-devops/SKILL.md`.
 
 ## Notes
 
