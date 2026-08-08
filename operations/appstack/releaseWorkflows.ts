@@ -349,20 +349,26 @@ export const ExecuteChangeRequestReleaseStageResponseSchema = ExecutePipelineRes
 /**
  * 阶段操作型接口(cancel / retry / skip)的响应。
  *
- * 三者原先都声明为 z.boolean(),但云效返回的是对象:swagger 里
- * CancelExecutionResponse 定义为 { success: boolean };retry / skip 的 200 未定义
- * 响应体。声明与实际不符会在 parse 时抛 ZodError —— 线上
- * cancel_app_release_stage_execution 因此是必然失败的
+ * 三者原先都声明为 z.boolean()。cancel 确实返回对象 —— swagger 的
+ * CancelExecutionResponse 是 { success: boolean },线上
+ * cancel_app_release_stage_execution 因此必然抛 ZodError
  * (expected boolean, received object)。
  *
- * optional + passthrough 兼容 { success: true } 及多返回字段的情况;空响应体
- * 由调用处兜为 { success: true }(能走到 parse 说明 HTTP 已经是 2xx)。
+ * 但 retry / skip 的 200 在 swagger 里没有响应体定义,而且它们至今没有一次成功
+ * 调用(线上 3 次全部因为缺 jobId 被云效 400 拦在前面),所以**无法确定**它们成功时
+ * 返回裸 boolean 还是对象。这里用 union 同时接受两种形态,避免把原本可能正常的
+ * 裸 boolean 响应改坏 —— 只放宽、不替换。
+ *
+ * 空响应体由调用处兜为 { success: true }(能走到 parse 说明 HTTP 已经是 2xx)。
  */
-export const ReleaseStageOperationResultSchema = z
-  .object({
-    success: z.boolean().optional().describe("操作是否成功"),
-  })
-  .passthrough();
+export const ReleaseStageOperationResultSchema = z.union([
+  z.boolean().describe("操作是否成功"),
+  z
+    .object({
+      success: z.boolean().optional().describe("操作是否成功"),
+    })
+    .passthrough(),
+]);
 
 // Schema for CancelExecutionReleaseStage API
 export const CancelExecutionReleaseStageRequestSchema = z.object({

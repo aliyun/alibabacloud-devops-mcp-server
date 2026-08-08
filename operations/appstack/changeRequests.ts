@@ -120,11 +120,14 @@ export const ListChangeRequestExecutionsRequestSchema = z.object({
 
 // swagger 的 PaginationChangeRequestExecutionVO 只把 pageSize/pages/records/total
 // 列为 required,current 是可选的。
+// records 这里也一并放宽:分页接口在无数据时不返回该字段是常见实现,而 swagger 的
+// required 并不可靠 —— 同一份 swagger 里 CancelExecutionResponse 的定义就与实际
+// 实现不符,ChangeRequestExecutionVO 又反过来漏标了 required。宁可放宽。
 export const ListChangeRequestExecutionsResponseSchema = z.object({
   current: z.number().nullable().optional().describe("当前页数"),
   pageSize: z.number().nullable().optional().describe("每页大小"),
   pages: z.number().nullable().optional().describe("总页数"),
-  records: z.array(ChangeRequestExecutionVOSchema).describe("数据列表"),
+  records: z.array(ChangeRequestExecutionVOSchema).nullable().optional().describe("数据列表"),
   total: z.number().nullable().optional().describe("总数"),
 }).passthrough();
 
