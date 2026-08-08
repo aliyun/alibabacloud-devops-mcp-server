@@ -388,6 +388,7 @@ export const RetryChangeRequestStagePipelineRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
   executionNumber: z.string().describe("发布流程阶执行序号"),
+  jobId: idParam("任务ID，可通过 GetReleaseStagePipelineRun 获取"),
 });
 
 export const RetryChangeRequestStagePipelineResponseSchema = ReleaseStageOperationResultSchema;
@@ -399,6 +400,7 @@ export const SkipChangeRequestStagePipelineRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
   executionNumber: z.string().describe("发布流程阶执行序号"),
+  jobId: idParam("任务ID，可通过 GetReleaseStagePipelineRun 获取"),
 });
 
 export const SkipChangeRequestStagePipelineResponseSchema = ReleaseStageOperationResultSchema;
@@ -619,13 +621,19 @@ export async function cancelExecutionReleaseStage(params: CancelExecutionRelease
  * Retry change request stage pipeline
  */
 export async function retryChangeRequestStagePipeline(params: RetryChangeRequestStagePipelineRequest): Promise<RetryChangeRequestStagePipelineResponse> {
-  const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber, jobId } = params;
   const finalOrgId = await resolveOrganizationId(organizationId);
-  
+
+  // swagger 要求 jobId 作为 required 的 query 参数,漏掉会被云效以 400 拒绝:
+  // "Required request parameter [jobId] of type [String] is missing"
+  const query: Record<string, string> = {};
+  if (jobId) query.jobId = jobId;
+
   try {
-    const url = isRegionEdition()
+    const baseUrl = isRegionEdition()
       ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:retry`
       : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:retry`;
+    const url = buildUrl(baseUrl, query);
     const response = await yunxiaoRequest(
       url,
       {
@@ -642,13 +650,18 @@ export async function retryChangeRequestStagePipeline(params: RetryChangeRequest
  * Skip change request stage pipeline
  */
 export async function skipChangeRequestStagePipeline(params: SkipChangeRequestStagePipelineRequest): Promise<SkipChangeRequestStagePipelineResponse> {
-  const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber, jobId } = params;
   const finalOrgId = await resolveOrganizationId(organizationId);
-  
+
+  // 同 retry:swagger 要求 jobId 作为 required 的 query 参数
+  const query: Record<string, string> = {};
+  if (jobId) query.jobId = jobId;
+
   try {
-    const url = isRegionEdition()
+    const baseUrl = isRegionEdition()
       ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:skip`
       : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:skip`;
+    const url = buildUrl(baseUrl, query);
     const response = await yunxiaoRequest(
       url,
       {

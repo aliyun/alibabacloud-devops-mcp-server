@@ -1,6 +1,6 @@
 {
   "total": 197,
-  "generatedAt": "2026-08-08T14:11:29.006Z",
+  "generatedAt": "2026-08-08T14:29:25.794Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -7595,6 +7595,13 @@
           "executionNumber": {
             "type": "string",
             "description": "发布流程阶执行序号"
+          },
+          "jobId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "任务ID，可通过 GetReleaseStagePipelineRun 获取"
           }
         },
         "required": [
@@ -7602,7 +7609,8 @@
           "appName",
           "releaseWorkflowSn",
           "releaseStageSn",
-          "executionNumber"
+          "executionNumber",
+          "jobId"
         ],
         "additionalProperties": false
       }
@@ -7632,6 +7640,13 @@
           "executionNumber": {
             "type": "string",
             "description": "发布流程阶执行序号"
+          },
+          "jobId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "任务ID，可通过 GetReleaseStagePipelineRun 获取"
           }
         },
         "required": [
@@ -7639,7 +7654,8 @@
           "appName",
           "releaseWorkflowSn",
           "releaseStageSn",
-          "executionNumber"
+          "executionNumber",
+          "jobId"
         ],
         "additionalProperties": false
       }
