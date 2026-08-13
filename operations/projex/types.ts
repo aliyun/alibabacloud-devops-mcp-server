@@ -416,8 +416,8 @@ export const SearchWorkitemsSchema = z.object({
   advancedConditions: z.string().nullable().optional().describe("Advanced filter conditions, JSON format"),
   orderBy: z.string().optional().default("gmtCreate").describe("Sort field, default is gmtCreate. Possible values: gmtCreate, subject, status, priority, assignedTo"),
   sort: z.string().optional().default("desc").describe("Sort order, default is desc. Possible values: desc (descending), asc (ascending)"),
-  page: z.number().int().min(1).optional().describe("Page number, starting from 1. Default is 1"),
-  perPage: z.number().int().min(0).max(200).optional().describe("Number of items per page, range 0-200. Default is 20"),
+  page: z.number().int().min(1).optional().describe("Page number, starting from 1. Default is 1. Due to the search engine's deep-paging limit, page * perPage must not exceed 10000, otherwise the API returns 400; narrow the query with filters to reach more results"),
+  perPage: z.number().int().min(0).max(200).optional().describe("Number of items per page, range 0-200. Default is 20. page * perPage must not exceed 10000; use 200 to reduce the number of pages when iterating large result sets"),
   includeDetails: z.boolean().optional().describe("Set to true when you need work item descriptions/detailed content. This automatically fetches missing descriptions instead of requiring separate get_work_item calls. RECOMMENDED: Use includeDetails=true when user asks for 'detailed content', 'descriptions', or 'full information' of work items. This is more efficient than calling get_work_item multiple times. Default is false")
 });
 

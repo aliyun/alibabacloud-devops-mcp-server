@@ -89,8 +89,8 @@ export const CreateTestcaseResponseSchema = z.object({
 export const SearchTestcasesRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
   testRepoId: z.string().describe("用例库唯一标识"),
-  page: z.number().int().optional().default(1).describe("分页参数，第几页"),
-  perPage: z.number().int().min(0).max(200).optional().default(20).describe("分页参数，每页大小"),
+  page: z.number().int().optional().default(1).describe("分页参数，第几页。受搜索引擎深翻页限制，page * perPage 不能超过 10000，超出会返回 400；需要遍历更多用例时请用 directoryId 或 conditions 缩小范围"),
+  perPage: z.number().int().min(0).max(200).optional().default(20).describe("分页参数，每页大小。page * perPage 不能超过 10000，遍历大量用例时建议取 200 以减少翻页次数"),
   orderBy: z.enum(["gmtCreate", "name"]).optional().default("gmtCreate").describe("排序字段"),
   sort: z.enum(["desc", "asc"]).optional().default("desc").describe("排序方式"),
   directoryId: z.string().optional().describe("目录id"),

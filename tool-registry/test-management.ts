@@ -46,7 +46,7 @@ export const getTestManagementTools = () => [
   },
   {
     name: 'search_testcases',
-    description: '[test management] 搜索测试用例',
+    description: '[test management] 搜索测试用例。分页有上限:page * perPage 不能超过 10000,超出会返回 400,需要更多结果时用 directoryId 或 conditions 缩小范围',
     inputSchema: toInputSchema(SearchTestcasesRequestSchema),
   },
   {

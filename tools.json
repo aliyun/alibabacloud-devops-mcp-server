@@ -1,6 +1,6 @@
 {
   "total": 197,
-  "generatedAt": "2026-08-08T14:29:25.794Z",
+  "generatedAt": "2026-08-13T08:36:04.827Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -2195,7 +2195,7 @@
     },
     {
       "name": "search_workitems",
-      "description": "[Project Management] Search work items with various filter conditions",
+      "description": "[Project Management] Search work items with various filter conditions. Paging is capped: page * perPage must not exceed 10000, otherwise the API returns 400 — narrow the filters to reach more results",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2366,13 +2366,13 @@
           "page": {
             "type": "integer",
             "minimum": 1,
-            "description": "Page number, starting from 1. Default is 1"
+            "description": "Page number, starting from 1. Default is 1. Due to the search engine's deep-paging limit, page * perPage must not exceed 10000, otherwise the API returns 400; narrow the query with filters to reach more results"
           },
           "perPage": {
             "type": "integer",
             "minimum": 0,
             "maximum": 200,
-            "description": "Number of items per page, range 0-200. Default is 20"
+            "description": "Number of items per page, range 0-200. Default is 20. page * perPage must not exceed 10000; use 200 to reduce the number of pages when iterating large result sets"
           },
           "includeDetails": {
             "type": "boolean",
@@ -8065,7 +8065,7 @@
     },
     {
       "name": "search_testcases",
-      "description": "[test management] 搜索测试用例",
+      "description": "[test management] 搜索测试用例。分页有上限:page * perPage 不能超过 10000,超出会返回 400,需要更多结果时用 directoryId 或 conditions 缩小范围",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -8080,14 +8080,14 @@
           "page": {
             "type": "integer",
             "default": 1,
-            "description": "分页参数，第几页"
+            "description": "分页参数，第几页。受搜索引擎深翻页限制，page * perPage 不能超过 10000，超出会返回 400；需要遍历更多用例时请用 directoryId 或 conditions 缩小范围"
           },
           "perPage": {
             "type": "integer",
             "minimum": 0,
             "maximum": 200,
             "default": 20,
-            "description": "分页参数，每页大小"
+            "description": "分页参数，每页大小。page * perPage 不能超过 10000，遍历大量用例时建议取 200 以减少翻页次数"
           },
           "orderBy": {
             "type": "string",

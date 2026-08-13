@@ -82,7 +82,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "search_workitems",
-    description: "[Project Management] Search work items with various filter conditions",
+    description: "[Project Management] Search work items with various filter conditions. Paging is capped: page * perPage must not exceed 10000, otherwise the API returns 400 — narrow the filters to reach more results",
     inputSchema: toInputSchema(types.SearchWorkitemsSchema),
   },
   {
