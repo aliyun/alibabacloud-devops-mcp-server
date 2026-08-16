@@ -75,7 +75,9 @@ export const CreateTestcaseRequestSchema = z.object({
   subject: z.string().min(0).max(256).optional().describe("标题"),
   assignedTo: z.string().optional().describe("负责人userId"),
   directoryId: z.string().optional().describe("目录id"),
-  preCondition: z.string().optional().describe("前置条件"),
+  // 接受 null:响应侧 preCondition 本就是 nullable,调用方「先 get 再回传」时会原样带上 null。
+  // 拒掉它会让整个创建失败(线上 schema 校验失败的头号来源),而语义上 null 与不传等价。
+  preCondition: z.string().nullable().optional().describe("前置条件"),
   labels: z.array(z.string()).optional().describe("标签ids"),
   customFieldValues: z.record(z.any()).optional().describe("自定义字段值"),
   testSteps: TestStepsDTOSchema.optional().describe("测试步骤"),
@@ -240,7 +242,10 @@ export async function getTestcaseFieldConfig(params: GetTestcaseFieldConfigReque
  * 创建测试用例
  */
 export async function createTestcase(params: CreateTestcaseRequest): Promise<CreateTestcaseResponse> {
-  const { organizationId, testRepoId, ...body } = params;
+  const { organizationId, testRepoId, ...rest } = params;
+  // 顶层 null 一律剔除而不是透传:入参允许 null(见 CreateTestcaseRequestSchema),
+  // 但云效对 null 的容忍度不一,当作「没传」最稳。
+  const body = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== null));
   const finalOrgId = await resolveOrganizationId(organizationId);
   const url = isRegionEdition()
     ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases`

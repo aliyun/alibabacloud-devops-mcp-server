@@ -100,7 +100,9 @@ export const ListSprintsSchema = z.object({
   id: z.string().describe("Project unique identifier"),
   status: z.array(z.string()).optional().describe("Filter by status: TODO, DOING, ARCHIVED"),
   page: z.number().int().min(1).optional().describe("Page number"),
-  perPage: z.number().int().min(1).max(100).optional().describe("Page size"),
+  // 上限放宽到 200:实测云效 sprints 接口对 perPage=500 仍返回 200，不校验上限，
+  // 原来的 max(100) 是我们自己加的限制，模型传更大值会被 zod 直接拒掉、工具完全不可用。
+  perPage: z.number().int().min(1).max(200).optional().describe("Page size, up to 200"),
 });
 
 // Get Sprint Schema

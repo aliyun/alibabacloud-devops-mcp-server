@@ -388,7 +388,9 @@ export const CreateChangeRequestCommentSchema = z.object({
   resolved: z.boolean().default(false).describe("是否标记已解决。true - 已解决；false - 未解决（默认值）"),
   patchset_biz_id: z.string().describe("关联版本ID，具有唯一性。对于全局评论，使用最新合并源版本ID；对于行内评论，选择 from_patchset_biz_id 或 to_patchset_biz_id 中的一个。示例：'bf117304dfe44d5d9b1132f348edf92e'"),
   file_path: z.string().optional().describe("文件路径，仅行内评论需要。表示评论针对的文件路径。示例：'/src/main/java/com/example/MyClass.java' 或 'src/utils/helper.ts' 或 'frontend/components/Button.tsx'"),
-  line_number: z.number().int().positive().optional().describe("行号，仅行内评论需要。表示评论针对的代码行号，从1开始计数。示例：42 表示第42行，100 表示第100行"),
+  // 接受 0 / null:全局评论不需要行号，但调用方常会带一个 0 占位。
+  // 原来的 positive() 会因此拒掉整个全局评论调用，语义上 0/null 等同于「没有行号」。
+  line_number: z.number().int().nonnegative().nullable().optional().describe("行号，仅行内评论需要，从1开始计数（示例：42 表示第42行）。全局评论可省略，或传 0 / null 表示无行号"),
   from_patchset_biz_id: z.string().optional().describe("比较的起始版本ID，行内评论类型必传。表示代码比较的起始版本（通常是目标分支版本，即合并目标对应的版本）。示例：'bf117304dfe44d5d9b1132f348edf92e'"),
   to_patchset_biz_id: z.string().optional().describe("比较的目标版本ID，行内评论类型必传。表示代码比较的目标版本（通常是源分支版本，即合并源对应的版本）。示例：'537367017a9841738ac4269fbf6aacbe'"),
   parent_comment_biz_id: z.string().optional().describe("父评论ID，用于回复评论。如果这是对某个评论的回复，需要传入被回复评论的 bizId。示例：'1d8171cf0cc2453197fae0e0a27d5ece'"),
