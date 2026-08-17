@@ -3,7 +3,8 @@ import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, floatToIntString,
 import { resolveOrganizationId } from "../organization/organization.js";
 import {
   ChangeRequestSchema,
-  PatchSetSchema
+  PatchSetSchema,
+  ReviewChangeRequestResponseSchema
 } from "./types.js";
 
 // 通过API获取仓库的数字ID
@@ -301,6 +302,56 @@ export async function createChangeRequestFunc(
     method: "POST",
     body: payload,
   });
-  
+
   return ChangeRequestSchema.parse(response);
-} 
+}
+
+/**
+ * 评审合并请求
+ *
+ * 提交评审意见(PASS / NOT_PASS)，可附带评论内容，并可一并提交此前留下的草稿评论。
+ *
+ * @param organizationId 组织ID，示例：'60d54f3daccf2bbd6659f3ad'
+ * @param repositoryId 代码库ID或路径，示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'
+ * @param localId 合并请求局部ID，示例：'1'
+ * @param reviewOpinion 评审意见：'PASS' - 通过；'NOT_PASS' - 不通过
+ * @param reviewComment 评论内容
+ * @param submitDraftCommentIds 要一并提交的草稿评论ID列表
+ */
+export async function reviewChangeRequestFunc(
+  organizationId: string | undefined,
+  repositoryId: string,
+  localId: string,
+  reviewOpinion?: string,
+  reviewComment?: string,
+  submitDraftCommentIds?: string[]
+): Promise<z.infer<typeof ReviewChangeRequestResponseSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
+
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}/review`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}/review`;
+
+  const payload: Record<string, any> = {};
+
+  if (reviewOpinion !== undefined) {
+    payload.reviewOpinion = reviewOpinion;
+  }
+
+  if (reviewComment !== undefined) {
+    payload.reviewComment = reviewComment;
+  }
+
+  if (submitDraftCommentIds !== undefined) {
+    payload.submitDraftCommentIds = submitDraftCommentIds;
+  }
+
+  const response = await yunxiaoRequest(url, {
+    method: "POST",
+    body: payload,
+  });
+
+  // 空响应体兜为 { result: true } —— 能走到这里说明 HTTP 已经是 2xx
+  return ReviewChangeRequestResponseSchema.parse(response ?? { result: true });
+}

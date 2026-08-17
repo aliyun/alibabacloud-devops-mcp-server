@@ -33,7 +33,7 @@ node export-tools.mjs            # writes tools.json
 
 Two things the suite does *not* cover, so verify them yourself when touching schemas:
 - The test org's data has no `null`/missing optional fields, so a missing `.nullable()` passes here and only fails in production. Feed the offending shape to the schema directly instead.
-- Only a handful of tools are exercised. A `tools/list` smoke test over stdio is a cheap way to confirm all 197 still build a valid `inputSchema`.
+- Only a handful of tools are exercised. A `tools/list` smoke test over stdio is a cheap way to confirm all 198 still build a valid `inputSchema`.
 
 No lint or formatter is configured; `tsc` (via `npm run build`) is the only static check.
 
@@ -71,7 +71,7 @@ In region mode, `organizationId` is optional and `resolveOrganizationId(undefine
 5. If the tool's path uses `repositoryId`, route it through `handleRepositoryIdEncoding()` to get correct slash encoding.
 6. Build the input schema with `toInputSchema()` from `common/inputSchema.ts` — never call `zodToJsonSchema` directly. It strips `$schema`, and it is the one place to apply any future context-size trimming across all ~200 tools.
 7. For ID-like inputs (`repositoryId`, `pipelineId`, `localId`, …) use `idParam()` from `common/zodHelpers.ts` instead of `z.string()`. Yunxiao IDs are numeric, models pass numbers, and a bare `z.string()` rejects them.
-8. Run `npm run build` and `npm test`, then `node export-tools.mjs` to refresh `tools.json` and `skills/alibabacloud-devops/SKILL.md`.
+8. Run `npm run build` and `npm test`, then `node export-tools.mjs` to refresh `tools.json`. `skills/alibabacloud-devops/SKILL.md` is **not** generated — its tool tables are hand-maintained, so add the new tool's row yourself.
 
 ## Notes
 

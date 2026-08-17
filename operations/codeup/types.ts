@@ -377,6 +377,31 @@ export const ListChangeRequestPatchSetsSchema = z.object({
   localId: idParam("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
 });
 
+export const ReviewChangeRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  localId: idParam("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  // 三个 body 字段在 swagger 里都没有 required 标记,这里一律可选 —— 只提交草稿评论
+  // 而不给评审意见是合法用法。语义要求靠 description 引导,不靠 schema 硬拒。
+  reviewOpinion: z.enum(["PASS", "NOT_PASS"]).optional().describe("评审意见。PASS - 通过；NOT_PASS - 不通过。表达评审结论时必传，仅提交草稿评论时可省略"),
+  reviewComment: z.string().optional().describe("评论内容，随评审一起提交。示例：'代码逻辑没问题，但建议补一个单测'"),
+  submitDraftCommentIds: z.array(z.string()).optional().describe("要一并提交的草稿评论ID列表。示例：['4ff23jj62c795xxxb468af8']"),
+});
+
+/**
+ * 评审接口的响应。swagger 定义为 { result: boolean },但按仓库既定做法
+ * (见 appstack ReleaseStageOperationResultSchema)对操作型响应一律用 union
+ * 同时接受裸 boolean —— 只放宽、不替换,避免云效实际返回另一种形态时 parse 抛错。
+ */
+export const ReviewChangeRequestResponseSchema = z.union([
+  z.boolean().describe("是否执行成功"),
+  z
+    .object({
+      result: z.boolean().optional().describe("是否执行成功"),
+    })
+    .passthrough(),
+]);
+
 // Codeup change request comments related Schema definitions
 export const CreateChangeRequestCommentSchema = z.object({
   organizationId: z.string().describe("组织ID"),

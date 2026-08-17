@@ -103,6 +103,11 @@ export const getCodeManagementTools = () => [
     inputSchema: toInputSchema(types.CreateChangeRequestSchema),
   },
   {
+    name: "review_change_request",
+    description: "[Code Management] Review a change request (merge request): submit a PASS / NOT_PASS opinion, optionally with a comment, and optionally submit pending draft comments at the same time.",
+    inputSchema: toInputSchema(types.ReviewChangeRequestSchema),
+  },
+  {
     name: "create_change_request_comment",
     description: "[Code Management] Create a comment on a change request. Supports two types: GLOBAL_COMMENT (global comment on the entire merge request) and INLINE_COMMENT (inline comment on specific code lines). For INLINE_COMMENT, you must provide file_path, line_number, from_patchset_biz_id, and to_patchset_biz_id parameters.",
     inputSchema: toInputSchema(types.CreateChangeRequestCommentSchema),

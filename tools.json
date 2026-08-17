@@ -1,6 +1,6 @@
 {
-  "total": 197,
-  "generatedAt": "2026-08-16T14:21:04.813Z",
+  "total": 198,
+  "generatedAt": "2026-08-17T13:50:49.925Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -836,6 +836,58 @@
           "title",
           "sourceBranch",
           "targetBranch"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "review_change_request",
+      "description": "[Code Management] Review a change request (merge request): submit a PASS / NOT_PASS opinion, optionally with a comment, and optionally submit pending draft comments at the same time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "repositoryId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
+          },
+          "localId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"
+          },
+          "reviewOpinion": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "NOT_PASS"
+            ],
+            "description": "评审意见。PASS - 通过；NOT_PASS - 不通过。表达评审结论时必传，仅提交草稿评论时可省略"
+          },
+          "reviewComment": {
+            "type": "string",
+            "description": "评论内容，随评审一起提交。示例：'代码逻辑没问题，但建议补一个单测'"
+          },
+          "submitDraftCommentIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "要一并提交的草稿评论ID列表。示例：['4ff23jj62c795xxxb468af8']"
+          }
+        },
+        "required": [
+          "organizationId",
+          "repositoryId",
+          "localId"
         ],
         "additionalProperties": false
       }
