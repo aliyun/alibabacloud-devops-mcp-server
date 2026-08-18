@@ -1,6 +1,6 @@
 {
-  "total": 198,
-  "generatedAt": "2026-08-17T13:50:49.925Z",
+  "total": 199,
+  "generatedAt": "2026-08-18T11:55:27.947Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -888,6 +888,58 @@
           "organizationId",
           "repositoryId",
           "localId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "merge_change_request",
+      "description": "[Code Management] Merge a change request (merge request) using a specific merge type (ff-only / no-fast-forward / squash / rebase), with an optional merge message and optional source-branch deletion. This rewrites the target branch and is not reversible.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "repositoryId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
+          },
+          "localId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"
+          },
+          "mergeType": {
+            "type": "string",
+            "enum": [
+              "ff-only",
+              "no-fast-forward",
+              "squash",
+              "rebase"
+            ],
+            "description": "合并类型。ff-only - fast-forward-only 合并；no-fast-forward - 普通合并；squash - 压缩合并；rebase - rebase 合并"
+          },
+          "mergeMessage": {
+            "type": "string",
+            "description": "合并提交信息。示例：'merge message'"
+          },
+          "removeSourceBranch": {
+            "type": "boolean",
+            "description": "是否在合并后删除源分支。不传则由云效按默认行为处理"
+          }
+        },
+        "required": [
+          "organizationId",
+          "repositoryId",
+          "localId",
+          "mergeType"
         ],
         "additionalProperties": false
       }

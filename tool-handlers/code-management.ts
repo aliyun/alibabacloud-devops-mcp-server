@@ -262,6 +262,21 @@ export const handleCodeManagementTools = async (request: any) => {
       };
     }
 
+    case "merge_change_request": {
+      const args = types.MergeChangeRequestSchema.parse(request.params.arguments);
+      const changeRequest = await changeRequests.mergeChangeRequestFunc(
+        args.organizationId,
+        args.repositoryId,
+        args.localId,
+        args.mergeType,
+        args.mergeMessage,
+        args.removeSourceBranch
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(changeRequest, null, 2) }],
+      };
+    }
+
     case "create_change_request_comment": {
       const args = types.CreateChangeRequestCommentSchema.parse(request.params.arguments);
       const comment = await changeRequestComments.createChangeRequestCommentFunc(

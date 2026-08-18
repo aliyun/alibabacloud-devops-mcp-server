@@ -108,6 +108,11 @@ export const getCodeManagementTools = () => [
     inputSchema: toInputSchema(types.ReviewChangeRequestSchema),
   },
   {
+    name: "merge_change_request",
+    description: "[Code Management] Merge a change request (merge request) using a specific merge type (ff-only / no-fast-forward / squash / rebase), with an optional merge message and optional source-branch deletion. This rewrites the target branch and is not reversible.",
+    inputSchema: toInputSchema(types.MergeChangeRequestSchema),
+  },
+  {
     name: "create_change_request_comment",
     description: "[Code Management] Create a comment on a change request. Supports two types: GLOBAL_COMMENT (global comment on the entire merge request) and INLINE_COMMENT (inline comment on specific code lines). For INLINE_COMMENT, you must provide file_path, line_number, from_patchset_biz_id, and to_patchset_biz_id parameters.",
     inputSchema: toInputSchema(types.CreateChangeRequestCommentSchema),

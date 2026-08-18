@@ -402,6 +402,17 @@ export const ReviewChangeRequestResponseSchema = z.union([
     .passthrough(),
 ]);
 
+export const MergeChangeRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  localId: idParam("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  // mergeType 必填:swagger 明确标了 required: ["mergeType"](与 review 的三个字段不同,
+  // 那边没有 required 标记所以做成可选)。合并是不可逆操作,合并方式不该由我们代为默认。
+  mergeType: z.enum(["ff-only", "no-fast-forward", "squash", "rebase"]).describe("合并类型。ff-only - fast-forward-only 合并；no-fast-forward - 普通合并；squash - 压缩合并；rebase - rebase 合并"),
+  mergeMessage: z.string().optional().describe("合并提交信息。示例：'merge message'"),
+  removeSourceBranch: z.boolean().optional().describe("是否在合并后删除源分支。不传则由云效按默认行为处理"),
+});
+
 // Codeup change request comments related Schema definitions
 export const CreateChangeRequestCommentSchema = z.object({
   organizationId: z.string().describe("组织ID"),

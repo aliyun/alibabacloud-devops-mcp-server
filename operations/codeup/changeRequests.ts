@@ -355,3 +355,53 @@ export async function reviewChangeRequestFunc(
   // 空响应体兜为 { result: true } —— 能走到这里说明 HTTP 已经是 2xx
   return ReviewChangeRequestResponseSchema.parse(response ?? { result: true });
 }
+
+/**
+ * 合并合并请求
+ *
+ * 按指定的合并方式(ff-only / no-fast-forward / squash / rebase)执行合并，
+ * 可指定合并提交信息，并可选择合并后删除源分支。
+ *
+ * ⚠️ 这是不可逆操作:合并会真实改写目标分支,removeSourceBranch 还会删掉源分支。
+ *
+ * @param organizationId 组织ID，示例：'60d54f3daccf2bbd6659f3ad'
+ * @param repositoryId 代码库ID或路径，示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'
+ * @param localId 合并请求局部ID，示例：'1'
+ * @param mergeType 合并类型：'ff-only' / 'no-fast-forward' / 'squash' / 'rebase'
+ * @param mergeMessage 合并提交信息
+ * @param removeSourceBranch 是否在合并后删除源分支
+ */
+export async function mergeChangeRequestFunc(
+  organizationId: string | undefined,
+  repositoryId: string,
+  localId: string,
+  mergeType: string,
+  mergeMessage?: string,
+  removeSourceBranch?: boolean
+): Promise<z.infer<typeof ChangeRequestSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
+
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}/merge`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}/merge`;
+
+  const payload: Record<string, any> = {
+    mergeType: mergeType,
+  };
+
+  if (mergeMessage !== undefined) {
+    payload.mergeMessage = mergeMessage;
+  }
+
+  if (removeSourceBranch !== undefined) {
+    payload.removeSourceBranch = removeSourceBranch;
+  }
+
+  const response = await yunxiaoRequest(url, {
+    method: "POST",
+    body: payload,
+  });
+
+  return ChangeRequestSchema.parse(response);
+}

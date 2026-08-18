@@ -98,6 +98,7 @@ npx -y mcporter call --stdio "npx -y alibabacloud-devops-mcp-server" --env YUNXI
 | `list_change_requests` | 列出变更请求 |
 | `create_change_request` | 创建变更请求 |
 | `review_change_request` | 评审变更请求（提交 PASS / NOT_PASS 意见） |
+| `merge_change_request` | 合并变更请求（ff-only / no-fast-forward / squash / rebase） |
 | `create_change_request_comment` | 创建变更请求评论 |
 | `list_change_request_comments` | 列出变更请求评论 |
 | `update_change_request_comment` | 更新变更请求评论 |

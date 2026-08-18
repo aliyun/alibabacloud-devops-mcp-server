@@ -60,6 +60,7 @@ export {
   CreateChangeRequestSchema,
   ListChangeRequestPatchSetsSchema,
   ReviewChangeRequestSchema,
+  MergeChangeRequestSchema,
 
   // Change request comment schemas
   CreateChangeRequestCommentSchema,

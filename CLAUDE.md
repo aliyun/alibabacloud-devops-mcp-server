@@ -33,7 +33,7 @@ node export-tools.mjs            # writes tools.json
 
 Two things the suite does *not* cover, so verify them yourself when touching schemas:
 - The test org's data has no `null`/missing optional fields, so a missing `.nullable()` passes here and only fails in production. Feed the offending shape to the schema directly instead.
-- Only a handful of tools are exercised. A `tools/list` smoke test over stdio is a cheap way to confirm all 198 still build a valid `inputSchema`.
+- Only a handful of tools are exercised. A `tools/list` smoke test over stdio is a cheap way to confirm all 199 still build a valid `inputSchema`.
 
 No lint or formatter is configured; `tsc` (via `npm run build`) is the only static check.
 
