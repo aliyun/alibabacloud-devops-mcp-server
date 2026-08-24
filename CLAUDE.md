@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-`alibabacloud-devops-mcp-server` is an MCP (Model Context Protocol) server that exposes the Alibaba Cloud Yunxiao DevOps OpenAPI as ~165 tools across code, project, pipeline, application delivery, packages and test toolsets. TypeScript, ESM, Node ≥ 18, MCP SDK `@modelcontextprotocol/sdk`.
+`alibabacloud-devops-mcp-server` is an MCP (Model Context Protocol) server that exposes the Alibaba Cloud Yunxiao DevOps OpenAPI as ~200 tools across code, project, pipeline, application delivery, packages and test toolsets. TypeScript, ESM, Node ≥ 18, MCP SDK `@modelcontextprotocol/sdk`.
 
 ## Common commands
 

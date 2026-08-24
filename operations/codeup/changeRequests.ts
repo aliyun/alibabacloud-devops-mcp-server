@@ -4,7 +4,8 @@ import { resolveOrganizationId } from "../organization/organization.js";
 import {
   ChangeRequestSchema,
   PatchSetSchema,
-  ReviewChangeRequestResponseSchema
+  ReviewChangeRequestResponseSchema,
+  UpdateChangeRequestResponseSchema,
 } from "./types.js";
 
 // 通过API获取仓库的数字ID
@@ -304,6 +305,39 @@ export async function createChangeRequestFunc(
   });
 
   return ChangeRequestSchema.parse(response);
+}
+
+/**
+ * 更新合并请求标题或描述
+ */
+export async function updateChangeRequestFunc(
+  organizationId: string | undefined,
+  repositoryId: string,
+  localId: string,
+  title?: string,
+  description?: string,
+): Promise<z.infer<typeof UpdateChangeRequestResponseSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
+
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}`;
+
+  const payload: Record<string, string> = {};
+  if (title !== undefined) {
+    payload.title = title;
+  }
+  if (description !== undefined) {
+    payload.description = description;
+  }
+
+  const response = await yunxiaoRequest(url, {
+    method: "PUT",
+    body: payload,
+  });
+
+  return UpdateChangeRequestResponseSchema.parse(response);
 }
 
 /**

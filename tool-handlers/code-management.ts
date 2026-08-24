@@ -247,6 +247,20 @@ export const handleCodeManagementTools = async (request: any) => {
       };
     }
 
+    case "update_change_request": {
+      const args = types.UpdateChangeRequestSchema.parse(request.params.arguments);
+      const result = await changeRequests.updateChangeRequestFunc(
+        args.organizationId,
+        args.repositoryId,
+        args.localId,
+        args.title,
+        args.description,
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+
     case "review_change_request": {
       const args = types.ReviewChangeRequestSchema.parse(request.params.arguments);
       const result = await changeRequests.reviewChangeRequestFunc(

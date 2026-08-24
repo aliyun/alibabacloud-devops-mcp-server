@@ -270,6 +270,7 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `list_files`: Query file tree
 - `update_file`: Update file content
 - `create_change_request`: Create a merge request
+- `update_change_request`: Update a merge request title or description
 - `create_change_request_comment`: Create a comment on a merge request
 - `get_change_request`: Query merge request
 - `list_change_request_patch_sets`: Query merge request version list
