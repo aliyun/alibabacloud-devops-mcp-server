@@ -1,6 +1,6 @@
 {
-  "total": 199,
-  "generatedAt": "2026-08-18T11:55:27.947Z",
+  "total": 200,
+  "generatedAt": "2026-08-24T10:25:10.212Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -836,6 +836,49 @@
           "title",
           "sourceBranch",
           "targetBranch"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_change_request",
+      "description": "[Code Management] Update an existing change request (merge request) title and/or description. At least one field is required.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "组织ID"
+          },
+          "repositoryId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"
+          },
+          "localId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "新的标题，不超过256个字符"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000,
+            "description": "新的描述/PR正文，不超过10000个字符"
+          }
+        },
+        "required": [
+          "organizationId",
+          "repositoryId",
+          "localId"
         ],
         "additionalProperties": false
       }

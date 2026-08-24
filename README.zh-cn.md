@@ -252,6 +252,7 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `list_files`: 查询文件树
 - `update_file`: 更新文件内容
 - `create_change_request`: 创建合并请求
+- `update_change_request`: 更新合并请求标题或描述
 - `create_change_request_comment`: 创建合并请求评论
 - `get_change_request`: 查询合并请求
 - `list_change_request_patch_sets`: 查询合并请求版本列表

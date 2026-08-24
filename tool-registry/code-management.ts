@@ -103,6 +103,11 @@ export const getCodeManagementTools = () => [
     inputSchema: toInputSchema(types.CreateChangeRequestSchema),
   },
   {
+    name: "update_change_request",
+    description: "[Code Management] Update an existing change request (merge request) title and/or description. At least one field is required.",
+    inputSchema: toInputSchema(types.UpdateChangeRequestSchema),
+  },
+  {
     name: "review_change_request",
     description: "[Code Management] Review a change request (merge request): submit a PASS / NOT_PASS opinion, optionally with a comment, and optionally submit pending draft comments at the same time.",
     inputSchema: toInputSchema(types.ReviewChangeRequestSchema),
