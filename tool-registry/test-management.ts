@@ -64,7 +64,7 @@ export const getTestManagementTools = () => [
   },
   {
     name: 'list_test_plans',
-    description: '[test management] 获取测试计划列表',
+    description: '[test management] 获取测试计划列表，支持分页及按项目、迭代、状态、名称筛选',
     inputSchema: toInputSchema(ListTestPlanRequestSchema),
   },
   {
@@ -118,4 +118,3 @@ export const getTestManagementTools = () => [
     inputSchema: toInputSchema(CreateTestPlanTestcaseCommentRequestSchema),
   },
 ];
-

@@ -1,6 +1,6 @@
 {
   "total": 199,
-  "generatedAt": "2026-08-18T11:55:27.947Z",
+  "generatedAt": "2026-09-01T03:29:59.997Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -8293,13 +8293,66 @@
     },
     {
       "name": "list_test_plans",
-      "description": "[test management] 获取测试计划列表",
+      "description": "[test management] 获取测试计划列表，支持分页及按项目、迭代、状态、名称筛选",
       "inputSchema": {
         "type": "object",
         "properties": {
           "organizationId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "组织ID"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "分页参数，第几页，默认为 1"
+          },
+          "perPage": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "分页参数，每页大小，最大 1000，默认为 1000"
+          },
+          "sprintIdentifier": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "迭代唯一标识，传入后只返回该迭代下的测试计划"
+          },
+          "projectIdentifier": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "项目唯一标识，传入后只返回该项目下的测试计划"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(TODO|DOING|DONE)(,(TODO|DOING|DONE))*$"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "TODO",
+                    "DOING",
+                    "DONE"
+                  ]
+                },
+                "minItems": 1
+              }
+            ],
+            "description": "测试计划状态，可传单个状态、逗号分隔字符串或状态数组"
+          },
+          "name": {
+            "type": "string",
+            "description": "测试计划名称模糊查询条件"
           }
         },
         "required": [
