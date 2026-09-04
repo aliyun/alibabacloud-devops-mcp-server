@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UserInfoSchema } from "../organization/types.js";
+import { idParam } from "../../common/zodHelpers.js";
 
 // Custom field related types
 export const FieldItemSchema = z.object({
@@ -461,14 +462,14 @@ export const ListWorkItemRelationWorkItemTypesSchema = z.object({
 // Work item comment related schemas
 export const ListWorkItemCommentsSchema = z.object({
   organizationId: z.string().describe("企业ID"),
-  workItemId: z.string().describe("工作项ID"),
+  workItemId: idParam("工作项ID"),
   page: z.number().int().optional().default(1).describe("页码"),
   perPage: z.number().int().optional().default(20).describe("每页条数"),
 });
 
 export const CreateWorkItemCommentSchema = z.object({
   organizationId: z.string().describe("企业ID"),
-  workItemId: z.string().describe("工作项ID"),
+  workItemId: idParam("工作项ID"),
   content: z.string().describe("评论内容"),
 });
 

@@ -1,6 +1,6 @@
 {
   "total": 199,
-  "generatedAt": "2026-09-01T03:29:59.997Z",
+  "generatedAt": "2026-09-02T06:06:19.996Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -2808,7 +2808,10 @@
             "description": "企业ID"
           },
           "workItemId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "工作项ID"
           },
           "page": {
@@ -2840,7 +2843,10 @@
             "description": "企业ID"
           },
           "workItemId": {
-            "type": "string",
+            "type": [
+              "string",
+              "number"
+            ],
             "description": "工作项ID"
           },
           "content": {
