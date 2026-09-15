@@ -462,7 +462,7 @@ export const ListWorkItemRelationWorkItemTypesSchema = z.object({
 });
 
 export const WorkItemRelationRecordSchema = z.object({
-  gmtCreate: z.string().nullable().optional().describe("创建关联的时间"),
+  gmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("创建关联的时间（Unix 毫秒时间戳或 ISO 字符串）"),
   id: z.string().nullable().optional().describe("关联记录ID"),
   relationType: WorkItemRelationTypeSchema.nullable().optional().describe("关联类型"),
   resourceId: z.string().nullable().optional().describe("关联资源ID"),

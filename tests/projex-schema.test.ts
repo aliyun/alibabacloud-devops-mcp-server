@@ -5,6 +5,7 @@ import {
   CreateWorkItemCommentSchema,
   DeleteWorkitemRelationRecordSchema,
   ListWorkitemRelationRecordsSchema,
+  WorkItemRelationRecordSchema,
   ListWorkItemCommentsSchema,
 } from '../operations/projex/types.js';
 
@@ -68,6 +69,17 @@ describe('Projex input schemas', () => {
         relationType: 'RELATE',
       }).success,
       false,
+    );
+  });
+
+  it('accepts numeric and ISO-string creation times in relation record responses', () => {
+    assert.equal(
+      WorkItemRelationRecordSchema.parse({ gmtCreate: 1789459200000 }).gmtCreate,
+      1789459200000,
+    );
+    assert.equal(
+      WorkItemRelationRecordSchema.parse({ gmtCreate: '2026-09-15T08:00:00Z' }).gmtCreate,
+      '2026-09-15T08:00:00Z',
     );
   });
 });

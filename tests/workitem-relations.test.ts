@@ -42,7 +42,7 @@ describe('work item relation record operations', () => {
 
       if (init?.method === 'GET') {
         return new Response(JSON.stringify([{
-          gmtCreate: '2026-09-15T08:00:00Z',
+          gmtCreate: 1789459200000,
           id: 'relation-1',
           relationType: 'ASSOCIATED',
           resourceId: 'target-1',
@@ -67,6 +67,7 @@ describe('work item relation record operations', () => {
     );
 
     assert.equal(listed[0].resourceId, 'target-1');
+    assert.equal(listed[0].gmtCreate, 1789459200000);
     assert.deepEqual(created, { id: 'relation-1' });
     assert.deepEqual(requests, [
       {
