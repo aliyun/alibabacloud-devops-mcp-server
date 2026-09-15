@@ -58,6 +58,7 @@ export {
   GetChangeRequestSchema,
   ListChangeRequestsSchema,
   CreateChangeRequestSchema,
+  UpdateChangeRequestSchema,
   ListChangeRequestPatchSetsSchema,
   ReviewChangeRequestSchema,
   MergeChangeRequestSchema,

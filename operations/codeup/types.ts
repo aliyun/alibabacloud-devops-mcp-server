@@ -371,6 +371,17 @@ export const CreateChangeRequestSchema = z.object({
   triggerAIReviewRun: z.boolean().optional().default(false).describe("是否触发AI评审。true - 触发AI评审；false - 不触发（默认）"),
 });
 
+export const UpdateChangeRequestSchema = z.object({
+  organizationId: z.string().describe("组织ID"),
+  repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
+  localId: idParam("局部ID，表示代码库中第几个合并请求。示例：'1' 或 '42'"),
+  title: z.string().max(256).optional().describe("新的标题，不超过256个字符"),
+  description: z.string().max(10000).optional().describe("新的描述，不超过10000个字符"),
+}).refine(
+  ({ title, description }) => title !== undefined || description !== undefined,
+  { message: "title 和 description 至少传入一个" },
+);
+
 export const ListChangeRequestPatchSetsSchema = z.object({
   organizationId: z.string().describe("组织ID"),
   repositoryId: idParam("代码库ID或全路径(斜杠须编码为%2F)，如 2835387 或 myorg%2FmyRepo"),
@@ -401,6 +412,10 @@ export const ReviewChangeRequestResponseSchema = z.union([
     })
     .passthrough(),
 ]);
+
+export const UpdateChangeRequestResponseSchema = z.object({
+  result: z.boolean().describe("是否执行成功"),
+});
 
 export const MergeChangeRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
