@@ -110,6 +110,9 @@ export {
   ListWorkItemTypesSchema,
   GetWorkItemTypeSchema,
   ListWorkItemRelationWorkItemTypesSchema,
+  ListWorkitemRelationRecordsSchema,
+  CreateWorkitemRelationRecordSchema,
+  DeleteWorkitemRelationRecordSchema,
   GetWorkItemTypeFieldConfigSchema,
   GetWorkItemWorkflowSchema,
   

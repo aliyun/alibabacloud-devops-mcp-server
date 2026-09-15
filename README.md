@@ -306,6 +306,9 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `list_work_item_types`: List work item types in a project space
 - `get_work_item_type`: Get details of a specific work item type
 - `list_work_item_relation_work_item_types`: List work item types that can be related to a specific work item
+- `list_workitem_relation_records`: List relation records for a work item
+- `create_workitem_relation_record`: Relate one work item to another
+- `delete_workitem_relation_record`: Delete a work item relation
 - `get_work_item_type_field_config`: Get field configuration for a specific work item type
 - `get_work_item_workflow`: Get workflow information for a specific work item type
 - `list_work_item_comments`: List comments for a specific work item

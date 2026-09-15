@@ -1,6 +1,6 @@
 {
-  "total": 200,
-  "generatedAt": "2026-09-15T07:59:31.071Z",
+  "total": 203,
+  "generatedAt": "2026-09-15T08:07:40.213Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -2782,6 +2782,141 @@
         "required": [
           "organizationId",
           "workItemTypeId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_workitem_relation_records",
+      "description": "[Project Management] List relation records of the requested relation type for a work item.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID"
+          },
+          "workItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "要查询关联记录的工作项唯一标识"
+          },
+          "relationType": {
+            "type": "string",
+            "enum": [
+              "PARENT",
+              "SUB",
+              "ASSOCIATED",
+              "DEPEND_ON",
+              "DEPENDED_BY"
+            ],
+            "description": "要查询的关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "relationType"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_workitem_relation_record",
+      "description": "[Project Management] Relate one work item to another. Use ASSOCIATED for a normal related item without a parent-child hierarchy.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID"
+          },
+          "workItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "源工作项唯一标识"
+          },
+          "relatedWorkItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "要关联的目标工作项唯一标识"
+          },
+          "relationType": {
+            "type": "string",
+            "enum": [
+              "PARENT",
+              "SUB",
+              "ASSOCIATED",
+              "DEPEND_ON",
+              "DEPENDED_BY"
+            ],
+            "description": "关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"
+          },
+          "operatorId": {
+            "type": "string",
+            "description": "操作者用户ID；使用个人访问令牌时该参数无效"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "relatedWorkItemId",
+          "relationType"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "delete_workitem_relation_record",
+      "description": "[Project Management] Delete a relation between two work items without deleting either work item.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID"
+          },
+          "workItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "源工作项唯一标识"
+          },
+          "relatedWorkItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "要解除关联的目标工作项唯一标识"
+          },
+          "relationType": {
+            "type": "string",
+            "enum": [
+              "PARENT",
+              "SUB",
+              "ASSOCIATED",
+              "DEPEND_ON",
+              "DEPENDED_BY"
+            ],
+            "description": "要删除的关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"
+          },
+          "operatorId": {
+            "type": "string",
+            "description": "操作者用户ID；使用个人访问令牌时该参数无效"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "relatedWorkItemId",
+          "relationType"
         ],
         "additionalProperties": false
       }

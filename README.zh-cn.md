@@ -288,6 +288,9 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `list_work_item_types`: 列出项目空间中工作项类型
 - `get_work_item_type`: 获取特定工作项类型的详细信息
 - `list_work_item_relation_work_item_types`: 列出可关联到特定工作项的工作项类型
+- `list_workitem_relation_records`: 查询工作项关联记录
+- `create_workitem_relation_record`: 创建工作项关联关系
+- `delete_workitem_relation_record`: 删除工作项关联关系
 - `get_work_item_type_field_config`: 获取工作项类型的字段配置
 - `get_work_item_workflow`: 获取工作项类型的工作流信息
 - `list_work_item_comments`: 列出特定工作项的评论

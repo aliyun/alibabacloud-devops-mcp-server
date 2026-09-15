@@ -453,10 +453,44 @@ export const GetWorkItemTypeSchema = z.object({
   id: z.string().describe("工作项类型ID"),
 });
 
+export const WorkItemRelationTypeSchema = z.enum(["PARENT", "SUB", "ASSOCIATED", "DEPEND_ON", "DEPENDED_BY"]);
+
 export const ListWorkItemRelationWorkItemTypesSchema = z.object({
   organizationId: z.string().describe("企业ID"),
   workItemTypeId: z.string().describe("工作项类型ID"),
-  relationType: z.enum(["PARENT", "SUB", "ASSOCIATED", "DEPEND_ON", "DEPENDED_BY"]).optional().describe("关联类型，可选值为 PARENT、SUB、ASSOCIATED，DEPEND_ON, DEPENDED_BY 分别对应父项，子项，关联项，依赖项，支撑项。"),
+  relationType: WorkItemRelationTypeSchema.optional().describe("关联类型，可选值为 PARENT、SUB、ASSOCIATED，DEPEND_ON, DEPENDED_BY 分别对应父项，子项，关联项，依赖项，支撑项。"),
+});
+
+export const WorkItemRelationRecordSchema = z.object({
+  gmtCreate: z.string().nullable().optional().describe("创建关联的时间"),
+  id: z.string().nullable().optional().describe("关联记录ID"),
+  relationType: WorkItemRelationTypeSchema.nullable().optional().describe("关联类型"),
+  resourceId: z.string().nullable().optional().describe("关联资源ID"),
+  resourceType: z.string().nullable().optional().describe("关联资源类型"),
+}).passthrough();
+
+export const ListWorkitemRelationRecordsResponseSchema = z.array(WorkItemRelationRecordSchema);
+
+export const ListWorkitemRelationRecordsSchema = z.object({
+  organizationId: z.string().describe("企业ID"),
+  workItemId: idParam("要查询关联记录的工作项唯一标识"),
+  relationType: WorkItemRelationTypeSchema.describe("要查询的关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"),
+});
+
+export const CreateWorkitemRelationRecordSchema = z.object({
+  organizationId: z.string().describe("企业ID"),
+  workItemId: idParam("源工作项唯一标识"),
+  relatedWorkItemId: idParam("要关联的目标工作项唯一标识"),
+  relationType: WorkItemRelationTypeSchema.describe("关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"),
+  operatorId: z.string().optional().describe("操作者用户ID；使用个人访问令牌时该参数无效"),
+});
+
+export const DeleteWorkitemRelationRecordSchema = z.object({
+  organizationId: z.string().describe("企业ID"),
+  workItemId: idParam("源工作项唯一标识"),
+  relatedWorkItemId: idParam("要解除关联的目标工作项唯一标识"),
+  relationType: WorkItemRelationTypeSchema.describe("要删除的关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"),
+  operatorId: z.string().optional().describe("操作者用户ID；使用个人访问令牌时该参数无效"),
 });
 
 // Work item comment related schemas
@@ -782,6 +816,10 @@ export type ListAllWorkItemTypesParams = z.infer<typeof ListAllWorkItemTypesSche
 export type ListWorkItemTypesParams = z.infer<typeof ListWorkItemTypesSchema>;
 export type GetWorkItemTypeParams = z.infer<typeof GetWorkItemTypeSchema>;
 export type ListWorkItemRelationWorkItemTypesParams = z.infer<typeof ListWorkItemRelationWorkItemTypesSchema>;
+export type WorkItemRelationRecord = z.infer<typeof WorkItemRelationRecordSchema>;
+export type ListWorkitemRelationRecordsParams = z.infer<typeof ListWorkitemRelationRecordsSchema>;
+export type CreateWorkitemRelationRecordParams = z.infer<typeof CreateWorkitemRelationRecordSchema>;
+export type DeleteWorkitemRelationRecordParams = z.infer<typeof DeleteWorkitemRelationRecordSchema>;
 export type ListWorkItemCommentsParams = z.infer<typeof ListWorkItemCommentsSchema>;
 export type CreateWorkItemCommentParams = z.infer<typeof CreateWorkItemCommentSchema>;
 export type FieldOption = z.infer<typeof FieldOptionSchema>;

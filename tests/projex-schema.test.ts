@@ -1,7 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  CreateWorkitemRelationRecordSchema,
   CreateWorkItemCommentSchema,
+  DeleteWorkitemRelationRecordSchema,
+  ListWorkitemRelationRecordsSchema,
   ListWorkItemCommentsSchema,
 } from '../operations/projex/types.js';
 
@@ -28,6 +31,41 @@ describe('Projex input schemas', () => {
         organizationId: 'org-id',
         workItemId: null,
         content: 'comment',
+      }).success,
+      false,
+    );
+  });
+
+  it('validates relation record inputs and normalizes numeric work item IDs', () => {
+    const listArgs = ListWorkitemRelationRecordsSchema.parse({
+      organizationId: 'org-id',
+      workItemId: 1001,
+      relationType: 'ASSOCIATED',
+    });
+    const createArgs = CreateWorkitemRelationRecordSchema.parse({
+      organizationId: 'org-id',
+      workItemId: 1001,
+      relatedWorkItemId: 1002,
+      relationType: 'DEPEND_ON',
+      operatorId: 'user-id',
+    });
+    const deleteArgs = DeleteWorkitemRelationRecordSchema.parse({
+      organizationId: 'org-id',
+      workItemId: 1001,
+      relatedWorkItemId: 1002,
+      relationType: 'DEPENDED_BY',
+    });
+
+    assert.equal(listArgs.workItemId, '1001');
+    assert.equal(createArgs.relatedWorkItemId, '1002');
+    assert.equal(createArgs.operatorId, 'user-id');
+    assert.equal(deleteArgs.relatedWorkItemId, '1002');
+    assert.equal(
+      CreateWorkitemRelationRecordSchema.safeParse({
+        organizationId: 'org-id',
+        workItemId: '1001',
+        relatedWorkItemId: '1002',
+        relationType: 'RELATE',
       }).success,
       false,
     );
