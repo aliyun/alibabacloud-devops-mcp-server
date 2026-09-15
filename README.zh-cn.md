@@ -430,9 +430,9 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `update_test_result`: [测试管理] 更新测试结果
 
 ## 联系我们
-如有任何疑问或疑虑，请通过钉钉群联系我们：134400004101
+如有任何疑问或疑虑，请加入“云效mcp server&amp;智能化用户沟通2群”，钉钉群号：177120034028。
 
-![Alibaba Cloud Devops MCP Server Group](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/1750147152464.png)
+![云效 MCP Server 钉钉交流群](image/dingtalk-group-177120034028.png)
 
 ## 相关链接
 - [阿里云云效](https://www.aliyun.com/product/yunxiao)

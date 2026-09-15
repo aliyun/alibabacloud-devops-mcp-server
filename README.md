@@ -448,9 +448,9 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `update_test_result`: [test management] Update test result
 
 ## Contact Us
-If you have any questions, please join the Alibaba Cloud Devops discussion group (134400004101) for discussion.
+If you have any questions, please join the DingTalk group “云效mcp server&amp;智能化用户沟通2群” (ID: 177120034028).
 
-![Alibaba Cloud Devops MCP Server Group](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/1750147152464.png)
+![Alibaba Cloud DevOps MCP Server DingTalk Group](image/dingtalk-group-177120034028.png)
 
 
 ## Related Links
