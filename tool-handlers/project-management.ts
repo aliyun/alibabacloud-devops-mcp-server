@@ -341,6 +341,44 @@ export const handleProjectManagementTools = async (request: any) => {
         content: [{ type: "text", text: JSON.stringify(workItemTypes, null, 2) }],
       };
     }
+
+    case "list_workitem_relation_records": {
+      const args = types.ListWorkitemRelationRecordsSchema.parse(request.params.arguments);
+      const relations = await workitem.listWorkitemRelationRecordsFunc(
+        args.organizationId,
+        args.workItemId,
+        args.relationType
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(relations, null, 2) }],
+      };
+    }
+
+    case "create_workitem_relation_record": {
+      const args = types.CreateWorkitemRelationRecordSchema.parse(request.params.arguments);
+      const relation = await workitem.createWorkitemRelationRecordFunc(
+        args.organizationId,
+        args.workItemId,
+        args.relatedWorkItemId,
+        args.relationType
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(relation ?? { success: true }, null, 2) }],
+      };
+    }
+
+    case "delete_workitem_relation_record": {
+      const args = types.DeleteWorkitemRelationRecordSchema.parse(request.params.arguments);
+      const result = await workitem.deleteWorkitemRelationRecordFunc(
+        args.organizationId,
+        args.workItemId,
+        args.relatedWorkItemId,
+        args.relationType
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(result ?? { success: true }, null, 2) }],
+      };
+    }
     
     case "get_work_item_type_field_config": {
       const args = types.GetWorkItemTypeFieldConfigSchema.parse(request.params.arguments);

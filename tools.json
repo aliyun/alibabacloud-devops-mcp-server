@@ -1,6 +1,6 @@
 {
-  "total": 199,
-  "generatedAt": "2026-09-02T06:06:19.996Z",
+  "total": 202,
+  "generatedAt": "2026-09-15T03:54:30.857Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -2739,6 +2739,133 @@
         "required": [
           "organizationId",
           "workItemTypeId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_workitem_relation_records",
+      "description": "[Project Management] List relation records of the requested relationType for a work item. Returns related resource IDs and relation details for verification.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID"
+          },
+          "workItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "要查询关联记录的工作项唯一标识"
+          },
+          "relationType": {
+            "type": "string",
+            "enum": [
+              "PARENT",
+              "SUB",
+              "ASSOCIATED",
+              "DEPEND_ON",
+              "DEPENDED_BY"
+            ],
+            "description": "要查询的关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "relationType"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_workitem_relation_record",
+      "description": "[Project Management] Relate one work item to another. Use relationType ASSOCIATED for a normal related item without a parent-child hierarchy.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID"
+          },
+          "workItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "源工作项唯一标识"
+          },
+          "relatedWorkItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "要关联的目标工作项唯一标识"
+          },
+          "relationType": {
+            "type": "string",
+            "enum": [
+              "PARENT",
+              "SUB",
+              "ASSOCIATED",
+              "DEPEND_ON",
+              "DEPENDED_BY"
+            ],
+            "description": "关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "relatedWorkItemId",
+          "relationType"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "delete_workitem_relation_record",
+      "description": "[Project Management] Delete the specified relation type between two work items. This operation removes the relation but does not delete either work item.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "企业ID"
+          },
+          "workItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "源工作项唯一标识"
+          },
+          "relatedWorkItemId": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "要解除关联的目标工作项唯一标识"
+          },
+          "relationType": {
+            "type": "string",
+            "enum": [
+              "PARENT",
+              "SUB",
+              "ASSOCIATED",
+              "DEPEND_ON",
+              "DEPENDED_BY"
+            ],
+            "description": "要删除的关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"
+          }
+        },
+        "required": [
+          "organizationId",
+          "workItemId",
+          "relatedWorkItemId",
+          "relationType"
         ],
         "additionalProperties": false
       }

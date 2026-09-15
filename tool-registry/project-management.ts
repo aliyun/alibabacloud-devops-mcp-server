@@ -127,6 +127,24 @@ export const getProjectManagementTools = () => [
     inputSchema: toInputSchema(types.ListWorkItemRelationWorkItemTypesSchema),
   },
   {
+    name: "list_workitem_relation_records",
+    description: "[Project Management] List relation records of the requested relationType for a work item. Returns related resource IDs and relation details for verification.",
+    inputSchema: toInputSchema(types.ListWorkitemRelationRecordsSchema),
+  },
+  {
+    name: "create_workitem_relation_record",
+    description: "[Project Management] Relate one work item to another. Use relationType ASSOCIATED for a normal related item without a parent-child hierarchy.",
+    inputSchema: toInputSchema(types.CreateWorkitemRelationRecordSchema),
+  },
+  {
+    name: "delete_workitem_relation_record",
+    description: "[Project Management] Delete the specified relation type between two work items. This operation removes the relation but does not delete either work item.",
+    inputSchema: toInputSchema(types.DeleteWorkitemRelationRecordSchema),
+    annotations: {
+      destructiveHint: true,
+    },
+  },
+  {
     name: "get_work_item_type_field_config",
     description: "[Project Management] Get field configuration for a specific work item type",
     inputSchema: toInputSchema(types.GetWorkItemTypeFieldConfigSchema),
