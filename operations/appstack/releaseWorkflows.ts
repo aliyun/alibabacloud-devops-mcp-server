@@ -19,21 +19,20 @@ export const VariableGroupSchema = z.object({
   variables: z.record(z.string()).optional().describe("变量映射"),
 });
 
-// Schema for FlowV1Pipeline
-export const FlowV1PipelineSchema = z.object({
-  // Based on the reference in the swagger, we'll define a basic structure
-  // You may need to update this with the actual fields from FlowV1Pipeline
-  id: z.number().optional().describe("流水线ID"),
-  name: z.string().optional().describe("流水线名称"),
-});
+// FlowV1 and FlowV2 currently return the same envelope. The nested pipeline
+// detail is owned by Flow and may add fields independently, so keep it intact.
+export const FlowPipelineSchema = z.object({
+  engineSn: z.string().nullable().optional().describe("流水线ID"),
+  engineType: z.enum(["FlowV1", "FlowV2", "FlowAny"]).nullable().optional().describe("流水线引擎类型"),
+  pipelineYaml: z.string().nullable().optional().describe("流水线YAML"),
+  pipeline: z.record(z.unknown()).nullable().optional().describe("流水线详情"),
+  plugins: z.unknown().nullable().optional().describe("流水线插件配置"),
+  refObjectList: z.array(z.unknown()).nullable().optional().describe("流水线关联对象列表"),
+}).passthrough();
 
-// Schema for FlowV2Pipeline
-export const FlowV2PipelineSchema = z.object({
-  // Based on the reference in the swagger, we'll define a basic structure
-  // You may need to update this with the actual fields from FlowV2Pipeline
-  id: z.number().optional().describe("流水线ID"),
-  name: z.string().optional().describe("流水线名称"),
-});
+// Preserve the existing exports for callers that import a versioned schema.
+export const FlowV1PipelineSchema = FlowPipelineSchema;
+export const FlowV2PipelineSchema = FlowPipelineSchema;
 
 // Schema for ReleaseStage
 export const ReleaseStageSchema = z.object({
@@ -41,7 +40,7 @@ export const ReleaseStageSchema = z.object({
   labels: z.array(LabelSchema).describe("标签列表"),
   name: z.string().optional().describe("名称"),
   order: z.string().optional().describe("阶段顺序"),
-  pipeline: z.union([FlowV1PipelineSchema, FlowV2PipelineSchema]).optional(),
+  pipeline: FlowPipelineSchema.nullable().optional().describe("流水线配置"),
   releaseWorkflowSn: z.string().optional().describe("所属的流程sn"),
   sn: z.string().optional().describe("唯一序列号"),
   variableGroups: z.array(VariableGroupSchema).describe("变量组列表"),
