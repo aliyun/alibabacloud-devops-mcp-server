@@ -832,6 +832,90 @@ export async function listWorkItemRelationWorkItemTypesFunc(
 }
 
 /**
+ * 查询工作项的关联记录，用于获取和验证关联项。
+ */
+export async function listWorkitemRelationRecordsFunc(
+  organizationId: string | undefined,
+  workItemId: string,
+  relationType: string
+): Promise<any[]> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/relationRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/relationRecords`;
+
+  const response = await yunxiaoRequest(buildUrl(url, { relationType }), { method: "GET" });
+
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  if (response && typeof response === "object" && "result" in response && Array.isArray(response.result)) {
+    return response.result;
+  }
+
+  return [];
+}
+
+/**
+ * 创建工作项关联记录。ASSOCIATED 表示普通关联项，不会建立父子层级。
+ */
+export async function createWorkitemRelationRecordFunc(
+  organizationId: string | undefined,
+  workItemId: string,
+  relatedWorkItemId: string,
+  relationType: string
+): Promise<any> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/relationRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/relationRecords`;
+
+  const response = await yunxiaoRequest(url, {
+    method: "POST",
+    body: {
+      relationType,
+      workitemId: relatedWorkItemId,
+    },
+  });
+
+  if (response && typeof response === "object" && "result" in response) {
+    return response.result;
+  }
+
+  return response;
+}
+
+/**
+ * 删除两个工作项之间的指定类型关联。
+ */
+export async function deleteWorkitemRelationRecordFunc(
+  organizationId: string | undefined,
+  workItemId: string,
+  relatedWorkItemId: string,
+  relationType: string
+): Promise<any> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/relationRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/relationRecords`;
+
+  const response = await yunxiaoRequest(url, {
+    method: "DELETE",
+    body: {
+      relationType,
+      workitemId: relatedWorkItemId,
+    },
+  });
+
+  if (response && typeof response === "object" && "result" in response) {
+    return response.result;
+  }
+
+  return response;
+}
+
+/**
  * 获取工作项类型字段配置
  * @param organizationId 企业ID
  * @param projectId 项目唯一标识
