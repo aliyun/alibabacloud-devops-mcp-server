@@ -51,7 +51,7 @@ npx -y mcporter call --stdio "npx -y alibabacloud-devops-mcp-server" --env YUNXI
 
 ## 工具列表
 
-共 165 个工具，按功能分类如下：
+共 203 个工具，按功能分类如下：
 
 ### 基础工具（Base）
 
@@ -97,6 +97,9 @@ npx -y mcporter call --stdio "npx -y alibabacloud-devops-mcp-server" --env YUNXI
 | `get_change_request` | 获取变更请求详情 |
 | `list_change_requests` | 列出变更请求 |
 | `create_change_request` | 创建变更请求 |
+| `update_change_request` | 更新变更请求标题或描述 |
+| `review_change_request` | 评审变更请求（提交 PASS / NOT_PASS 意见） |
+| `merge_change_request` | 合并变更请求（ff-only / no-fast-forward / squash / rebase） |
 | `create_change_request_comment` | 创建变更请求评论 |
 | `list_change_request_comments` | 列出变更请求评论 |
 | `update_change_request_comment` | 更新变更请求评论 |
@@ -178,6 +181,9 @@ npx -y mcporter call --stdio "npx -y alibabacloud-devops-mcp-server" --env YUNXI
 | `list_work_item_types` | 列出工作项类型 |
 | `get_work_item_type` | 获取工作项类型详情 |
 | `list_work_item_relation_work_item_types` | 列出工作项关联的工作项类型 |
+| `list_workitem_relation_records` | 查询工作项关联记录 |
+| `create_workitem_relation_record` | 创建工作项关联关系 |
+| `delete_workitem_relation_record` | 删除工作项关联关系 |
 | `get_work_item_type_field_config` | 获取工作项类型字段配置 |
 | `get_work_item_workflow` | 获取工作项工作流 |
 | `list_work_item_comments` | 列出工作项评论 |

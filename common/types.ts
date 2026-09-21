@@ -58,8 +58,11 @@ export {
   GetChangeRequestSchema,
   ListChangeRequestsSchema,
   CreateChangeRequestSchema,
+  UpdateChangeRequestSchema,
   ListChangeRequestPatchSetsSchema,
-  
+  ReviewChangeRequestSchema,
+  MergeChangeRequestSchema,
+
   // Change request comment schemas
   CreateChangeRequestCommentSchema,
   ListChangeRequestCommentsSchema,
@@ -107,6 +110,9 @@ export {
   ListWorkItemTypesSchema,
   GetWorkItemTypeSchema,
   ListWorkItemRelationWorkItemTypesSchema,
+  ListWorkitemRelationRecordsSchema,
+  CreateWorkitemRelationRecordSchema,
+  DeleteWorkitemRelationRecordSchema,
   GetWorkItemTypeFieldConfigSchema,
   GetWorkItemWorkflowSchema,
   

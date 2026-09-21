@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toInputSchema } from '../common/inputSchema.js';
 import { 
   CreateAppTagRequestSchema,
   UpdateAppTagRequestSchema,
@@ -12,21 +12,21 @@ export const getAppStackTagTools = () => [
   {
     name: 'create_app_tag',
     description: '[application delivery] Create an application tag',
-    inputSchema: zodToJsonSchema(CreateAppTagRequestSchema),
+    inputSchema: toInputSchema(CreateAppTagRequestSchema),
   },
   {
     name: 'update_app_tag',
     description: '[application delivery] Update an application tag',
-    inputSchema: zodToJsonSchema(UpdateAppTagRequestSchema),
+    inputSchema: toInputSchema(UpdateAppTagRequestSchema),
   },
   {
     name: 'search_app_tags',
     description: '[application delivery] Search application tags',
-    inputSchema: zodToJsonSchema(SearchAppTagRequestSchema),
+    inputSchema: toInputSchema(SearchAppTagRequestSchema),
   },
   {
     name: 'update_app_tag_bind',
     description: '[application delivery] Update application tag bindings',
-    inputSchema: zodToJsonSchema(UpdateAppTagBindRequestSchema),
+    inputSchema: toInputSchema(UpdateAppTagBindRequestSchema),
   }
 ];

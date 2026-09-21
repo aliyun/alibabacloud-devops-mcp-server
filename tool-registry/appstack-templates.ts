@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toInputSchema } from '../common/inputSchema.js';
 import { 
   SearchAppTemplatesRequestSchema
 } from '../operations/appstack/appTemplates.js';
@@ -9,6 +9,6 @@ export const getAppStackTemplateTools = () => [
   {
     name: 'search_app_templates',
     description: '[application delivery] Search application templates',
-    inputSchema: zodToJsonSchema(SearchAppTemplatesRequestSchema),
+    inputSchema: toInputSchema(SearchAppTemplatesRequestSchema),
   }
 ];

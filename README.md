@@ -270,6 +270,7 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `list_files`: Query file tree
 - `update_file`: Update file content
 - `create_change_request`: Create a merge request
+- `update_change_request`: Update a merge request title or description
 - `create_change_request_comment`: Create a comment on a merge request
 - `get_change_request`: Query merge request
 - `list_change_request_patch_sets`: Query merge request version list
@@ -305,6 +306,9 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `list_work_item_types`: List work item types in a project space
 - `get_work_item_type`: Get details of a specific work item type
 - `list_work_item_relation_work_item_types`: List work item types that can be related to a specific work item
+- `list_workitem_relation_records`: List relation records for a work item
+- `create_workitem_relation_record`: Relate one work item to another
+- `delete_workitem_relation_record`: Delete a work item relation
 - `get_work_item_type_field_config`: Get field configuration for a specific work item type
 - `get_work_item_workflow`: Get workflow information for a specific work item type
 - `list_work_item_comments`: List comments for a specific work item
@@ -444,9 +448,9 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `update_test_result`: [test management] Update test result
 
 ## Contact Us
-If you have any questions, please join the Alibaba Cloud Devops discussion group (134400004101) for discussion.
+If you have any questions, please join the DingTalk group “云效mcp server&amp;智能化用户沟通2群” (ID: 177120034028).
 
-![Alibaba Cloud Devops MCP Server Group](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/1750147152464.png)
+![Alibaba Cloud DevOps MCP Server DingTalk Group](image/dingtalk-group-177120034028.png)
 
 
 ## Related Links

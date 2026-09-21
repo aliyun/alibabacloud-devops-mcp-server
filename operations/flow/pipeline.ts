@@ -1,5 +1,4 @@
 import * as utils from "../../common/utils.js";
-import { logger } from "../../common/logger.js";
 import { resolveOrganizationId } from "../organization/organization.js";
 import {
   PipelineDetailSchema,
@@ -214,9 +213,8 @@ export async function createPipelineRunFunc(
           tag: options.tag // 如果有tag参数，应用到所有仓库
         }));
       
-    } catch (e) {
+    } catch {
       // 获取失败时，保持 repositories 为空，后续会有 fallback 处理
-      logger.error({ err: e }, "failed to fetch pipeline detail for repositories");
     }
   }
   
@@ -778,9 +776,8 @@ export async function createPipelineWithOptionsFunc(
       generatedYaml
     };
   } catch (error) {
-    // 如果是YAML校验失败或其他流水线创建错误，将详细信息透出给用户
-    logger.error({ err: error }, "create pipeline failed");
-    
+    // 如果是YAML校验失败或其他流水线创建错误，将详细信息透出给用户。
+    // 失败详情由 index.ts 的统一出口按 warn 记录(tool call failed)，此处不重复打点。
     // 构造包含生成YAML的错误信息，方便用户排查
     const errorMessage = error instanceof Error ? error.message : String(error);
     const enhancedError = new Error(
@@ -813,8 +810,8 @@ async function getDefaultServiceConnectionId(organizationId: string): Promise<st
       return serviceConnections[0].uuid || null;
     }
     return null;
-  } catch (error) {
-    logger.error({ err: error }, "failed to get Codeup service connection");
+  } catch {
+    // 取不到时返回 null，由调用方 fallback；失败详情由统一出口记录
     return null;
   }
 }
@@ -832,8 +829,8 @@ async function getDefaultPackagesServiceConnectionId(organizationId: string): Pr
       return serviceConnections[0].uuid || null;
     }
     return null;
-  } catch (error) {
-    logger.error({ err: error }, "failed to get Packages service connection");
+  } catch {
+    // 取不到时返回 null，由调用方 fallback；失败详情由统一出口记录
     return null;
   }
 }
@@ -850,8 +847,8 @@ async function getDefaultHostGroupId(organizationId: string): Promise<string | n
       return hostGroups[0].uuid || null;
     }
     return null;
-  } catch (error) {
-    logger.error({ err: error }, "failed to get host group");
+  } catch {
+    // 取不到时返回 null，由调用方 fallback；失败详情由统一出口记录
     return null;
   }
 }

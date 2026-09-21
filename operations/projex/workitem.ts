@@ -14,7 +14,9 @@ import {
   WorkItemTypeFieldConfig,
   WorkItemWorkflow,
   UpdateWorkItemField,
-  ActivityDTOSchema
+  ActivityDTOSchema,
+  IdentifierDTOSchema,
+  ListWorkitemRelationRecordsResponseSchema,
 } from "./types.js";
 import { ProjectInfoSchema } from "./types.js";
 import { ListWorkItemCommentsParams } from "./types.js";
@@ -829,6 +831,82 @@ export async function listWorkItemRelationWorkItemTypesFunc(
   
   // 其他情况返回空数组
   return [];
+}
+
+/**
+ * 查询工作项的指定类型关联记录。
+ */
+export async function listWorkitemRelationRecordsFunc(
+  organizationId: string | undefined,
+  workItemId: string,
+  relationType: string
+): Promise<z.infer<typeof ListWorkitemRelationRecordsResponseSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/relationRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/relationRecords`;
+
+  const response = await yunxiaoRequest(buildUrl(url, { relationType }), { method: "GET" });
+  const data = response && typeof response === "object" && "result" in response
+    ? response.result
+    : response;
+
+  return ListWorkitemRelationRecordsResponseSchema.parse(data);
+}
+
+/**
+ * 创建两个工作项之间的关联。
+ */
+export async function createWorkitemRelationRecordFunc(
+  organizationId: string | undefined,
+  workItemId: string,
+  relatedWorkItemId: string,
+  relationType: string,
+  operatorId?: string
+): Promise<z.infer<typeof IdentifierDTOSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/relationRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/relationRecords`;
+  const body: Record<string, string> = {
+    relationType,
+    workitemId: relatedWorkItemId,
+  };
+  if (operatorId !== undefined) {
+    body.operatorId = operatorId;
+  }
+
+  const response = await yunxiaoRequest(url, { method: "POST", body });
+  const data = response && typeof response === "object" && "result" in response
+    ? response.result
+    : response;
+
+  return IdentifierDTOSchema.parse(data);
+}
+
+/**
+ * 删除两个工作项之间的指定类型关联；不会删除工作项本身。
+ */
+export async function deleteWorkitemRelationRecordFunc(
+  organizationId: string | undefined,
+  workItemId: string,
+  relatedWorkItemId: string,
+  relationType: string,
+  operatorId?: string
+): Promise<void> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const url = isRegionEdition()
+    ? `/oapi/v1/projex/workitems/${workItemId}/relationRecords`
+    : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/relationRecords`;
+  const body: Record<string, string> = {
+    relationType,
+    workitemId: relatedWorkItemId,
+  };
+  if (operatorId !== undefined) {
+    body.operatorId = operatorId;
+  }
+
+  await yunxiaoRequest(url, { method: "DELETE", body });
 }
 
 /**

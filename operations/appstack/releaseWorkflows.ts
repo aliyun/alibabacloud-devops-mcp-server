@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { yunxiaoRequest, buildUrl, isRegionEdition } from '../../common/utils.js';
 import { resolveOrganizationId } from '../organization/organization.js';
+import { idParam } from '../../common/zodHelpers.js';
 
 // Schema for Label
 export const LabelSchema = z.object({
@@ -18,21 +19,20 @@ export const VariableGroupSchema = z.object({
   variables: z.record(z.string()).optional().describe("变量映射"),
 });
 
-// Schema for FlowV1Pipeline
-export const FlowV1PipelineSchema = z.object({
-  // Based on the reference in the swagger, we'll define a basic structure
-  // You may need to update this with the actual fields from FlowV1Pipeline
-  id: z.number().optional().describe("流水线ID"),
-  name: z.string().optional().describe("流水线名称"),
-});
+// FlowV1 and FlowV2 currently return the same envelope. The nested pipeline
+// detail is owned by Flow and may add fields independently, so keep it intact.
+export const FlowPipelineSchema = z.object({
+  engineSn: z.string().nullable().optional().describe("流水线ID"),
+  engineType: z.enum(["FlowV1", "FlowV2", "FlowAny"]).nullable().optional().describe("流水线引擎类型"),
+  pipelineYaml: z.string().nullable().optional().describe("流水线YAML"),
+  pipeline: z.record(z.unknown()).nullable().optional().describe("流水线详情"),
+  plugins: z.unknown().nullable().optional().describe("流水线插件配置"),
+  refObjectList: z.array(z.unknown()).nullable().optional().describe("流水线关联对象列表"),
+}).passthrough();
 
-// Schema for FlowV2Pipeline
-export const FlowV2PipelineSchema = z.object({
-  // Based on the reference in the swagger, we'll define a basic structure
-  // You may need to update this with the actual fields from FlowV2Pipeline
-  id: z.number().optional().describe("流水线ID"),
-  name: z.string().optional().describe("流水线名称"),
-});
+// Preserve the existing exports for callers that import a versioned schema.
+export const FlowV1PipelineSchema = FlowPipelineSchema;
+export const FlowV2PipelineSchema = FlowPipelineSchema;
 
 // Schema for ReleaseStage
 export const ReleaseStageSchema = z.object({
@@ -40,7 +40,7 @@ export const ReleaseStageSchema = z.object({
   labels: z.array(LabelSchema).describe("标签列表"),
   name: z.string().optional().describe("名称"),
   order: z.string().optional().describe("阶段顺序"),
-  pipeline: z.union([FlowV1PipelineSchema, FlowV2PipelineSchema]).optional(),
+  pipeline: FlowPipelineSchema.nullable().optional().describe("流水线配置"),
   releaseWorkflowSn: z.string().optional().describe("所属的流程sn"),
   sn: z.string().optional().describe("唯一序列号"),
   variableGroups: z.array(VariableGroupSchema).describe("变量组列表"),
@@ -345,6 +345,30 @@ export const ExecuteChangeRequestReleaseStageRequestSchema = z.object({
 
 export const ExecuteChangeRequestReleaseStageResponseSchema = ExecutePipelineResultSchema;
 
+/**
+ * 阶段操作型接口(cancel / retry / skip)的响应。
+ *
+ * 三者原先都声明为 z.boolean()。cancel 确实返回对象 —— swagger 的
+ * CancelExecutionResponse 是 { success: boolean },线上
+ * cancel_app_release_stage_execution 因此必然抛 ZodError
+ * (expected boolean, received object)。
+ *
+ * 但 retry / skip 的 200 在 swagger 里没有响应体定义,而且它们至今没有一次成功
+ * 调用(线上 3 次全部因为缺 jobId 被云效 400 拦在前面),所以**无法确定**它们成功时
+ * 返回裸 boolean 还是对象。这里用 union 同时接受两种形态,避免把原本可能正常的
+ * 裸 boolean 响应改坏 —— 只放宽、不替换。
+ *
+ * 空响应体由调用处兜为 { success: true }(能走到 parse 说明 HTTP 已经是 2xx)。
+ */
+export const ReleaseStageOperationResultSchema = z.union([
+  z.boolean().describe("操作是否成功"),
+  z
+    .object({
+      success: z.boolean().optional().describe("操作是否成功"),
+    })
+    .passthrough(),
+]);
+
 // Schema for CancelExecutionReleaseStage API
 export const CancelExecutionReleaseStageRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
@@ -354,7 +378,7 @@ export const CancelExecutionReleaseStageRequestSchema = z.object({
   executionNumber: z.string().describe("发布流程阶执行序号"),
 });
 
-export const CancelExecutionReleaseStageResponseSchema = z.boolean();
+export const CancelExecutionReleaseStageResponseSchema = ReleaseStageOperationResultSchema;
 
 // Schema for RetryChangeRequestStagePipeline API
 export const RetryChangeRequestStagePipelineRequestSchema = z.object({
@@ -363,9 +387,10 @@ export const RetryChangeRequestStagePipelineRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
   executionNumber: z.string().describe("发布流程阶执行序号"),
+  jobId: idParam("任务ID，可通过 GetReleaseStagePipelineRun 获取"),
 });
 
-export const RetryChangeRequestStagePipelineResponseSchema = z.boolean();
+export const RetryChangeRequestStagePipelineResponseSchema = ReleaseStageOperationResultSchema;
 
 // Schema for SkipChangeRequestStagePipeline API
 export const SkipChangeRequestStagePipelineRequestSchema = z.object({
@@ -374,9 +399,10 @@ export const SkipChangeRequestStagePipelineRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
   executionNumber: z.string().describe("发布流程阶执行序号"),
+  jobId: idParam("任务ID，可通过 GetReleaseStagePipelineRun 获取"),
 });
 
-export const SkipChangeRequestStagePipelineResponseSchema = z.boolean();
+export const SkipChangeRequestStagePipelineResponseSchema = ReleaseStageOperationResultSchema;
 
 // Export types
 export type ListAllReleaseWorkflowsRequest = z.infer<typeof ListAllReleaseWorkflowsRequestSchema>;
@@ -584,7 +610,7 @@ export async function cancelExecutionReleaseStage(params: CancelExecutionRelease
         method: 'POST',
       }
     );
-    return CancelExecutionReleaseStageResponseSchema.parse(response);
+    return CancelExecutionReleaseStageResponseSchema.parse(response ?? { success: true });
   } catch (error) {
     throw error;
   }
@@ -594,20 +620,26 @@ export async function cancelExecutionReleaseStage(params: CancelExecutionRelease
  * Retry change request stage pipeline
  */
 export async function retryChangeRequestStagePipeline(params: RetryChangeRequestStagePipelineRequest): Promise<RetryChangeRequestStagePipelineResponse> {
-  const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber, jobId } = params;
   const finalOrgId = await resolveOrganizationId(organizationId);
-  
+
+  // swagger 要求 jobId 作为 required 的 query 参数,漏掉会被云效以 400 拒绝:
+  // "Required request parameter [jobId] of type [String] is missing"
+  const query: Record<string, string> = {};
+  if (jobId) query.jobId = jobId;
+
   try {
-    const url = isRegionEdition()
+    const baseUrl = isRegionEdition()
       ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:retry`
       : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:retry`;
+    const url = buildUrl(baseUrl, query);
     const response = await yunxiaoRequest(
       url,
       {
         method: 'POST',
       }
     );
-    return RetryChangeRequestStagePipelineResponseSchema.parse(response);
+    return RetryChangeRequestStagePipelineResponseSchema.parse(response ?? { success: true });
   } catch (error) {
     throw error;
   }
@@ -617,20 +649,25 @@ export async function retryChangeRequestStagePipeline(params: RetryChangeRequest
  * Skip change request stage pipeline
  */
 export async function skipChangeRequestStagePipeline(params: SkipChangeRequestStagePipelineRequest): Promise<SkipChangeRequestStagePipelineResponse> {
-  const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber } = params;
+  const { organizationId, appName, releaseWorkflowSn, releaseStageSn, executionNumber, jobId } = params;
   const finalOrgId = await resolveOrganizationId(organizationId);
-  
+
+  // 同 retry:swagger 要求 jobId 作为 required 的 query 参数
+  const query: Record<string, string> = {};
+  if (jobId) query.jobId = jobId;
+
   try {
-    const url = isRegionEdition()
+    const baseUrl = isRegionEdition()
       ? `/oapi/v1/appstack/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:skip`
       : `/oapi/v1/appstack/organizations/${finalOrgId}/apps/${appName}/releaseWorkflows/${releaseWorkflowSn}/releaseStages/${releaseStageSn}/executions/${executionNumber}:skip`;
+    const url = buildUrl(baseUrl, query);
     const response = await yunxiaoRequest(
       url,
       {
         method: 'POST',
       }
     );
-    return SkipChangeRequestStagePipelineResponseSchema.parse(response);
+    return SkipChangeRequestStagePipelineResponseSchema.parse(response ?? { success: true });
   } catch (error) {
     throw error;
   }
@@ -707,7 +744,7 @@ export const PassReleaseStagePipelineValidateRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
   executionNumber: z.string().describe("发布流程阶执行序号"),
-  jobId: z.string().describe("任务ID"),
+  jobId: idParam("任务ID"),
 });
 
 export const PassReleaseStagePipelineValidateResponseSchema = PassPipelineValidateResponseSchema;
@@ -725,7 +762,7 @@ export const RefuseReleaseStagePipelineValidateRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("研发流程唯一序列号"),
   releaseStageSn: z.string().describe("研发流程阶段唯一序列号"),
   executionNumber: z.string().describe("研发流程阶执行序号"),
-  jobId: z.string().describe("任务ID"),
+  jobId: idParam("任务ID"),
 });
 
 export const RefuseReleaseStagePipelineValidateResponseSchema = RefusePipelineValidateResponseSchema;
@@ -743,7 +780,7 @@ export const GetAppReleaseStageExecutionPipelineJobLogRequestSchema = z.object({
   releaseWorkflowSn: z.string().describe("发布流程唯一序列号"),
   releaseStageSn: z.string().describe("发布流程阶段唯一序列号"),
   executionNumber: z.string().describe("研发阶段的执行记录编号"),
-  jobId: z.string().describe("任务ID，可通过GetReleaseStagePipelineRun接口获取任务ID"),
+  jobId: idParam("任务ID，可通过GetReleaseStagePipelineRun接口获取任务ID"),
 });
 
 export const GetAppReleaseStageExecutionPipelineJobLogResponseSchema = ReleaseStageExecutionPipelineJobLogResponseSchema;

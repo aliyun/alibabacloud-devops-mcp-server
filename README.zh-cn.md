@@ -252,6 +252,7 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `list_files`: 查询文件树
 - `update_file`: 更新文件内容
 - `create_change_request`: 创建合并请求
+- `update_change_request`: 更新合并请求标题或描述
 - `create_change_request_comment`: 创建合并请求评论
 - `get_change_request`: 查询合并请求
 - `list_change_request_patch_sets`: 查询合并请求版本列表
@@ -287,6 +288,9 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `list_work_item_types`: 列出项目空间中工作项类型
 - `get_work_item_type`: 获取特定工作项类型的详细信息
 - `list_work_item_relation_work_item_types`: 列出可关联到特定工作项的工作项类型
+- `list_workitem_relation_records`: 查询工作项关联记录
+- `create_workitem_relation_record`: 创建工作项关联关系
+- `delete_workitem_relation_record`: 删除工作项关联关系
 - `get_work_item_type_field_config`: 获取工作项类型的字段配置
 - `get_work_item_workflow`: 获取工作项类型的工作流信息
 - `list_work_item_comments`: 列出特定工作项的评论
@@ -426,9 +430,9 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `update_test_result`: [测试管理] 更新测试结果
 
 ## 联系我们
-如有任何疑问或疑虑，请通过钉钉群联系我们：134400004101
+如有任何疑问或疑虑，请加入“云效mcp server&amp;智能化用户沟通2群”，钉钉群号：177120034028。
 
-![Alibaba Cloud Devops MCP Server Group](https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/alibabacloud-devops-mcp-server/1750147152464.png)
+![云效 MCP Server 钉钉交流群](image/dingtalk-group-177120034028.png)
 
 ## 相关链接
 - [阿里云云效](https://www.aliyun.com/product/yunxiao)

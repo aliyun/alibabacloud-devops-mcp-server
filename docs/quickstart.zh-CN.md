@@ -213,4 +213,4 @@ claude mcp add --transport http yunxiao https://your-org.devops.aliyuncs.com/ai/
 - [云效 DevOps 产品主页](https://www.aliyun.com/product/yunxiao)
 - [MCP 市场(ModelScope)](https://modelscope.cn/mcp/servers/@aliyun/alibabacloud-devops-mcp-server)
 - [GitHub 仓库](https://github.com/aliyun/alibabacloud-devops-mcp-server)
-- 有问题可加入阿里云云效交流群(群号 **134400004101**)讨论。
+- 有问题可加入“云效mcp server&amp;智能化用户沟通2群”（钉钉群号 **177120034028**）讨论。

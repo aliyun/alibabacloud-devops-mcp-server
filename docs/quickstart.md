@@ -213,4 +213,4 @@ To deploy it yourself locally or in a private environment (stdio / SSE / Streama
 - [Yunxiao DevOps product page](https://www.aliyun.com/product/yunxiao)
 - [MCP marketplace (ModelScope)](https://modelscope.cn/mcp/servers/@aliyun/alibabacloud-devops-mcp-server)
 - [GitHub repository](https://github.com/aliyun/alibabacloud-devops-mcp-server)
-- Questions? Join the Alibaba Cloud DevOps group (ID **134400004101**).
+- Questions? Join the DingTalk group “云效mcp server&amp;智能化用户沟通2群” (ID **177120034028**).

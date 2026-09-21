@@ -71,19 +71,50 @@ npm run build
 
 确认构建成功（退出码为 0）。
 
-### Step 5: 提交代码并推送
+### Step 5: 提交代码并推送（**所有远端都要推**）
+
+本仓库配置了多个远端，用途不同：`origin` 承载 GitHub Release 与 npm 发布，另一个远端是部署链路的取码来源。`git push` 只会推当前分支的 upstream（一般是 `origin`），git hook 也**不会**自动推其余远端，因此必须逐个显式推送，否则会出现「npm 上有新版本、但部署环境仍是旧代码」。
 
 ```bash
 git add -A
 git commit -m "chore: release v<新版本号>"
-git push
+for r in $(git remote); do
+  echo "--- push -> $r"
+  git push "$r" master
+done
 ```
 
-### Step 6: 创建 Git Tag 并推送
+推完验证每个远端都已包含本次提交：
+
+```bash
+git fetch --all --quiet
+for r in $(git remote); do
+  git merge-base --is-ancestor HEAD "$r/master" 2>/dev/null \
+    && echo "$r/master ✓" || echo "$r/master ✗ 未包含本次提交"
+done
+```
+
+全部为 `✓` 才继续下一步。
+
+### Step 6: 创建 Git Tag 并推送（**所有远端都要推**）
+
+同 Step 5，tag 也要逐个远端推，不能只推 `origin`：
 
 ```bash
 git tag v<新版本号>
-git push origin v<新版本号>
+for r in $(git remote); do
+  echo "--- push tag -> $r"
+  git push "$r" v<新版本号>
+done
+```
+
+验证每个远端都有该 tag：
+
+```bash
+for r in $(git remote); do
+  git ls-remote --tags "$r" "refs/tags/v<新版本号>" | grep -q . \
+    && echo "$r ✓ 有 v<新版本号>" || echo "$r ✗ 缺 tag"
+done
 ```
 
 ### Step 7: 构建 Docker 镜像

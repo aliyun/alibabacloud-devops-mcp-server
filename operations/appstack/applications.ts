@@ -19,15 +19,25 @@ export const ListApplicationsRequestSchema = z.object({
     ),
 });
 
+/**
+ * 应用对象。List / Get / Create / Update 四个接口返回的结构一致,共用此定义。
+ *
+ * 云效对这些字段会返回 null,原先只有 appTemplate* 两个字段带 .nullable(),
+ * 其余没带 —— 线上 list_applications 的 data.N.description 7 天报错 30 次、
+ * get_application.description 1 次(expected string, received null)。
+ * 统一加 nullable,并用 passthrough 兜住后续新增字段。
+ */
+const ApplicationVOSchema = z.object({
+  appTemplateDisplayName: z.string().nullable().optional().describe("应用模版展示名称"),
+  appTemplateName: z.string().nullable().optional().describe("应用模版名称"),
+  creatorId: z.string().nullable().optional().describe("应用创建者id"),
+  description: z.string().nullable().optional().describe("应用描述"),
+  gmtCreate: z.string().nullable().optional().describe("创建时间"),
+  name: z.string().nullable().optional().describe("应用名"),
+}).passthrough();
+
 export const ListApplicationsResponseSchema = z.object({
-  data: z.array(z.object({
-    appTemplateDisplayName: z.string().nullable().optional().describe("应用模版显示名称"),
-    appTemplateName: z.string().nullable().optional().describe("应用模版名称"),
-    creatorId: z.string().optional().describe("应用创建者id"),
-    description: z.string().optional().describe("应用描述"),
-    gmtCreate: z.string().optional().describe("创建时间"),
-    name: z.string().optional().describe("应用名"),
-  })),
+  data: z.array(ApplicationVOSchema),
   nextToken: z.string().nullable().optional(),
 });
 
@@ -37,14 +47,7 @@ export const GetApplicationRequestSchema = z.object({
   appName: z.string().describe("应用名"),
 });
 
-export const GetApplicationResponseSchema = z.object({
-  appTemplateDisplayName: z.string().nullable().optional().describe("应用模版展示名称"),
-  appTemplateName: z.string().nullable().optional().describe("应用模版名称"),
-  creatorId: z.string().optional().describe("应用创建者id"),
-  description: z.string().optional().describe("应用描述"),
-  gmtCreate: z.string().optional().describe("创建时间"),
-  name: z.string().optional().describe("应用名"),
-});
+export const GetApplicationResponseSchema = ApplicationVOSchema;
 
 // Schema for the CreateApplication API
 export const CreateApplicationRequestSchema = z.object({
@@ -56,14 +59,7 @@ export const CreateApplicationRequestSchema = z.object({
   tags: z.array(z.string()).optional().describe("应用标签"),
 });
 
-export const CreateApplicationResponseSchema = z.object({
-  appTemplateDisplayName: z.string().nullable().optional().describe("应用模版展示名称"),
-  appTemplateName: z.string().nullable().optional().describe("应用模版名称"),
-  creatorId: z.string().optional().describe("应用创建者id"),
-  description: z.string().optional().describe("应用描述"),
-  gmtCreate: z.string().optional().describe("创建时间"),
-  name: z.string().optional().describe("应用名"),
-});
+export const CreateApplicationResponseSchema = ApplicationVOSchema;
 
 // Schema for the UpdateApplication API
 export const UpdateApplicationRequestSchema = z.object({
@@ -72,14 +68,7 @@ export const UpdateApplicationRequestSchema = z.object({
   ownerId: z.string().optional().describe("应用 owner ID"),
 });
 
-export const UpdateApplicationResponseSchema = z.object({
-  appTemplateDisplayName: z.string().nullable().optional().describe("应用模版展示名称"),
-  appTemplateName: z.string().nullable().optional().describe("应用模版名称"),
-  creatorId: z.string().optional().describe("应用创建者id"),
-  description: z.string().optional().describe("应用描述"),
-  gmtCreate: z.string().optional().describe("创建时间"),
-  name: z.string().optional().describe("应用名"),
-});
+export const UpdateApplicationResponseSchema = ApplicationVOSchema;
 
 export type ListApplicationsRequest = z.infer<typeof ListApplicationsRequestSchema>;
 export type ListApplicationsResponse = z.infer<typeof ListApplicationsResponseSchema>;

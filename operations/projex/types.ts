@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UserInfoSchema } from "../organization/types.js";
+import { idParam } from "../../common/zodHelpers.js";
 
 // Custom field related types
 export const FieldItemSchema = z.object({
@@ -86,10 +87,13 @@ export const SprintInfoSchema = z.object({
   owners: z.array(UserInfoSchema).nullable().optional().describe("Owners"),
 });
 
+// 云效在工作项的 sprint 对象里会返回 name: null,原先缺 .nullable() 导致
+// search_workitems 抛 ZodError(sprint.name expected string, received null) ——
+// 线上 7 天 90 次,是该工具最主要的失败原因。
 export const SprintSchema = z.object({
-  id: z.string().optional().describe("Sprint ID"),
-  name: z.string().optional().describe("Sprint name"),
-});
+  id: z.string().nullable().optional().describe("Sprint ID"),
+  name: z.string().nullable().optional().describe("Sprint name"),
+}).passthrough();
 
 // List Sprints Schema
 export const ListSprintsSchema = z.object({
@@ -97,7 +101,9 @@ export const ListSprintsSchema = z.object({
   id: z.string().describe("Project unique identifier"),
   status: z.array(z.string()).optional().describe("Filter by status: TODO, DOING, ARCHIVED"),
   page: z.number().int().min(1).optional().describe("Page number"),
-  perPage: z.number().int().min(1).max(100).optional().describe("Page size"),
+  // 上限放宽到 200:实测云效 sprints 接口对 perPage=500 仍返回 200，不校验上限，
+  // 原来的 max(100) 是我们自己加的限制，模型传更大值会被 zod 直接拒掉、工具完全不可用。
+  perPage: z.number().int().min(1).max(200).optional().describe("Page size, up to 200"),
 });
 
 // Get Sprint Schema
@@ -205,7 +211,7 @@ export const VersionDTOSchema = z.object({
 
 // List Program Versions Schema
 export const ListProgramVersionsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   id: z.string().describe("Program (Project Set) unique identifier"),
   status: z.array(z.enum(["TODO", "DOING", "ARCHIVED"])).optional().describe("Filter by status: TODO (not started), DOING (in progress), ARCHIVED (released)"),
   name: z.string().nullable().optional().describe("Filter by name"),
@@ -215,7 +221,7 @@ export const ListProgramVersionsSchema = z.object({
 
 // List Project Versions Schema
 export const ListVersionsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   id: z.string().describe("Project unique identifier or Program unique identifier"),
   status: z.array(z.string()).optional().describe("Filter by status: TODO (not started), DOING (in progress), ARCHIVED (released)"),
   name: z.string().nullable().optional().describe("Filter by name"),
@@ -225,7 +231,7 @@ export const ListVersionsSchema = z.object({
 
 // Create Version Schema
 export const CreateVersionSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   id: z.string().describe("Project unique identifier"),
   name: z.string().min(1).max(50).describe("Version name, max length 50 characters"),
   owners: z.array(z.string()).min(1).describe("Owner user IDs, at least one required"),
@@ -235,7 +241,7 @@ export const CreateVersionSchema = z.object({
 
 // Update Version Schema
 export const UpdateVersionSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   projectId: z.string().describe("Project unique identifier"),
   id: z.string().describe("Version unique identifier"),
   name: z.string().min(1).max(50).describe("Version name, max length 50 characters"),
@@ -246,7 +252,7 @@ export const UpdateVersionSchema = z.object({
 
 // Delete Version Schema
 export const DeleteVersionSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   projectId: z.string().describe("Project unique identifier"),
   id: z.string().describe("Version unique identifier"),
 });
@@ -337,7 +343,7 @@ export const SearchProjectsSchema = z.object({
 
 // Program (Project Set) related schemas
 export const SearchProgramsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
 
   // Simplified search parameters
   name: z.string().nullable().optional().describe("Name search (fuzzy matching)"),
@@ -356,12 +362,12 @@ export const SearchProgramsSchema = z.object({
 
 // Work item related schemas
 export const DeleteWorkItemSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   workItemId: z.string().describe("Work item unique identifier, required parameter"),
 });
 
 export const GetWorkItemSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   workItemId: z.string().describe("Work item unique identifier, required parameter"),
 });
 
@@ -413,8 +419,8 @@ export const SearchWorkitemsSchema = z.object({
   advancedConditions: z.string().nullable().optional().describe("Advanced filter conditions, JSON format"),
   orderBy: z.string().optional().default("gmtCreate").describe("Sort field, default is gmtCreate. Possible values: gmtCreate, subject, status, priority, assignedTo"),
   sort: z.string().optional().default("desc").describe("Sort order, default is desc. Possible values: desc (descending), asc (ascending)"),
-  page: z.number().int().min(1).optional().describe("Page number, starting from 1. Default is 1"),
-  perPage: z.number().int().min(0).max(200).optional().describe("Number of items per page, range 0-200. Default is 20"),
+  page: z.number().int().min(1).optional().describe("Page number, starting from 1. Default is 1. Due to the search engine's deep-paging limit, page * perPage must not exceed 10000, otherwise the API returns 400; narrow the query with filters to reach more results"),
+  perPage: z.number().int().min(0).max(200).optional().describe("Number of items per page, range 0-200. Default is 20. page * perPage must not exceed 10000; use 200 to reduce the number of pages when iterating large result sets"),
   includeDetails: z.boolean().optional().describe("Set to true when you need work item descriptions/detailed content. This automatically fetches missing descriptions instead of requiring separate get_work_item calls. RECOMMENDED: Use includeDetails=true when user asks for 'detailed content', 'descriptions', or 'full information' of work items. This is more efficient than calling get_work_item multiple times. Default is false")
 });
 
@@ -433,37 +439,71 @@ export const WorkItemTypeDetailSchema = z.object({
 });
 
 export const ListAllWorkItemTypesSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
 });
 
 export const ListWorkItemTypesSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
   projectId: z.string().describe("项目唯一标识"),
   category: z.string().optional().describe("工作项类型，可选值为 Req，Bug，Task 等。"),
 });
 
 export const GetWorkItemTypeSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
   id: z.string().describe("工作项类型ID"),
 });
 
+export const WorkItemRelationTypeSchema = z.enum(["PARENT", "SUB", "ASSOCIATED", "DEPEND_ON", "DEPENDED_BY"]);
+
 export const ListWorkItemRelationWorkItemTypesSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
   workItemTypeId: z.string().describe("工作项类型ID"),
-  relationType: z.enum(["PARENT", "SUB", "ASSOCIATED", "DEPEND_ON", "DEPENDED_BY"]).optional().describe("关联类型，可选值为 PARENT、SUB、ASSOCIATED，DEPEND_ON, DEPENDED_BY 分别对应父项，子项，关联项，依赖项，支撑项。"),
+  relationType: WorkItemRelationTypeSchema.optional().describe("关联类型，可选值为 PARENT、SUB、ASSOCIATED，DEPEND_ON, DEPENDED_BY 分别对应父项，子项，关联项，依赖项，支撑项。"),
+});
+
+export const WorkItemRelationRecordSchema = z.object({
+  gmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("创建关联的时间（Unix 毫秒时间戳或 ISO 字符串）"),
+  id: z.string().nullable().optional().describe("关联记录ID"),
+  relationType: WorkItemRelationTypeSchema.nullable().optional().describe("关联类型"),
+  resourceId: z.string().nullable().optional().describe("关联资源ID"),
+  resourceType: z.string().nullable().optional().describe("关联资源类型"),
+}).passthrough();
+
+export const ListWorkitemRelationRecordsResponseSchema = z.array(WorkItemRelationRecordSchema);
+
+export const ListWorkitemRelationRecordsSchema = z.object({
+  organizationId: z.string().describe("企业ID"),
+  workItemId: idParam("要查询关联记录的工作项唯一标识"),
+  relationType: WorkItemRelationTypeSchema.describe("要查询的关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"),
+});
+
+export const CreateWorkitemRelationRecordSchema = z.object({
+  organizationId: z.string().describe("企业ID"),
+  workItemId: idParam("源工作项唯一标识"),
+  relatedWorkItemId: idParam("要关联的目标工作项唯一标识"),
+  relationType: WorkItemRelationTypeSchema.describe("关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"),
+  operatorId: z.string().optional().describe("操作者用户ID；使用个人访问令牌时该参数无效"),
+});
+
+export const DeleteWorkitemRelationRecordSchema = z.object({
+  organizationId: z.string().describe("企业ID"),
+  workItemId: idParam("源工作项唯一标识"),
+  relatedWorkItemId: idParam("要解除关联的目标工作项唯一标识"),
+  relationType: WorkItemRelationTypeSchema.describe("要删除的关联类型：PARENT 父项、SUB 子项、ASSOCIATED 关联项、DEPEND_ON 依赖项、DEPENDED_BY 支撑项"),
+  operatorId: z.string().optional().describe("操作者用户ID；使用个人访问令牌时该参数无效"),
 });
 
 // Work item comment related schemas
 export const ListWorkItemCommentsSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
-  workItemId: z.string().describe("工作项ID"),
+  organizationId: z.string().describe("企业ID"),
+  workItemId: idParam("工作项ID"),
   page: z.number().int().optional().default(1).describe("页码"),
   perPage: z.number().int().optional().default(20).describe("每页条数"),
 });
 
 export const CreateWorkItemCommentSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
-  workItemId: z.string().describe("工作项ID"),
+  organizationId: z.string().describe("企业ID"),
+  workItemId: idParam("工作项ID"),
   content: z.string().describe("评论内容"),
 });
 
@@ -521,13 +561,13 @@ export const WorkItemWorkflowSchema = z.object({
 });
 
 export const GetWorkItemTypeFieldConfigSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
   projectId: z.string().describe("项目唯一标识"),
   workItemTypeId: z.string().describe("工作项类型ID"),
 });
 
 export const GetWorkItemWorkflowSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
   projectId: z.string().describe("项目唯一标识"),
   workItemTypeId: z.string().describe("工作项类型ID"),
 });
@@ -698,18 +738,18 @@ export const WorkitemFileSchema = z.object({
 });
 
 export const ListWorkitemAttachmentsSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   workItemId: z.string().describe("工作项唯一标识"),
 });
 
 export const GetWorkitemFileSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   workitemId: z.string().describe("工作项唯一标识"),
   id: z.string().describe("文件唯一标识。支持两种格式：文件ID（长hex字符串，用于描述中嵌入的图片）或附件ID（纯数字如 62487031，用于普通附件）"),
 });
 
 export const CreateWorkitemAttachmentSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   workItemId: z.string().describe("工作项唯一标识"),
   filePath: z.string().optional().describe("本地文件的绝对路径，MCP Server 将读取该文件。仅适用于 server 与调用方同机的场景（如 stdio 本地运行）。⚠️ 远程（streamable HTTP）部署下本参数已被禁用（filePath 指向服务器文件系统，存在任意文件读取的安全风险），此时请改用 fileContent"),
   fileContent: z.string().optional().describe("文件内容的 base64 编码。远程部署上传附件时使用，需配合 fileName。单文件 ≤ 10MB（base64 编码后约 13.5MB）"),
@@ -762,7 +802,7 @@ export const ActivityDTOSchema = z.object({
 });
 
 export const ListWorkitemActivitiesSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   workItemId: z.string().describe("Work item unique identifier"),
 });
 
@@ -776,6 +816,10 @@ export type ListAllWorkItemTypesParams = z.infer<typeof ListAllWorkItemTypesSche
 export type ListWorkItemTypesParams = z.infer<typeof ListWorkItemTypesSchema>;
 export type GetWorkItemTypeParams = z.infer<typeof GetWorkItemTypeSchema>;
 export type ListWorkItemRelationWorkItemTypesParams = z.infer<typeof ListWorkItemRelationWorkItemTypesSchema>;
+export type WorkItemRelationRecord = z.infer<typeof WorkItemRelationRecordSchema>;
+export type ListWorkitemRelationRecordsParams = z.infer<typeof ListWorkitemRelationRecordsSchema>;
+export type CreateWorkitemRelationRecordParams = z.infer<typeof CreateWorkitemRelationRecordSchema>;
+export type DeleteWorkitemRelationRecordParams = z.infer<typeof DeleteWorkitemRelationRecordSchema>;
 export type ListWorkItemCommentsParams = z.infer<typeof ListWorkItemCommentsSchema>;
 export type CreateWorkItemCommentParams = z.infer<typeof CreateWorkItemCommentSchema>;
 export type FieldOption = z.infer<typeof FieldOptionSchema>;
@@ -810,18 +854,18 @@ export type UpdateEstimatedEffortParams = z.infer<typeof UpdateEstimatedEffortSc
 
 // Work item related testcase schemas
 export const ListWorkitemTestcaseRelationsSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
   workItemId: z.string().describe("工作项唯一标识"),
 });
 
 export const CreateWorkitemTestcaseRelationSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
   workItemId: z.string().describe("工作项唯一标识"),
   testcaseId: z.string().describe("要关联的测试用例唯一标识"),
 });
 
 export const DeleteWorkitemTestcaseRelationSchema = z.object({
-  organizationId: z.string().describe("企业ID，可在组织管理后台的基本信息页面获取"),
+  organizationId: z.string().describe("企业ID"),
   workItemId: z.string().describe("工作项唯一标识"),
   relationRecordId: z.string().describe("关联记录ID（通过 list 或 create 返回获取）"),
 });

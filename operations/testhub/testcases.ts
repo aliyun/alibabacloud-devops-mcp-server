@@ -75,7 +75,9 @@ export const CreateTestcaseRequestSchema = z.object({
   subject: z.string().min(0).max(256).optional().describe("标题"),
   assignedTo: z.string().optional().describe("负责人userId"),
   directoryId: z.string().optional().describe("目录id"),
-  preCondition: z.string().optional().describe("前置条件"),
+  // 接受 null:响应侧 preCondition 本就是 nullable,调用方「先 get 再回传」时会原样带上 null。
+  // 拒掉它会让整个创建失败(线上 schema 校验失败的头号来源),而语义上 null 与不传等价。
+  preCondition: z.string().nullable().optional().describe("前置条件"),
   labels: z.array(z.string()).optional().describe("标签ids"),
   customFieldValues: z.record(z.any()).optional().describe("自定义字段值"),
   testSteps: TestStepsDTOSchema.optional().describe("测试步骤"),
@@ -89,8 +91,8 @@ export const CreateTestcaseResponseSchema = z.object({
 export const SearchTestcasesRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
   testRepoId: z.string().describe("用例库唯一标识"),
-  page: z.number().int().optional().default(1).describe("分页参数，第几页"),
-  perPage: z.number().int().min(0).max(200).optional().default(20).describe("分页参数，每页大小"),
+  page: z.number().int().optional().default(1).describe("分页参数，第几页。受搜索引擎深翻页限制，page * perPage 不能超过 10000，超出会返回 400；需要遍历更多用例时请用 directoryId 或 conditions 缩小范围"),
+  perPage: z.number().int().min(0).max(200).optional().default(20).describe("分页参数，每页大小。page * perPage 不能超过 10000，遍历大量用例时建议取 200 以减少翻页次数"),
   orderBy: z.enum(["gmtCreate", "name"]).optional().default("gmtCreate").describe("排序字段"),
   sort: z.enum(["desc", "asc"]).optional().default("desc").describe("排序方式"),
   directoryId: z.string().optional().describe("目录id"),
@@ -111,10 +113,13 @@ export const MiniLabelSchema = z.object({
 });
 
 // Schema for MiniItemDTO
+// 用例的 directory 等引用对象会返回 name: null,原先声明为必填 z.string()
+// 导致 search_testcases 抛 ZodError(N.directory.name expected string,
+// received null) —— 线上 7 天 48 次。
 export const MiniItemDTOSchema = z.object({
-  id: z.string().describe("id"),
-  name: z.string().describe("名称"),
-});
+  id: z.string().nullable().optional().describe("id"),
+  name: z.string().nullable().optional().describe("名称"),
+}).passthrough();
 
 // Schema for FieldValue
 export const FieldValueSchema = z.object({
@@ -237,7 +242,10 @@ export async function getTestcaseFieldConfig(params: GetTestcaseFieldConfigReque
  * 创建测试用例
  */
 export async function createTestcase(params: CreateTestcaseRequest): Promise<CreateTestcaseResponse> {
-  const { organizationId, testRepoId, ...body } = params;
+  const { organizationId, testRepoId, ...rest } = params;
+  // 顶层 null 一律剔除而不是透传:入参允许 null(见 CreateTestcaseRequestSchema),
+  // 但云效对 null 的容忍度不一,当作「没传」最稳。
+  const body = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== null));
   const finalOrgId = await resolveOrganizationId(organizationId);
   const url = isRegionEdition()
     ? `/oapi/v1/testhub/testRepos/${testRepoId}/testcases`

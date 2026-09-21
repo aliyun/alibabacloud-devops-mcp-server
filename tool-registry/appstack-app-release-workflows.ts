@@ -1,4 +1,4 @@
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toInputSchema } from '../common/inputSchema.js';
 import { 
   ListAllReleaseWorkflowsRequestSchema,
   ListAllReleaseWorkflowBriefsRequestSchema,
@@ -22,77 +22,77 @@ export const getAppStackAppReleaseWorkflowTools = () => [
   {
     name: 'list_app_release_workflows',
     description: '[application delivery] 查询应用下所有发布流程',
-    inputSchema: zodToJsonSchema(ListAllReleaseWorkflowsRequestSchema),
+    inputSchema: toInputSchema(ListAllReleaseWorkflowsRequestSchema),
   },
   {
     name: 'list_app_release_workflow_briefs',
     description: '[application delivery] 查询应用下所有发布流程摘要',
-    inputSchema: zodToJsonSchema(ListAllReleaseWorkflowBriefsRequestSchema),
+    inputSchema: toInputSchema(ListAllReleaseWorkflowBriefsRequestSchema),
   },
   {
     name: 'get_app_release_workflow_stage',
     description: '[application delivery] 获取发布流程阶段详情',
-    inputSchema: zodToJsonSchema(GetReleaseWorkflowStageRequestSchema),
+    inputSchema: toInputSchema(GetReleaseWorkflowStageRequestSchema),
   },
   {
     name: 'list_app_release_stage_briefs',
     description: '[application delivery] 查询发布流程阶段摘要列表',
-    inputSchema: zodToJsonSchema(ListAllReleaseStageBriefsRequestSchema),
+    inputSchema: toInputSchema(ListAllReleaseStageBriefsRequestSchema),
   },
   {
     name: 'update_app_release_stage',
     description: '[application delivery] 更新应用发布流程阶段',
-    inputSchema: zodToJsonSchema(UpdateAppReleaseStageRequestSchema),
+    inputSchema: toInputSchema(UpdateAppReleaseStageRequestSchema),
   },
   {
     name: 'list_app_release_stage_runs',
     description: '[application delivery] 查询发布流程阶段执行记录列表',
-    inputSchema: zodToJsonSchema(ListAppReleaseStageRunsRequestSchema),
+    inputSchema: toInputSchema(ListAppReleaseStageRunsRequestSchema),
   },
   {
     name: 'execute_app_release_stage',
     description: '[application delivery] 执行变更请求的发布流程阶段',
-    inputSchema: zodToJsonSchema(ExecuteChangeRequestReleaseStageRequestSchema),
+    inputSchema: toInputSchema(ExecuteChangeRequestReleaseStageRequestSchema),
   },
   {
     name: 'cancel_app_release_stage_execution',
     description: '[application delivery] 取消发布流程阶段执行',
-    inputSchema: zodToJsonSchema(CancelExecutionReleaseStageRequestSchema),
+    inputSchema: toInputSchema(CancelExecutionReleaseStageRequestSchema),
   },
   {
     name: 'retry_app_release_stage_pipeline',
     description: '[application delivery] 重试变更请求的发布流程阶段流水线',
-    inputSchema: zodToJsonSchema(RetryChangeRequestStagePipelineRequestSchema),
+    inputSchema: toInputSchema(RetryChangeRequestStagePipelineRequestSchema),
   },
   {
     name: 'skip_app_release_stage_pipeline',
     description: '[application delivery] 跳过变更请求的发布流程阶段流水线',
-    inputSchema: zodToJsonSchema(SkipChangeRequestStagePipelineRequestSchema),
+    inputSchema: toInputSchema(SkipChangeRequestStagePipelineRequestSchema),
   },
   {
     name: 'list_app_release_stage_metadata',
     description: '[application delivery] 查询研发阶段执行记录集成变更信息',
-    inputSchema: zodToJsonSchema(ListAppReleaseStageExecutionIntegratedMetadataRequestSchema),
+    inputSchema: toInputSchema(ListAppReleaseStageExecutionIntegratedMetadataRequestSchema),
   },
   {
     name: 'get_app_release_stage_pipeline_run',
     description: '[application delivery] 获取研发阶段流水线运行实例',
-    inputSchema: zodToJsonSchema(GetReleaseStagePipelineRunRequestSchema),
+    inputSchema: toInputSchema(GetReleaseStagePipelineRunRequestSchema),
   },
   {
     name: 'pass_app_release_stage_validate',
     description: '[application delivery] 通过发布流程阶段验证',
-    inputSchema: zodToJsonSchema(PassReleaseStagePipelineValidateRequestSchema),
+    inputSchema: toInputSchema(PassReleaseStagePipelineValidateRequestSchema),
   },
   {
     name: 'get_app_release_stage_job_log',
     description: '[application delivery] 查询研发阶段流水线任务运行日志',
-    inputSchema: zodToJsonSchema(GetAppReleaseStageExecutionPipelineJobLogRequestSchema),
+    inputSchema: toInputSchema(GetAppReleaseStageExecutionPipelineJobLogRequestSchema),
   },
   {
     name: 'refuse_app_release_stage_validate',
     description: '[application delivery] 拒绝发布流程阶段验证',
-    inputSchema: zodToJsonSchema(RefuseReleaseStagePipelineValidateRequestSchema),
+    inputSchema: toInputSchema(RefuseReleaseStagePipelineValidateRequestSchema),
   }
 ];
 

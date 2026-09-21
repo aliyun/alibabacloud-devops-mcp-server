@@ -8,6 +8,13 @@ This file provides guidance to iFlow Cli when working with code in this reposito
 - `npm run build` - Compiles TypeScript code to JavaScript in the `dist` directory
 - `npm run watch` - Continuously watches and compiles TypeScript files
 
+### Testing
+- `npm test` - Compiles with `tsconfig.test.json` into `dist-test/`, then runs the suites in `tests/` on Node's built-in runner (`node --test`)
+- These are **integration** tests: every case calls the real Yunxiao OpenAPI, so `.env` needs a valid `YUNXIAO_ACCESS_TOKEN` (`tests/setup.ts` throws without it) and the org ID is hardcoded there
+- Run it before committing; `tsc` alone catches neither a broken request path nor a response schema that drifted from the API
+- Caveat: the test org's data contains no `null` or missing optional fields, so a missing `.nullable()` passes here and only fails in production — verify such changes by feeding the offending shape to the schema directly
+- No lint or formatter is configured
+
 ### Running
 - `npm start` - Runs the compiled server from `dist/index.js` in stdio mode
 - `npm run start:sse` - Runs the compiled server from `dist/index.js` in SSE mode
@@ -17,6 +24,8 @@ This file provides guidance to iFlow Cli when working with code in this reposito
 ### Development
 - Use `npm run watch` during development for automatic recompilation
 - The server entry point is `index.ts` which exports all functionality as an MCP server
+- Build tool input schemas with `toInputSchema()` from `common/inputSchema.ts`, never `zodToJsonSchema` directly — it strips the redundant `$schema` and is the single place to trim context size across all ~200 tools
+- For ID-like inputs (`repositoryId`, `pipelineId`, `localId`, …) use `idParam()` from `common/zodHelpers.ts` rather than `z.string()`: Yunxiao IDs are numeric, models pass numbers, and a bare `z.string()` rejects them
 - To run in SSE mode during development: `node dist/index.js --sse`
 - To run in Streamable HTTP mode: `node dist/index.js --streamable-http` or `MCP_TRANSPORT=streamable-http`
 - To run **both** transports: `MCP_TRANSPORT=both node dist/index.js`, or `node dist/index.js --sse --streamable-http`, or `npm run start:both`

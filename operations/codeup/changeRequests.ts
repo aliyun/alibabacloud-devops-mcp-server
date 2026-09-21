@@ -3,7 +3,9 @@ import { yunxiaoRequest, buildUrl, handleRepositoryIdEncoding, floatToIntString,
 import { resolveOrganizationId } from "../organization/organization.js";
 import {
   ChangeRequestSchema,
-  PatchSetSchema
+  PatchSetSchema,
+  ReviewChangeRequestResponseSchema,
+  UpdateChangeRequestResponseSchema,
 } from "./types.js";
 
 // 通过API获取仓库的数字ID
@@ -301,6 +303,139 @@ export async function createChangeRequestFunc(
     method: "POST",
     body: payload,
   });
-  
+
   return ChangeRequestSchema.parse(response);
-} 
+}
+
+/**
+ * 更新合并请求标题或描述
+ */
+export async function updateChangeRequestFunc(
+  organizationId: string | undefined,
+  repositoryId: string,
+  localId: string,
+  title?: string,
+  description?: string,
+): Promise<z.infer<typeof UpdateChangeRequestResponseSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
+
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}`;
+
+  const payload: Record<string, string> = {};
+  if (title !== undefined) {
+    payload.title = title;
+  }
+  if (description !== undefined) {
+    payload.description = description;
+  }
+
+  const response = await yunxiaoRequest(url, {
+    method: "PUT",
+    body: payload,
+  });
+
+  return UpdateChangeRequestResponseSchema.parse(response);
+}
+
+/**
+ * 评审合并请求
+ *
+ * 提交评审意见(PASS / NOT_PASS)，可附带评论内容，并可一并提交此前留下的草稿评论。
+ *
+ * @param organizationId 组织ID，示例：'60d54f3daccf2bbd6659f3ad'
+ * @param repositoryId 代码库ID或路径，示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'
+ * @param localId 合并请求局部ID，示例：'1'
+ * @param reviewOpinion 评审意见：'PASS' - 通过；'NOT_PASS' - 不通过
+ * @param reviewComment 评论内容
+ * @param submitDraftCommentIds 要一并提交的草稿评论ID列表
+ */
+export async function reviewChangeRequestFunc(
+  organizationId: string | undefined,
+  repositoryId: string,
+  localId: string,
+  reviewOpinion?: string,
+  reviewComment?: string,
+  submitDraftCommentIds?: string[]
+): Promise<z.infer<typeof ReviewChangeRequestResponseSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
+
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}/review`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}/review`;
+
+  const payload: Record<string, any> = {};
+
+  if (reviewOpinion !== undefined) {
+    payload.reviewOpinion = reviewOpinion;
+  }
+
+  if (reviewComment !== undefined) {
+    payload.reviewComment = reviewComment;
+  }
+
+  if (submitDraftCommentIds !== undefined) {
+    payload.submitDraftCommentIds = submitDraftCommentIds;
+  }
+
+  const response = await yunxiaoRequest(url, {
+    method: "POST",
+    body: payload,
+  });
+
+  // 空响应体兜为 { result: true } —— 能走到这里说明 HTTP 已经是 2xx
+  return ReviewChangeRequestResponseSchema.parse(response ?? { result: true });
+}
+
+/**
+ * 合并合并请求
+ *
+ * 按指定的合并方式(ff-only / no-fast-forward / squash / rebase)执行合并，
+ * 可指定合并提交信息，并可选择合并后删除源分支。
+ *
+ * ⚠️ 这是不可逆操作:合并会真实改写目标分支,removeSourceBranch 还会删掉源分支。
+ *
+ * @param organizationId 组织ID，示例：'60d54f3daccf2bbd6659f3ad'
+ * @param repositoryId 代码库ID或路径，示例：'2835387' 或 '60de7a6852743a5162b5f957%2FDemoRepo'
+ * @param localId 合并请求局部ID，示例：'1'
+ * @param mergeType 合并类型：'ff-only' / 'no-fast-forward' / 'squash' / 'rebase'
+ * @param mergeMessage 合并提交信息
+ * @param removeSourceBranch 是否在合并后删除源分支
+ */
+export async function mergeChangeRequestFunc(
+  organizationId: string | undefined,
+  repositoryId: string,
+  localId: string,
+  mergeType: string,
+  mergeMessage?: string,
+  removeSourceBranch?: boolean
+): Promise<z.infer<typeof ChangeRequestSchema>> {
+  const finalOrgId = await resolveOrganizationId(organizationId);
+  const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
+
+  const url = isRegionEdition()
+    ? `/oapi/v1/codeup/repositories/${encodedRepoId}/changeRequests/${localId}/merge`
+    : `/oapi/v1/codeup/organizations/${finalOrgId}/repositories/${encodedRepoId}/changeRequests/${localId}/merge`;
+
+  const payload: Record<string, any> = {
+    mergeType: mergeType,
+  };
+
+  if (mergeMessage !== undefined) {
+    payload.mergeMessage = mergeMessage;
+  }
+
+  if (removeSourceBranch !== undefined) {
+    payload.removeSourceBranch = removeSourceBranch;
+  }
+
+  const response = await yunxiaoRequest(url, {
+    method: "POST",
+    body: payload,
+  });
+
+  return ChangeRequestSchema.parse(response);
+}

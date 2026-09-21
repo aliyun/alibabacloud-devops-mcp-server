@@ -41,7 +41,7 @@ export async function createChangeRequestCommentFunc(
   resolved: boolean,
   patchset_biz_id: string,
   file_path?: string,
-  line_number?: number,
+  line_number?: number | null,
   from_patchset_biz_id?: string,
   to_patchset_biz_id?: string,
   parent_comment_biz_id?: string
@@ -65,7 +65,8 @@ export async function createChangeRequestCommentFunc(
   // 根据评论类型添加必要参数
   if (comment_type === "INLINE_COMMENT") {
     // 检查INLINE_COMMENT必需的参数
-    if (!file_path || line_number === undefined || !from_patchset_biz_id || !to_patchset_biz_id) {
+    // 用 !line_number 而不是 === undefined:行号从 1 开始，0/null 对行内评论同样无效。
+    if (!file_path || !line_number || !from_patchset_biz_id || !to_patchset_biz_id) {
       throw new Error("For INLINE_COMMENT, file_path, line_number, from_patchset_biz_id, and to_patchset_biz_id are required");
     }
 

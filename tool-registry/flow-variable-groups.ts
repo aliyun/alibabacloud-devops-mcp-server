@@ -1,4 +1,4 @@
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { toInputSchema } from "../common/inputSchema.js";
 import {
   CreateFlowVariableGroupRequestSchema,
   ListFlowVariableGroupsRequestSchema,
@@ -16,30 +16,30 @@ export const getFlowVariableGroupTools = () => [
     name: "create_flow_variable_group",
     description:
       "[Pipeline Management] Create an organization-level variable group for Flow (pipeline).",
-    inputSchema: zodToJsonSchema(CreateFlowVariableGroupRequestSchema),
+    inputSchema: toInputSchema(CreateFlowVariableGroupRequestSchema),
   },
   {
     name: "list_flow_variable_groups",
     description:
       "[Pipeline Management] List organization-level Flow (pipeline) variable groups with pagination.",
-    inputSchema: zodToJsonSchema(ListFlowVariableGroupsRequestSchema),
+    inputSchema: toInputSchema(ListFlowVariableGroupsRequestSchema),
   },
   {
     name: "get_flow_variable_group",
     description:
       "[Pipeline Management] Get a Flow (pipeline) variable group by numeric id.",
-    inputSchema: zodToJsonSchema(GetFlowVariableGroupRequestSchema),
+    inputSchema: toInputSchema(GetFlowVariableGroupRequestSchema),
   },
   {
     name: "update_flow_variable_group",
     description:
       "[Pipeline Management] Update a Flow (pipeline) variable group by numeric id.",
-    inputSchema: zodToJsonSchema(UpdateFlowVariableGroupRequestSchema),
+    inputSchema: toInputSchema(UpdateFlowVariableGroupRequestSchema),
   },
   {
     name: "delete_flow_variable_group",
     description:
       "[Pipeline Management] Delete a Flow (pipeline) variable group by numeric id.",
-    inputSchema: zodToJsonSchema(DeleteFlowVariableGroupRequestSchema),
+    inputSchema: toInputSchema(DeleteFlowVariableGroupRequestSchema),
   },
 ];

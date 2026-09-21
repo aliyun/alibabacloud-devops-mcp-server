@@ -1,4 +1,4 @@
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toInputSchema } from '../common/inputSchema.js';
 import { 
   CreateGlobalVarRequestSchema,
   GetGlobalVarRequestSchema,
@@ -11,21 +11,21 @@ export const getAppStackGlobalVarTools = () => [
   {
     name: 'create_global_var',
     description: '[application delivery] Create a global variable group',
-    inputSchema: zodToJsonSchema(CreateGlobalVarRequestSchema),
+    inputSchema: toInputSchema(CreateGlobalVarRequestSchema),
   },
   {
     name: 'get_global_var',
     description: '[application delivery] Get a global variable group',
-    inputSchema: zodToJsonSchema(GetGlobalVarRequestSchema),
+    inputSchema: toInputSchema(GetGlobalVarRequestSchema),
   },
   {
     name: 'update_global_var',
     description: '[application delivery] Update a global variable group',
-    inputSchema: zodToJsonSchema(UpdateGlobalVarRequestSchema),
+    inputSchema: toInputSchema(UpdateGlobalVarRequestSchema),
   },
   {
     name: 'list_global_vars',
     description: '[application delivery] List global variable groups',
-    inputSchema: zodToJsonSchema(ListGlobalVarsRequestSchema),
+    inputSchema: toInputSchema(ListGlobalVarsRequestSchema),
   }
 ];

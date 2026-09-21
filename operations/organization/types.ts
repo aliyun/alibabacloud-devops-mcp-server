@@ -117,7 +117,7 @@ export type GetOrganizationMemberByUserIdInfo = z.infer<typeof GetOrganizationMe
 
 // Search organization members types
 export const SearchOrganizationMembersSchema = z.object({
-  organizationId: z.string().describe("Organization ID, can be found in the basic information page of the organization admin console"),
+  organizationId: z.string().describe("Organization ID"),
   deptIds: z.array(z.string()).optional().describe("Department IDs to search for"),
   query: z.string().optional().describe("Search query"),
   includeChildren: z.boolean().optional().describe("Whether to include sub-departments"),

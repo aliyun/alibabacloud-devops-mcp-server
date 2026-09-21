@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { yunxiaoRequest, isRegionEdition } from '../../common/utils.js';
+import { idParam } from '../../common/zodHelpers.js';
 import { resolveOrganizationId } from '../organization/organization.js';
 import { isYunxiaoError } from '../../common/errors.js';
 import { CommentDTOSchema } from './testcases.js';
@@ -18,7 +19,16 @@ export const TestPlanDTOSchema = z.object({
 
 // Schema for ListTestPlan
 export const ListTestPlanRequestSchema = z.object({
-  organizationId: z.string().describe("组织ID"),
+  organizationId: idParam("组织ID"),
+  page: z.number().int().min(1).optional().describe("分页参数，第几页，默认为 1"),
+  perPage: z.number().int().min(1).max(1000).optional().describe("分页参数，每页大小，最大 1000，默认为 1000"),
+  sprintIdentifier: idParam("迭代唯一标识，传入后只返回该迭代下的测试计划").optional(),
+  projectIdentifier: idParam("项目唯一标识，传入后只返回该项目下的测试计划").optional(),
+  status: z.union([
+    z.string().regex(/^(TODO|DOING|DONE)(,(TODO|DOING|DONE))*$/),
+    z.array(z.enum(["TODO", "DOING", "DONE"])).min(1),
+  ]).optional().describe("测试计划状态，可传单个状态、逗号分隔字符串或状态数组"),
+  name: z.string().optional().describe("测试计划名称模糊查询条件"),
 });
 
 export const ListTestPlanResponseSchema = z.array(TestPlanDTOSchema);
@@ -162,12 +172,12 @@ export type ListTestRepoTagsResponse = z.infer<typeof ListTestRepoTagsResponseSc
  * 获取测试计划列表
  */
 export async function listTestPlan(params: ListTestPlanRequest): Promise<ListTestPlanResponse> {
-  const { organizationId } = params;
+  const { organizationId, ...requestBody } = params;
   const finalOrgId = await resolveOrganizationId(organizationId);
   const url = isRegionEdition()
     ? `/oapi/v1/projex/testPlan/list`
     : `/oapi/v1/projex/organizations/${finalOrgId}/testPlan/list`;
-  const response = await yunxiaoRequest(url, { method: 'POST', body: {} });
+  const response = await yunxiaoRequest(url, { method: 'POST', body: requestBody });
   return ListTestPlanResponseSchema.parse(response);
 }
 

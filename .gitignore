@@ -7,3 +7,8 @@ dist-test
 .vscode
 .env_region
 .qoder/
+.DS_Store
+.agents/
+.codex/
+AGENTS.md
+work/
