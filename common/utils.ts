@@ -16,6 +16,7 @@ type RequestAuthContext = {
   // region 多租户：把进入 MCP 的原始请求 Host 透传给 openapi 调用，
   // 供 devops-traefik-openapi 按子域名区分租户。仅 region 站生效（见 yunxiaoRequest）。
   forwardHost?: string;
+  clientIp?: string;
 };
 
 const requestContext = new AsyncLocalStorage<RequestAuthContext>();
@@ -229,6 +230,14 @@ export type YunxiaoRawResponse = {
   body: unknown;
 };
 
+/** Forward one validated client address, never the caller-supplied proxy chain. */
+export function getClientIpHeaders(): Record<string, string> {
+  const ip = requestContext.getStore()?.clientIp;
+  return isRegionEdition() && ip
+    ? { "X-Forwarded-For": ip, "X-Real-IP": ip }
+    : {};
+}
+
 /**
  * 发起云效 openapi 请求并返回带响应头的原始响应。
  * 需要读取响应头（如分页 x-total / x-page）的场景应使用它，而不要自己直发 fetch：
@@ -247,6 +256,7 @@ export async function yunxiaoRequestRaw(
     "Content-Type": "application/json",
     "User-Agent": USER_AGENT,
     ...options.headers,
+    ...getClientIpHeaders(),
   };
 
   // Use session-specific token if available, otherwise use default token
@@ -324,24 +334,26 @@ const TOKEN_VERIFY_TTL_MS = 60_000;
  * - true：token 有效
  * - false：token 明确无效（云效 401）
  * - "unknown"：无法判定（网络/5xx 等），调用方应放行（fail-open），避免云效抖动误伤
- * 仅正面结果(true)按 sha256(apiBaseUrl + token) 缓存 60s；false/"unknown" 不缓存，
+ * 仅正面结果(true)按 sha256(apiBaseUrl + forwardHost + clientIp + token) 缓存 60s；false/"unknown" 不缓存，
  * 避免无效判定或频控误伤被放大。token 变化会立即换 key，无需等待过期。
  */
 export async function verifyToken(
   token: string,
   apiBaseUrl?: string,
   forwardHost?: string,
+  clientIp?: string,
 ): Promise<boolean | "unknown"> {
-  // 缓存 key 纳入 forwardHost：region 多租户下 apiBaseUrl 相同（同一内网 service），
+  // 缓存 key 纳入 clientIp，避免跨来源复用白名单校验结果。
+  // 同时纳入 forwardHost：region 多租户下 apiBaseUrl 相同（同一内网 service），
   // 靠 Host 区分租户，若不纳入 key，不同租户会串用彼此的校验结果。
-  const key = createHash("sha256").update(`${apiBaseUrl ?? ""}\n${forwardHost ?? ""}\n${token}`).digest("hex");
+  const key = createHash("sha256").update(`${apiBaseUrl ?? ""}\n${forwardHost ?? ""}\n${clientIp ?? ""}\n${token}`).digest("hex");
   const now = Date.now();
   const cached = tokenVerifyCache.get(key);
   if (cached && cached.exp > now) {
     return cached.ok;
   }
   try {
-    await runWithAuth({ token, apiBaseUrl, forwardHost }, () =>
+    await runWithAuth({ token, apiBaseUrl, forwardHost, clientIp }, () =>
       yunxiaoRequest("/oapi/v1/platform/user", { method: "GET" }),
     );
     tokenVerifyCache.set(key, { ok: true, exp: now + TOKEN_VERIFY_TTL_MS });

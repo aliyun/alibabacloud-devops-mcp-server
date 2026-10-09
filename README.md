@@ -459,3 +459,19 @@ If you have any questions, please join the DingTalk group “云效mcp server&am
 - [Example Use Cases](https://mp.weixin.qq.com/s/KQsN6dQlnNeCNATC-QD7pg)
 - [使用云效进行项目管理](https://mp.weixin.qq.com/s/2lxa18OlnQ_ly7wgAkCKTw)
 - [使用云效进行代码管理](https://mp.weixin.qq.com/s/pI5fbCK-nVDN7cLwx8K4Zg)
+
+### Client IP forwarding for Region IP allowlists
+
+HTTP requests to a Region OpenAPI forward the ingress-provided `X-Real-IP` as a
+single validated address in `X-Forwarded-For` and `X-Real-IP`, including token
+checks and attachment uploads. The address is request-scoped, not stored in an
+MCP session. Missing or invalid `X-Real-IP` falls back to the socket peer address;
+MCP does not select an address from an incoming `X-Forwarded-For` chain. Stdio and
+central OpenAPI requests do not add these headers.
+
+The hosted deployment relies on ingress to overwrite `X-Real-IP` with the actual
+client address and restrict direct access to MCP. No proxy address list or
+Express `trust proxy` configuration is needed. Self-hosted HTTP deployments using
+this feature must enforce the same ingress contract; the header itself does not
+authenticate an address. A remote AI provider's egress IP may be the client
+observed by ingress, rather than the human user's workstation IP.
