@@ -161,7 +161,7 @@ export const getProjectManagementTools = () => [
   },
   {
     name: "create_work_item_comment",
-    description: "[Project Management] Create a comment for a specific work item",
+    description: "[Project Management] Create a comment for a specific work item. Set formatType to MARKDOWN for Markdown content or RICHTEXT for rich text. When omitted, the API defaults to RICHTEXT.",
     inputSchema: toInputSchema(types.CreateWorkItemCommentSchema),
   },
 

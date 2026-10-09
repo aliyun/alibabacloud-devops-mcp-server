@@ -424,7 +424,8 @@ export const handleProjectManagementTools = async (request: any) => {
       const comment = await workitem.createWorkItemCommentFunc(
         args.organizationId,
         args.workItemId,
-        args.content
+        args.content,
+        args.formatType
       );
       return {
         content: [{ type: "text", text: JSON.stringify(comment, null, 2) }],

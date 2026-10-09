@@ -1011,12 +1011,14 @@ export async function listWorkItemCommentsFunc(
  * @param organizationId 企业ID
  * @param workItemId 工作项ID
  * @param content 评论内容
+ * @param formatType 评论格式，省略时使用服务端默认值 RICHTEXT
  * @returns 创建的评论信息
  */
 export async function createWorkItemCommentFunc(
   organizationId: string | undefined,
   workItemId: string,
-  content: string
+  content: string,
+  formatType?: "RICHTEXT" | "MARKDOWN"
 ): Promise<any> {
   const finalOrgId = await resolveOrganizationId(organizationId);
   const url = isRegionEdition()
@@ -1024,7 +1026,8 @@ export async function createWorkItemCommentFunc(
     : `/oapi/v1/projex/organizations/${finalOrgId}/workitems/${workItemId}/comments`;
 
   const payload = {
-    content: content
+    content: content,
+    ...(formatType !== undefined ? { formatType } : {}),
   };
 
   const response = await yunxiaoRequest(url, {

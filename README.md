@@ -312,7 +312,7 @@ alibabacloud-devops-mcp-server integrates various tools, including:
 - `get_work_item_type_field_config`: Get field configuration for a specific work item type
 - `get_work_item_workflow`: Get workflow information for a specific work item type
 - `list_work_item_comments`: List comments for a specific work item
-- `create_work_item_comment`: Create a comment for a specific work item
+- `create_work_item_comment`: Create a comment for a specific work item; optional `formatType`: `RICHTEXT` (default) or `MARKDOWN`
 - `list_workitem_attachments`: List attachments for a specific work item
 - `get_workitem_file`: Get file information for a specific work item attachment
 - `create_workitem_attachment`: Upload a local file as an attachment to a work item

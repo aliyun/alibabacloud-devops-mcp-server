@@ -294,7 +294,7 @@ alibabacloud-devops-mcp-server集成了多种工具，包括：
 - `get_work_item_type_field_config`: 获取工作项类型的字段配置
 - `get_work_item_workflow`: 获取工作项类型的工作流信息
 - `list_work_item_comments`: 列出特定工作项的评论
-- `create_work_item_comment`: 为特定工作项创建评论
+- `create_work_item_comment`: 为特定工作项创建评论；可选 `formatType`：`RICHTEXT`（默认）或 `MARKDOWN`
 - `list_workitem_attachments`: 列出工作项的附件列表
 - `get_workitem_file`: 获取工作项附件文件信息
 - `create_workitem_attachment`: 上传本地文件作为工作项附件

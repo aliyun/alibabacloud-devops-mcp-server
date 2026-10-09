@@ -1,6 +1,6 @@
 {
   "total": 203,
-  "generatedAt": "2026-09-15T08:07:40.213Z",
+  "generatedAt": "2026-10-09T02:21:32.519Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -3012,7 +3012,7 @@
     },
     {
       "name": "create_work_item_comment",
-      "description": "[Project Management] Create a comment for a specific work item",
+      "description": "[Project Management] Create a comment for a specific work item. Set formatType to MARKDOWN for Markdown content or RICHTEXT for rich text. When omitted, the API defaults to RICHTEXT.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3030,6 +3030,14 @@
           "content": {
             "type": "string",
             "description": "评论内容"
+          },
+          "formatType": {
+            "type": "string",
+            "enum": [
+              "RICHTEXT",
+              "MARKDOWN"
+            ],
+            "description": "评论内容格式：RICHTEXT（富文本，默认）或 MARKDOWN（Markdown）。省略时使用服务端默认格式 RICHTEXT"
           }
         },
         "required": [

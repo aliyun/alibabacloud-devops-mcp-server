@@ -187,7 +187,7 @@ npx -y mcporter call --stdio "npx -y alibabacloud-devops-mcp-server" --env YUNXI
 | `get_work_item_type_field_config` | 获取工作项类型字段配置 |
 | `get_work_item_workflow` | 获取工作项工作流 |
 | `list_work_item_comments` | 列出工作项评论 |
-| `create_work_item_comment` | 创建工作项评论 |
+| `create_work_item_comment` | 创建工作项评论；formatType 支持 RICHTEXT（默认）或 MARKDOWN |
 | `list_workitem_attachments` | 列出工作项附件 |
 | `get_workitem_file` | 获取工作项附件文件 |
 | `create_workitem_attachment` | 创建工作项附件 |

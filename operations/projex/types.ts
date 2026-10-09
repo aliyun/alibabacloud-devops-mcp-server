@@ -505,6 +505,7 @@ export const CreateWorkItemCommentSchema = z.object({
   organizationId: z.string().describe("企业ID"),
   workItemId: idParam("工作项ID"),
   content: z.string().describe("评论内容"),
+  formatType: z.enum(["RICHTEXT", "MARKDOWN"]).optional().describe("评论内容格式：RICHTEXT（富文本，默认）或 MARKDOWN（Markdown）。省略时使用服务端默认格式 RICHTEXT"),
 });
 
 // Work item type field configuration schemas
