@@ -459,3 +459,35 @@ If you have any questions, please join the DingTalk group “云效mcp server&am
 - [Example Use Cases](https://mp.weixin.qq.com/s/KQsN6dQlnNeCNATC-QD7pg)
 - [使用云效进行项目管理](https://mp.weixin.qq.com/s/2lxa18OlnQ_ly7wgAkCKTw)
 - [使用云效进行代码管理](https://mp.weixin.qq.com/s/pI5fbCK-nVDN7cLwx8K4Zg)
+
+### Client IP forwarding for Region IP allowlists
+
+HTTP requests to a Region OpenAPI forward a single validated client address in
+`X-Forwarded-For` and `X-Real-IP`, including token checks and attachment uploads.
+The address is request-scoped; it is not retained in an MCP session. Stdio and
+central OpenAPI requests do not add these headers.
+
+When MCP is behind an ingress, set `MCP_TRUSTED_PROXY_CIDRS` to a comma-separated
+list of the actual ingress/proxy IP addresses or CIDRs. Without this setting, MCP
+uses the socket peer IP and ignores incoming forwarding headers. The proxy chain
+is resolved from right to left, stopping at the first untrusted address. For a
+local reverse proxy only, an example is `127.0.0.1/32,::1/128`; production values
+must come from that environment's network configuration. Boolean values, hop
+counts and `/0` ranges are rejected. Never configure client networks as proxies.
+
+Before enabling in a hosted deployment:
+
+1. Confirm the public ingress overwrites client-supplied XFF, or appends the
+   observed source address so the trust chain stops at the actual client.
+2. Restrict direct access to the MCP service and configure only trusted proxy
+   addresses (not all private networks).
+3. Confirm the internal OpenAPI gateway preserves these headers from MCP and
+   uses them for allowlist evaluation. Do not allow arbitrary internet clients
+   to impersonate this trusted internal path.
+4. Roll out the MCP image with the environment-specific trusted proxy setting,
+   then verify allowed and denied client IPs through a real ingress. Merely
+   updating the image without proxy configuration will still use the ingress IP.
+
+A remote AI provider's egress IP may be the client observed by ingress; this
+setting cannot recover the human user's IP if that provider never supplies it
+through a trusted proxy path.

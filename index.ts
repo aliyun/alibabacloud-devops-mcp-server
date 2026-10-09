@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { clientIp, trustedProxyCidrs } from "./common/clientIp.js";
 import { randomUUID } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
@@ -235,9 +236,9 @@ function sanitizeRequestedApiBaseUrl(requested?: string): string | undefined {
 }
 
 function resolveYunxiaoAuth(
-    req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined> },
+    req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined>; ip?: string },
     sessionAuth?: { yunxiao_access_token?: string; yunxiao_api_base_url?: string },
-): { token?: string; apiBaseUrl?: string; forwardHost?: string } {
+): { token?: string; apiBaseUrl?: string; forwardHost?: string; clientIp?: string } {
     const qTok = req.query['yunxiao_access_token'];
     const qBase = req.query['yunxiao_api_base_url'];
     const tokenFromQuery = typeof qTok === 'string' ? qTok : undefined;
@@ -264,6 +265,7 @@ function resolveYunxiaoAuth(
         token: tokenFromQuery || tokenFromHeader || tokenFromBearer || sessionAuth?.yunxiao_access_token || process.env.YUNXIAO_ACCESS_TOKEN,
         apiBaseUrl: sanitizeRequestedApiBaseUrl(baseFromQuery || baseFromHeader || sessionAuth?.yunxiao_api_base_url || undefined),
         forwardHost,
+        clientIp: clientIp(req),
     };
 }
 
@@ -373,14 +375,14 @@ async function enforceAuthGate(
     if (!serverConfig.authCheck) return false;
     if (req.method !== 'POST' || !bodyNeedsAuth(req.body)) return false;
 
-    const { token, apiBaseUrl, forwardHost } = resolveYunxiaoAuth(req, sessionAuth);
+    const { token, apiBaseUrl, forwardHost, clientIp } = resolveYunxiaoAuth(req, sessionAuth);
     if (!token) {
         sendUnauthorized(res, req.body, 'Unauthorized: missing Yunxiao access token');
         return true;
     }
 
     const utils = await import('./common/utils.js');
-    const valid = await utils.verifyToken(token, apiBaseUrl, forwardHost);
+    const valid = await utils.verifyToken(token, apiBaseUrl, forwardHost, clientIp);
     if (valid === false) {
         sendUnauthorized(res, req.body, 'Unauthorized: invalid or expired Yunxiao access token');
         return true;
@@ -541,7 +543,7 @@ function registerStreamableRoutes(
         // initialize 也纳入鉴权 gate：无 token / token 无效时 401，供上游在连接探测阶段发现 OAuth。
         if (await enforceAuthGate(req, res)) return;
 
-        const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url, forwardHost } = resolveYunxiaoAuth(req);
+        const { token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url, forwardHost, clientIp } = resolveYunxiaoAuth(req);
         const toolsets = resolveToolsets(req);
         const sessionServer = createMcpServer();
 
@@ -571,7 +573,7 @@ function registerStreamableRoutes(
             "new Streamable HTTP connection",
         );
 
-        await utils.runWithAuth({ token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url, forwardHost, toolsets }, () =>
+        await utils.runWithAuth({ token: yunxiao_access_token, apiBaseUrl: yunxiao_api_base_url, forwardHost, clientIp, toolsets }, () =>
             transport.handleRequest(req, res, req.body),
         );
     });
@@ -644,6 +646,10 @@ async function runServer() {
             const { default: express } = await import('express');
             app = express();
         }
+
+        // Trust only explicitly configured ingress peers. Express walks XFF from the
+        // socket toward the client and stops at the first untrusted address.
+        app.set('trust proxy', trustedProxyCidrs(process.env.MCP_TRUSTED_PROXY_CIDRS));
 
         // 轻量健康检查端点（供 ALB 后端健康检查 / K8s 存活就绪探针使用）。
         // 挂在根路径，不依赖任何 transport 或鉴权，始终返回 200。

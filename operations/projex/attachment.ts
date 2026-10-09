@@ -9,6 +9,7 @@ import {
   getYunxiaoApiBaseUrl,
   getCurrentSessionToken,
   getCurrentForwardHost,
+  getClientIpHeaders,
   requestWithHostOverride,
   isNetworkTransport
 } from "../../common/utils.js";
@@ -181,6 +182,7 @@ export async function createWorkitemAttachmentFunc(
   // 不走 yunxiaoRequest：它强制 JSON content-type，无法发 multipart/form-data。
   const requestHeaders: Record<string, string> = {
     "Accept": "application/json",
+    ...getClientIpHeaders(),
     "User-Agent": `modelcontextprotocol/servers/alibabacloud-devops-mcp-server/v${VERSION} ${getUserAgent()}`,
   };
 
