@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { clientIp, trustedProxyCidrs } from "./common/clientIp.js";
+import { clientIp } from "./common/clientIp.js";
 import { randomUUID } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
@@ -236,7 +236,7 @@ function sanitizeRequestedApiBaseUrl(requested?: string): string | undefined {
 }
 
 function resolveYunxiaoAuth(
-    req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined>; ip?: string },
+    req: { query: Record<string, unknown>; headers: Record<string, string | string[] | undefined>; socket?: { remoteAddress?: string } },
     sessionAuth?: { yunxiao_access_token?: string; yunxiao_api_base_url?: string },
 ): { token?: string; apiBaseUrl?: string; forwardHost?: string; clientIp?: string } {
     const qTok = req.query['yunxiao_access_token'];
@@ -646,10 +646,6 @@ async function runServer() {
             const { default: express } = await import('express');
             app = express();
         }
-
-        // Trust only explicitly configured ingress peers. Express walks XFF from the
-        // socket toward the client and stops at the first untrusted address.
-        app.set('trust proxy', trustedProxyCidrs(process.env.MCP_TRUSTED_PROXY_CIDRS));
 
         // 轻量健康检查端点（供 ALB 后端健康检查 / K8s 存活就绪探针使用）。
         // 挂在根路径，不依赖任何 transport 或鉴权，始终返回 200。

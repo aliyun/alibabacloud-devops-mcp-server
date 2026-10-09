@@ -462,32 +462,16 @@ If you have any questions, please join the DingTalk group “云效mcp server&am
 
 ### Client IP forwarding for Region IP allowlists
 
-HTTP requests to a Region OpenAPI forward a single validated client address in
-`X-Forwarded-For` and `X-Real-IP`, including token checks and attachment uploads.
-The address is request-scoped; it is not retained in an MCP session. Stdio and
+HTTP requests to a Region OpenAPI forward the ingress-provided `X-Real-IP` as a
+single validated address in `X-Forwarded-For` and `X-Real-IP`, including token
+checks and attachment uploads. The address is request-scoped, not stored in an
+MCP session. Missing or invalid `X-Real-IP` falls back to the socket peer address;
+MCP does not select an address from an incoming `X-Forwarded-For` chain. Stdio and
 central OpenAPI requests do not add these headers.
 
-When MCP is behind an ingress, set `MCP_TRUSTED_PROXY_CIDRS` to a comma-separated
-list of the actual ingress/proxy IP addresses or CIDRs. Without this setting, MCP
-uses the socket peer IP and ignores incoming forwarding headers. The proxy chain
-is resolved from right to left, stopping at the first untrusted address. For a
-local reverse proxy only, an example is `127.0.0.1/32,::1/128`; production values
-must come from that environment's network configuration. Boolean values, hop
-counts and `/0` ranges are rejected. Never configure client networks as proxies.
-
-Before enabling in a hosted deployment:
-
-1. Confirm the public ingress overwrites client-supplied XFF, or appends the
-   observed source address so the trust chain stops at the actual client.
-2. Restrict direct access to the MCP service and configure only trusted proxy
-   addresses (not all private networks).
-3. Confirm the internal OpenAPI gateway preserves these headers from MCP and
-   uses them for allowlist evaluation. Do not allow arbitrary internet clients
-   to impersonate this trusted internal path.
-4. Roll out the MCP image with the environment-specific trusted proxy setting,
-   then verify allowed and denied client IPs through a real ingress. Merely
-   updating the image without proxy configuration will still use the ingress IP.
-
-A remote AI provider's egress IP may be the client observed by ingress; this
-setting cannot recover the human user's IP if that provider never supplies it
-through a trusted proxy path.
+The hosted deployment relies on ingress to overwrite `X-Real-IP` with the actual
+client address and restrict direct access to MCP. No proxy address list or
+Express `trust proxy` configuration is needed. Self-hosted HTTP deployments using
+this feature must enforce the same ingress contract; the header itself does not
+authenticate an address. A remote AI provider's egress IP may be the client
+observed by ingress, rather than the human user's workstation IP.

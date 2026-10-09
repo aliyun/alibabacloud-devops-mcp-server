@@ -3,11 +3,10 @@ import http from 'node:http';
 import { once } from 'node:events';
 import { spawn } from 'node:child_process';
 import { after, before, it } from 'node:test';
-import express from 'express';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { clientIp, trustedProxyCidrs } from '../common/clientIp.js';
+import { clientIp } from '../common/clientIp.js';
 import { runWithAuth, yunxiaoRequest, verifyToken } from '../common/utils.js';
 import { createWorkitemAttachmentFunc } from '../operations/projex/attachment.js';
 
@@ -51,31 +50,22 @@ after(async () => {
   else process.env.YUNXIAO_EDITION = previousEdition;
 });
 
-it('accepts explicit peers only and normalizes IPv4-mapped addresses', () => {
-  assert.deepEqual(trustedProxyCidrs(undefined), []);
-  assert.deepEqual(trustedProxyCidrs('127.0.0.1/32, ::1/128'), ['127.0.0.1/32', '::1/128']);
-  for (const value of ['true', '1', '0.0.0.0/0', '::/0', '10.0.0.1/33', '10.0.0.1/', 'loopback', '127.0.0.1,,::1']) {
-    assert.throws(() => trustedProxyCidrs(value));
-  }
-  assert.equal(clientIp({ ip: '::ffff:127.0.0.1' }), '127.0.0.1');
-  assert.equal(clientIp({ ip: '2001:db8::1' }), '2001:db8::1');
-  assert.equal(clientIp({ ip: 'not-an-ip' }), undefined);
+it('uses ingress X-Real-IP and normalizes IPv4/IPv6 addresses', () => {
+  const request = (ip: string) => ({ headers: { 'x-real-ip': ip }, socket: { remoteAddress: '127.0.0.1' } });
+  assert.equal(clientIp(request(' 203.0.113.7 ')), allowed);
+  assert.equal(clientIp(request('::ffff:203.0.113.7')), allowed);
+  assert.equal(clientIp(request('2001:db8::1')), '2001:db8::1');
 });
 
-it('ignores spoofed headers from untrusted peers and stops at the nearest untrusted proxy', async () => {
-  const app = express();
-  app.set('trust proxy', trustedProxyCidrs('192.0.2.10/32'));
-  app.get('/', (req, res) => res.json({ ip: clientIp(req) }));
-  const server = http.createServer(app);
-  const port = await listen(server);
-  try {
-    const request = () => fetch(`http://127.0.0.1:${port}`, { headers: { 'X-Forwarded-For': `${allowed}, ${denied}`, 'X-Real-IP': allowed } }).then(r => r.json());
-    assert.equal((await request()).ip, '127.0.0.1');
-    app.set('trust proxy', trustedProxyCidrs('127.0.0.1/32'));
-    assert.equal((await request()).ip, denied);
-    app.set('trust proxy', trustedProxyCidrs(`127.0.0.1/32,${denied}/32`));
-    assert.equal((await request()).ip, allowed);
-  } finally { await close(server); }
+it('ignores XFF and falls back to socket for missing or invalid ingress IP', () => {
+  for (const realIp of [undefined, '', 'not-an-ip', `${allowed}, ${denied}`, [allowed, denied]]) {
+    assert.equal(clientIp({
+      headers: { 'x-real-ip': realIp, 'x-forwarded-for': allowed },
+      socket: { remoteAddress: '::ffff:127.0.0.1' },
+    }), '127.0.0.1');
+  }
+  assert.equal(clientIp({ headers: { 'x-forwarded-for': allowed } }), undefined);
+  assert.equal(clientIp({ headers: { 'x-real-ip': denied, 'x-forwarded-for': allowed } }), denied);
 });
 
 it('isolates concurrent requests and includes IP in the auth probe and cache key', async () => {
@@ -109,14 +99,14 @@ it('forwards IP for both multipart paths and omits IP for stdio and central requ
 });
 
 for (const mode of ['stateless', 'stateful', 'sse']) {
-  it(`${mode}: propagates trusted IP through auth and tools and refreshes it on each request`, { timeout: 20000 }, async () => {
+  it(`${mode}: propagates ingress IP through auth and tools and refreshes it on each request`, { timeout: 20000 }, async () => {
     const reservation = http.createServer();
     const port = await listen(reservation);
     await close(reservation);
     const args = ['dist/index.js', mode === 'sse' ? '--sse' : '--streamable-http'];
     if (mode === 'stateless') args.push('--stateless');
     const child = spawn(process.execPath, args, {
-      env: { ...process.env, PORT: String(port), MCP_CLUSTER: 'false', MCP_AUTH_CHECK: 'true', YUNXIAO_ACCESS_TOKEN: 'transport-test', YUNXIAO_API_BASE_URL: apiBaseUrl, YUNXIAO_EDITION: 'region', MCP_TRUSTED_PROXY_CIDRS: '127.0.0.1/32,::1/128' },
+      env: { ...process.env, PORT: String(port), MCP_CLUSTER: 'false', MCP_AUTH_CHECK: 'true', YUNXIAO_ACCESS_TOKEN: 'transport-test', YUNXIAO_API_BASE_URL: apiBaseUrl, YUNXIAO_EDITION: 'region' },
       stdio: ['ignore', 'ignore', 'pipe'],
     });
     let logs = '';
@@ -133,7 +123,8 @@ for (const mode of ['stateless', 'stateful', 'sse']) {
       let ip = allowed;
       const customFetch: typeof fetch = (url, init) => {
         const headers = new Headers(init?.headers);
-        headers.set('X-Forwarded-For', ip);
+        headers.set('X-Real-IP', ip);
+        headers.set('X-Forwarded-For', allowed); // must not override ingress X-Real-IP
         headers.set('X-Forwarded-Host', 'tenant.example');
         return fetch(url, { ...init, headers });
       };
@@ -146,7 +137,7 @@ for (const mode of ['stateless', 'stateful', 'sse']) {
       const good = await client.callTool({ name: 'get_current_user', arguments: {} });
       assert.ok(!good.isError, JSON.stringify(good));
       assert.ok(requests.slice(before).every(r => r.ip === allowed && r.real === allowed));
-      ip = `${allowed}, ${denied}`; // attacker prepends an allowlisted address
+      ip = denied; // ingress reports denied source despite an allowlisted XFF value
       await assert.rejects(client.callTool({ name: 'get_current_user', arguments: {} }), /403.*allow list/);
       assert.equal(requests.at(-1)?.ip, denied);
       ip = allowed;
