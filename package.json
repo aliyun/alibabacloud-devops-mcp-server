@@ -39,7 +39,7 @@
     "start:both": "node dist/index.js --sse --streamable-http"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.31.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "pino": "^9.14.0",
@@ -53,7 +53,7 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "fast-uri": "^3.1.7",
+    "fast-uri": "^3.1.8",
     "body-parser": "^2.3.0",
     "@hono/node-server": "^2.0.11"
   }
