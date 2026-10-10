@@ -217,7 +217,8 @@ export async function createChangeRequestFunc(
   reviewerUserIds?: string[],
   workItemIds?: string,
   createFrom: string = "WEB",
-  triggerAIReviewRun: boolean = false // Whether to trigger AI review
+  triggerAIReviewRun: boolean = false, // Whether to trigger AI review
+  extensionParams?: Record<string, string>
 ): Promise<z.infer<typeof ChangeRequestSchema>> {
   const finalOrgId = await resolveOrganizationId(organizationId);
   const encodedRepoId = handleRepositoryIdEncoding(repositoryId);
@@ -297,6 +298,10 @@ export async function createChangeRequestFunc(
   
   if (triggerAIReviewRun !== undefined) {
     payload.triggerAIReviewRun = triggerAIReviewRun;
+  }
+
+  if (extensionParams !== undefined) {
+    payload.extensionParams = extensionParams;
   }
   
   const response = await yunxiaoRequest(url, {

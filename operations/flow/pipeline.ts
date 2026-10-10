@@ -422,7 +422,7 @@ export async function listPipelineRunsFunc(
   }
   
   if (options?.endTime !== undefined) {
-    queryParams.endTme = utils.convertToTimestamp(options.endTime);
+    queryParams.endTime = utils.convertToTimestamp(options.endTime);
   }
   
   if (options?.status !== undefined) {

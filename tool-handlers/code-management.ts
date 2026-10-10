@@ -240,7 +240,8 @@ export const handleCodeManagementTools = async (request: any) => {
         args.reviewerUserIds ?? undefined,
         args.workItemIds ?? undefined,
         args.createFrom,
-        args.triggerAIReviewRun ?? false
+        args.triggerAIReviewRun ?? false,
+        args.extensionParams
       );
       return {
         content: [{ type: "text", text: JSON.stringify(changeRequest, null, 2) }],

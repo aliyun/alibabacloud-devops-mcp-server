@@ -1,6 +1,6 @@
 {
   "total": 203,
-  "generatedAt": "2026-10-09T02:21:32.519Z",
+  "generatedAt": "2026-10-10T04:04:00.367Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -828,6 +828,13 @@
             "type": "boolean",
             "default": false,
             "description": "是否触发AI评审。true - 触发AI评审；false - 不触发（默认）"
+          },
+          "extensionParams": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "扩展参数，值必须为字符串。aiReview.model 用于指定 AI 评审模型，值为 JSON 字符串，例如 {\"modelKey\":\"glm-5.2\"}"
           }
         },
         "required": [

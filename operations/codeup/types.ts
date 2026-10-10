@@ -369,6 +369,7 @@ export const CreateChangeRequestSchema = z.object({
   workItemIds: z.string().optional().describe("关联工作项ID列表，以字符串形式逗号分隔。示例值：722200214032b6b31e6f1434ab,xxx"),
   createFrom: z.enum(["WEB"]).optional().default("WEB").describe("创建来源。WEB - 页面创建（默认）"),
   triggerAIReviewRun: z.boolean().optional().default(false).describe("是否触发AI评审。true - 触发AI评审；false - 不触发（默认）"),
+  extensionParams: z.record(z.string()).optional().describe('扩展参数，值必须为字符串。aiReview.model 用于指定 AI 评审模型，值为 JSON 字符串，例如 {"modelKey":"glm-5.2"}'),
 });
 
 export const UpdateChangeRequestSchema = z.object({
