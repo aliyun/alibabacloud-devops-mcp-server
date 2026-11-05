@@ -1,6 +1,6 @@
 {
   "total": 203,
-  "generatedAt": "2026-10-10T04:04:00.367Z",
+  "generatedAt": "2026-11-05T06:59:13.025Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -8310,21 +8310,37 @@
                   "TABLE",
                   "TEXT"
                 ],
-                "description": "内容格式"
+                "description": "步骤结构：TABLE为表格步骤，TEXT为文本步骤；TEXT的内容格式由stepContentFormat和expectedResultFormat分别指定"
               },
               "stepContent": {
                 "type": [
                   "string",
                   "null"
                 ],
-                "description": "当contentType为TEXT时，该字段描述了测试步骤的内容"
+                "description": "TEXT步骤内容，默认按纯文本处理，stepContentFormat=RICHTEXT时按HTML处理；与content同时传入时优先使用本字段"
+              },
+              "stepContentFormat": {
+                "type": "string",
+                "enum": [
+                  "TEXT",
+                  "RICHTEXT"
+                ],
+                "description": "仅用于TEXT步骤。请求省略时按TEXT处理：转义HTML并将换行转为段落；RICHTEXT保留HTML，必要时补充article容器。不支持MARKDOWN。响应返回实际存储格式，保存后为RICHTEXT，历史纯文本可为TEXT"
               },
               "expectedResult": {
                 "type": [
                   "string",
                   "null"
                 ],
-                "description": "当contentType为TEXT时，该字段描述了期望结果的内容"
+                "description": "TEXT步骤的期望结果，默认按纯文本处理，expectedResultFormat=RICHTEXT时按HTML处理"
+              },
+              "expectedResultFormat": {
+                "type": "string",
+                "enum": [
+                  "TEXT",
+                  "RICHTEXT"
+                ],
+                "description": "仅用于TEXT步骤的期望结果。请求省略时按TEXT处理：转义HTML并将换行转为段落；RICHTEXT保留HTML，必要时补充article容器。不支持MARKDOWN。响应返回实际存储格式，保存后为RICHTEXT，历史纯文本可为TEXT"
               },
               "content": {
                 "anyOf": [

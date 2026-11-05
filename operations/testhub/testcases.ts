@@ -62,9 +62,11 @@ export const TestStepSchema = z.object({
 
 // Schema for TestStepsDTO
 export const TestStepsDTOSchema = z.object({
-  contentType: z.enum(["TABLE", "TEXT"]).describe("内容格式"),
-  stepContent: z.string().nullable().optional().describe("当contentType为TEXT时，该字段描述了测试步骤的内容"),
-  expectedResult: z.string().nullable().optional().describe("当contentType为TEXT时，该字段描述了期望结果的内容"),
+  contentType: z.enum(["TABLE", "TEXT"]).describe("步骤结构：TABLE为表格步骤，TEXT为文本步骤；TEXT的内容格式由stepContentFormat和expectedResultFormat分别指定"),
+  stepContent: z.string().nullable().optional().describe("TEXT步骤内容，默认按纯文本处理，stepContentFormat=RICHTEXT时按HTML处理；与content同时传入时优先使用本字段"),
+  stepContentFormat: z.enum(["TEXT", "RICHTEXT"]).optional().describe("仅用于TEXT步骤。请求省略时按TEXT处理：转义HTML并将换行转为段落；RICHTEXT保留HTML，必要时补充article容器。不支持MARKDOWN。响应返回实际存储格式，保存后为RICHTEXT，历史纯文本可为TEXT"),
+  expectedResult: z.string().nullable().optional().describe("TEXT步骤的期望结果，默认按纯文本处理，expectedResultFormat=RICHTEXT时按HTML处理"),
+  expectedResultFormat: z.enum(["TEXT", "RICHTEXT"]).optional().describe("仅用于TEXT步骤的期望结果。请求省略时按TEXT处理：转义HTML并将换行转为段落；RICHTEXT保留HTML，必要时补充article容器。不支持MARKDOWN。响应返回实际存储格式，保存后为RICHTEXT，历史纯文本可为TEXT"),
   content: z.array(TestStepSchema).nullable().optional().describe("当contentType为TABLE时，该字段描述了测试步骤的内容；当contentType为TEXT时，该字段为null"),
 });
 
