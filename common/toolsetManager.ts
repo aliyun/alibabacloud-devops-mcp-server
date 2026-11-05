@@ -19,7 +19,6 @@ import { getAppStackChangeRequestTools } from '../tool-registry/appstack-change-
 import { getAppStackDeploymentResourceTools } from '../tool-registry/appstack-deployment-resources.js';
 import { getAppStackChangeOrderTools } from '../tool-registry/appstack-change-orders.js';
 import { getAppStackAppReleaseWorkflowTools } from '../tool-registry/appstack-app-release-workflows.js';
-import { getAppStackReleaseWorkflowTools } from '../tool-registry/appstack-release-workflows.js';
 import { getEffortTools } from '../tool-registry/effort.js';
 import { getResourceMemberTools } from '../tool-registry/resourceMember.js';
 import { getVMDeployOrderTools } from '../tool-registry/vmDeployOrder.js';
@@ -27,7 +26,6 @@ import { getFlowVariableGroupTools } from '../tool-registry/flow-variable-groups
 import { getCommitTools } from '../tool-registry/commit.js';
 import { getBaseTools } from '../tool-registry/base.js';
 import { getTestManagementTools } from '../tool-registry/test-management.js';
-import { getTagTools } from '../tool-registry/tag.js';
 
 // 定义所有工具集配置
 const ALL_TOOLSET_CONFIGS: Record<Toolset, ToolsetConfig> = {
@@ -74,8 +72,7 @@ const ALL_TOOLSET_CONFIGS: Record<Toolset, ToolsetConfig> = {
       ...getServiceConnectionTools(),
       ...getResourceMemberTools(),
       ...getVMDeployOrderTools(),
-      ...getFlowVariableGroupTools(),
-      ...getTagTools()
+      ...getFlowVariableGroupTools()
     ]) as () => Tool[]
   },
   [Toolset.PACKAGES_MANAGEMENT]: {
@@ -96,7 +93,6 @@ const ALL_TOOLSET_CONFIGS: Record<Toolset, ToolsetConfig> = {
       ...getAppStackChangeRequestTools(),
       ...getAppStackDeploymentResourceTools(),
       ...getAppStackChangeOrderTools(),
-      ...getAppStackReleaseWorkflowTools(),
       ...getAppStackAppReleaseWorkflowTools()
     ]) as () => Tool[]
   },
