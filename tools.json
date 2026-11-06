@@ -1,6 +1,6 @@
 {
   "total": 203,
-  "generatedAt": "2026-11-05T06:59:13.025Z",
+  "generatedAt": "2026-11-06T06:21:44.640Z",
   "tools": [
     {
       "name": "get_current_organization_info",
@@ -8302,87 +8302,94 @@
             "description": "自定义字段值"
           },
           "testSteps": {
-            "type": "object",
-            "properties": {
-              "contentType": {
-                "type": "string",
-                "enum": [
-                  "TABLE",
-                  "TEXT"
-                ],
-                "description": "步骤结构：TABLE为表格步骤，TEXT为文本步骤；TEXT的内容格式由stepContentFormat和expectedResultFormat分别指定"
-              },
-              "stepContent": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "TEXT步骤内容，默认按纯文本处理，stepContentFormat=RICHTEXT时按HTML处理；与content同时传入时优先使用本字段"
-              },
-              "stepContentFormat": {
-                "type": "string",
-                "enum": [
-                  "TEXT",
-                  "RICHTEXT"
-                ],
-                "description": "仅用于TEXT步骤。请求省略时按TEXT处理：转义HTML并将换行转为段落；RICHTEXT保留HTML，必要时补充article容器。不支持MARKDOWN。响应返回实际存储格式，保存后为RICHTEXT，历史纯文本可为TEXT"
-              },
-              "expectedResult": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "TEXT步骤的期望结果，默认按纯文本处理，expectedResultFormat=RICHTEXT时按HTML处理"
-              },
-              "expectedResultFormat": {
-                "type": "string",
-                "enum": [
-                  "TEXT",
-                  "RICHTEXT"
-                ],
-                "description": "仅用于TEXT步骤的期望结果。请求省略时按TEXT处理：转义HTML并将换行转为段落；RICHTEXT保留HTML，必要时补充article容器。不支持MARKDOWN。响应返回实际存储格式，保存后为RICHTEXT，历史纯文本可为TEXT"
-              },
-              "content": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "step": {
-                          "type": [
-                            "string",
-                            "null"
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "contentType": {
+                    "type": "string",
+                    "enum": [
+                      "TABLE",
+                      "TEXT"
+                    ],
+                    "description": "步骤结构：TABLE为表格步骤，TEXT为文本步骤；TEXT的内容格式由stepContentFormat和expectedResultFormat分别指定"
+                  },
+                  "stepContent": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "TEXT步骤内容，默认按纯文本处理，stepContentFormat=RICHTEXT时按HTML处理；与content同时传入时优先使用本字段"
+                  },
+                  "stepContentFormat": {
+                    "type": "string",
+                    "enum": [
+                      "TEXT",
+                      "RICHTEXT"
+                    ],
+                    "description": "仅用于TEXT步骤。请求省略时按TEXT处理：转义HTML并将换行转为段落；RICHTEXT保留HTML，必要时补充article容器。不支持MARKDOWN。响应返回实际存储格式，保存后为RICHTEXT，历史纯文本可为TEXT"
+                  },
+                  "expectedResult": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "TEXT步骤的期望结果，默认按纯文本处理，expectedResultFormat=RICHTEXT时按HTML处理"
+                  },
+                  "expectedResultFormat": {
+                    "type": "string",
+                    "enum": [
+                      "TEXT",
+                      "RICHTEXT"
+                    ],
+                    "description": "仅用于TEXT步骤的期望结果。请求省略时按TEXT处理：转义HTML并将换行转为段落；RICHTEXT保留HTML，必要时补充article容器。不支持MARKDOWN。响应返回实际存储格式，保存后为RICHTEXT，历史纯文本可为TEXT"
+                  },
+                  "content": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "step": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "测试步骤"
+                            },
+                            "expected": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "期望结果"
+                            }
+                          },
+                          "required": [
+                            "step",
+                            "expected"
                           ],
-                          "description": "测试步骤"
-                        },
-                        "expected": {
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "description": "期望结果"
+                          "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "step",
-                        "expected"
-                      ],
-                      "additionalProperties": false
-                    }
-                  },
-                  {
-                    "type": "null"
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "当contentType为TABLE时，该字段描述了测试步骤的内容；当contentType为TEXT时，该字段为null"
                   }
+                },
+                "required": [
+                  "contentType"
                 ],
-                "description": "当contentType为TABLE时，该字段描述了测试步骤的内容；当contentType为TEXT时，该字段为null"
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
               }
-            },
-            "required": [
-              "contentType"
             ],
-            "additionalProperties": false,
-            "description": "测试步骤"
+            "description": "测试步骤；null按未传处理。显式传入步骤时contentType必填，内容格式仅支持TEXT或RICHTEXT"
           }
         },
         "required": [

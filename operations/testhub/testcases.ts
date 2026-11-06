@@ -70,6 +70,14 @@ export const TestStepsDTOSchema = z.object({
   content: z.array(TestStepSchema).nullable().optional().describe("当contentType为TABLE时，该字段描述了测试步骤的内容；当contentType为TEXT时，该字段为null"),
 });
 
+// Responses may contain null for legacy step types and for formats on TABLE steps.
+// Keep these response allowances out of the create request's explicit field values.
+export const TestStepsResponseSchema = TestStepsDTOSchema.extend({
+  contentType: TestStepsDTOSchema.shape.contentType.nullable(),
+  stepContentFormat: TestStepsDTOSchema.shape.stepContentFormat.nullable(),
+  expectedResultFormat: TestStepsDTOSchema.shape.expectedResultFormat.nullable(),
+});
+
 // Schema for CreateTestcaseRequest
 export const CreateTestcaseRequestSchema = z.object({
   organizationId: z.string().describe("组织ID"),
@@ -82,7 +90,7 @@ export const CreateTestcaseRequestSchema = z.object({
   preCondition: z.string().nullable().optional().describe("前置条件"),
   labels: z.array(z.string()).optional().describe("标签ids"),
   customFieldValues: z.record(z.any()).optional().describe("自定义字段值"),
-  testSteps: TestStepsDTOSchema.optional().describe("测试步骤"),
+  testSteps: TestStepsDTOSchema.nullable().optional().describe("测试步骤；null按未传处理。显式传入步骤时contentType必填，内容格式仅支持TEXT或RICHTEXT"),
 });
 
 export const CreateTestcaseResponseSchema = z.object({
@@ -131,7 +139,7 @@ export const FieldValueSchema = z.object({
   values: z.array(z.object({
     identifier: z.string().describe("值的唯一标识"),
     displayValue: z.string().describe("显示的名称"),
-  })).optional().describe("字段值"),
+  })).nullable().optional().describe("字段值"),
 });
 
 // Schema for TestcaseDTO
@@ -147,7 +155,7 @@ export const TestcaseDTOSchema = z.object({
   preConditionFormat: z.enum(["RICHTEXT", "TEXT"]).nullable().optional().describe("前置条件内容格式"),
   labels: z.array(MiniLabelSchema).nullable().optional().describe("标签"),
   customFieldValues: z.array(FieldValueSchema).nullable().optional().describe("自定义字段值"),
-  testSteps: TestStepsDTOSchema.nullable().optional().describe("测试步骤"),
+  testSteps: TestStepsResponseSchema.nullable().optional().describe("测试步骤"),
   gmtCreate: z.union([z.string(), z.number()]).nullable().optional().describe("创建时间（时间戳或ISO字符串）"),
   gmtModified: z.union([z.string(), z.number()]).nullable().optional().describe("修改时间（时间戳或ISO字符串）"),
   testRepo: z.object({
